@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		#space-odyssey-game {
+			background-color: black;
+		}
+	</style>
+	<script src="./js/lib/jquery-1.9.1.min.js"></script>
+	<script src="./js/lib/sound.min.js"></script>
+	<script src="./js/math.js"></script>
+	<script src="./js/game.js"></script>
+	<script src="./js/controls.js"></script>
+	<script src="./js/goodguy.js"></script>
+	<script src="./js/badguy.js"></script>
+</head>
+<body>
+	<header><h1>Super Space Odyssey</h1></header>
+	<section>
+		<img src="./images/shipsall_4.gif" />
+		<canvas id="space-odyssey-game" height="400" width="600">
+
+		</canvas>
+	</section>
+	<script>
+		$(function() {
+			game.initGame();
+
+			setInterval(function() {
+				var currentTime = new Date().getTime();
+				var delta = (currentTime - game.lastTime) / 1000.0;
+				game.lastTime = currentTime;
+				
+				// we don't accept too big delta values
+				if (delta > 1.0) delta = 1.0;
+				  game.updateScene(delta);
+				  game.renderScene();
+			}
+			, 1000/game.frameRate);
+
+			
+		});
+
+	</script>
+<body>
+</html>
