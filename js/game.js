@@ -16,6 +16,7 @@ var game = {
 		goodGuys[0].updateState();
 		badGuys = badGuys.filter(function(badGuy) { return badGuy.active; });
 		badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
+		lvl.updateLevel(delta, badGuys);
 	},
 	renderScene: function() { 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -34,20 +34,23 @@ function TravelPath() {
 	this.P3 = null;
 
 	this.generateRandom = function() {
+		
+		var constraint = 200;
+
 		this.P0 = new Point();
-		this.P0.x = (game.height / 2) - (Math.random() * game.height);
+		this.P0.x = ((game.height + constraint) / 2) - (Math.random() * (game.height+ constraint));
 		this.P0.y = game.width / 2;
 
 		this.P1 = new Point();
-		this.P1.x = (game.height / 2) - (Math.random() * game.height);
+		this.P1.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
 		this.P1.y = Math.random() * 100 + 100;
 
 		this.P2 = new Point();
-		this.P2.x = (game.height / 2) - (Math.random() * game.height);
+		this.P2.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
 		this.P2.y = Math.random() * -200 - 50;
 
 		this.P3 = new Point();
-		this.P3.x = (game.height / 2) - (Math.random() * game.height);
+		this.P3.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
 		this.P3.y = (game.width / 2* -1)-50;
 	}
 }

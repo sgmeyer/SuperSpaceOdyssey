@@ -11,8 +11,6 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 
 var badGuys = [];
 badGuys.push(generateBadGuy());
-badGuys.push(generateBadGuy());
-badGuys.push(generateBadGuy());
 
 function BadGuy() {
 
