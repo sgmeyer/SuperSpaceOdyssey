@@ -11,6 +11,8 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 
 var goodGuys = [];
 goodGuys.push(new GoodGuy());
+goodGuys.push(new GoodGuy());
+goodGuys.push(new GoodGuy());
 
 function GoodGuy() {
 
@@ -18,11 +20,11 @@ function GoodGuy() {
 	var sy = 123;
 	var swidth = 60;
 	var sheight = 65;
-	var x = -25;
-	var y = 250; 
-	var width = 50;
-	var height = 50;
-
+	this.active = true;
+	this.x = -25;
+	this.y = 250; 
+	this.width = 50;
+	this.height = 50;
 	this.speed = 5;
 	
 	this.draw = function(context) {
@@ -30,40 +32,59 @@ function GoodGuy() {
 		var rotation = (Math.PI / 180.0) * 90;
 
 		context.save();
-		ctx.translate(game.width/2, game.height/2);
+		context.translate(game.width/2, game.height/2);
 		context.rotate(rotation);
-		context.drawImage(sprite, sx, sy, swidth, sheight, x, y, width, height);
+		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
 		context.restore();
 	};
 
 	this.updateState = function() {
 
 		if (keydown.up) {    
-			x -= this.speed;        
-            if (x < (game.height/2) * -1) {
-				x = game.height/2 * -1;
+			this.x -= this.speed;        
+            if (this.x < (game.height/2) * -1) {
+				this.x = game.height/2 * -1;
 			}
         }
         
 	    if (keydown.down) {
-	    	x += this.speed;
-	      	if (x > (game.height/2)-width) {
-	    		x = (game.height/2)-width;
+	    	this.x += this.speed;
+	      	if (this.x > (game.height/2)-this.width) {
+	    		this.x = (game.height/2)-this.width;
 	    	}
 	    }
 
 	    if (keydown.right) {
-	    	y -= this.speed;
-	    	if (y < (game.width/2) * -1) {
-    			y = (game.width/2) * -1;
+	    	this.y -= this.speed;
+	    	if (this.y < (game.width/2) * -1) {
+    			this.y = (game.width/2) * -1;
 	    	}
 	    }
 
 	    if (keydown.left) {
-	    	y += this.speed;
-	    	if (y > (game.width/2) - height)  {
-    			y = (game.width/2) - height;
+	    	this.y += this.speed;
+	    	if (this.y > (game.width/2) - this.height)  {
+    			this.y = (game.width/2) - this.height;
 	    	}
 	    }
+
+	    if(keydown.space) {
+
+	    	this.shoot();
+	    	// Prevents holding down the key to shoot frequently.
+	    	keydown.space = false;
+	    }
+
 	};
+
+	this.shoot = function() {
+
+		var bullet = new Bullet();
+		bullet.generateTravelPath(this.x+(this.width/2), this.y);
+		bullets.push(bullet);
+	};
+
+	this.kill = function() {
+		this.active = false;
+	}
 }; 
