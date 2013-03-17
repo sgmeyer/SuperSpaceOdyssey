@@ -13,3 +13,30 @@ function collides(a, b) {
 			a_y < b_y + b.height &&
 			a_y + a.height > b_y;
 }
+
+function handleCollisions(badGuys, explosions, goodGuy) {
+	goodGuy.shotBullets.forEach(function(bullet) {
+    	badGuys.forEach(function(badGuy) {
+	      	if (collides(bullet, badGuy)) {
+	    		badGuy.explode(explosions);
+	        	bullet.kill();
+	      	}
+	    });
+	});
+
+	badGuys.forEach(function(badGuy) {
+		badGuy.shotBullets.forEach(function(bullet){
+	      	if (collides(bullet, game.goodGuys[0])) {
+	    		bullet.kill();
+	    		goodGuy.explode(explosions);
+	      	}
+	    });
+	});
+
+	badGuys.forEach(function(badGuy) {
+		if (collides(game.goodGuys[0], badGuy)) {
+			badGuy.explode(explosions);
+			goodGuy.explode(explosions);
+		}
+	});
+}

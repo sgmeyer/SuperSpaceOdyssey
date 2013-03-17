@@ -9,9 +9,6 @@ width	Optional. The width of the image to use (stretch or reduce the image)
 height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
-var badGuys = [];
-badGuys.push(generateBadGuy());
-
 function BadGuy() {
 
 var temp = 0;
@@ -30,6 +27,18 @@ var temp = 0;
 	this.active = true;
 	this.speed = 3;
 	this.rotation = 0;
+	this.shotBullets = [];
+
+	this.updateState = function (delta) {
+		t += (delta / 10) * this.speed;		
+		if(t > 1) { this.kill(); }
+		var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
+		this.x = point.x;
+		this.y = point.y;
+
+		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
+		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
+	};
 
 	this.draw = function (context) {
 		this.rotation = (Math.PI / 180) * 270;
@@ -39,14 +48,8 @@ var temp = 0;
 		context.rotate(this.rotation);
 		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
 		context.restore();
-	};
 
-	this.updateState = function (delta) {
-		t += (delta / 10) * this.speed;		
-		if(t > 1) { this.kill(); }
-		var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
-		this.x = point.x;
-		this.y = point.y;
+		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
 	this.generateTravelPath = function () {
@@ -56,10 +59,11 @@ var temp = 0;
 
 	this.kill = function() {
 		this.active = false;
+		this.ShotBullets = [];
 	}
 
-	this.explode = function() {
-		this.active = false;
+	this.explode = function(explosions) {
+		this.kill();
 
 		var explosion = new Explosion();
 		explosion.explode(this);
@@ -70,12 +74,6 @@ var temp = 0;
 		var bullet = new Bullet();
 		bullet.rotation = 270;
 		bullet.generateTravelPath(this.x + (this.width/2), this.y);
-		badGuyBullets.push(bullet);
+		this.shotBullets.push(bullet);
 	};
 };
-
-function generateBadGuy() {
-	var badGuy = new BadGuy();
-	badGuy.generateTravelPath();
-	return badGuy;
-}

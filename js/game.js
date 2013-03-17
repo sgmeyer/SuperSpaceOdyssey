@@ -3,8 +3,9 @@ var game = {
 	height: 400,
 	width: 600,
 	lastTime:0,
-	initGame: function () {
-		
+	scenes: [],
+	goodGuys: [],
+	initialize: function () {
 		audio.initialize();
 		controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
@@ -15,75 +16,42 @@ var game = {
 
 		this.lastTime = new Date().getTime();
 		audio.playThemeSong();
+		this.initializeGameStart();
 	},
 	updateScene: function (delta) {
-
-		goodGuys = goodGuys.filter(function(goodGuy) { return goodGuy.active; });
-
-		if(goodGuys.length > 0) { handleCollisions(); }
-		if(goodGuys.length > 0) { goodGuys[0].updateState(); }
-
-
-		badGuys = badGuys.filter(function(badGuy) { return badGuy.active; });
-		badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
-		
-		bullets = bullets.filter(function(bullet) { return bullet.active; });
-		bullets.forEach(function(bullet) { bullet.updateState(delta); });	
-
-		badGuyBullets = badGuyBullets.filter(function(bullet) { return bullet.active; });
-		badGuyBullets.forEach(function(bullet) { bullet.updateState(delta); });
-
-		explosions = explosions.filter(function(explosion) { return explosion.active; });
-		explosions.forEach(function(explosion) { explosion.updateState(delta); });
-
-		lvl.updateLevel(delta, badGuys);	
+		this.scenes = this.scenes.filter(function (scene) { return scene.active; });
+		if(this.scenes.length > 0) {
+			this.scenes[0].updateState(delta);
+		}		
 	},
 	renderScene: function() { 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		
-		bullets.forEach(function(bullet) { bullet.draw(ctx); });
-		badGuyBullets.forEach(function(bullet) { bullet.draw(ctx); });
-
-		if(goodGuys.length > 0) { goodGuys[0].draw(ctx); }
-		badGuys.forEach(function (badGuy) { badGuy.draw(ctx); });
-
-		if(goodGuys.length == 0) { 
-			ctx.fillStyle = "#FF0000";
-			ctx.font="20px Georgia";
-			ctx.textAlign = "center";
-			ctx.fillText("You Suck!", game.width/2, game.height/2); 
+		if(this.scenes.length > 0) {
+			this.scenes[0].draw(ctx);
 		}
-		
-		explosions.forEach(function(explosion) { explosion.draw(ctx); });
 	},
 	loadSprite: function(name) {
 	    var sprite = new Image();
 	    sprite.src = name;
 	    return sprite;
+	},
+ 	initializeGameOver: function() {
+ 		this.scenes = [];
+		this.scenes.push(new GameOverMenu());
+	},
+ 	initializeGameStart: function() {
+		this.scenes = [];
+		this.scenes.push(new StartMenu());
+		this.scenes.push(new Level());
+		this.goodGuys.push(new GoodGuy());
+		this.goodGuys.push(new GoodGuy());
+		this.goodGuys.push(new GoodGuy());
+	},
+ 	initializeGameReset: function() {
+		this.scenes = [];
+		this.scenes.push(new Level());
+		this.goodGuys.push(new GoodGuy());
+		this.goodGuys.push(new GoodGuy());
+		this.goodGuys.push(new GoodGuy());
 	}
-}
-
-function handleCollisions() {
-	bullets.forEach(function(bullet) {
-    	badGuys.forEach(function(badGuy) {
-	      	if (collides(bullet, badGuy)) {
-	    		badGuy.explode();
-	        	bullet.kill();
-	      	}
-	    });
-	});
-
-	badGuyBullets.forEach(function(bullet) {
-      	if (collides(bullet, goodGuys[0])) {
-    		bullet.kill();
-    		goodGuys[0].explode();
-      	}
-	});
-
-	badGuys.forEach(function(badGuy) {
-		if (collides(goodGuys[0], badGuy)) {
-			badGuy.explode();
-			goodGuys[0].explode();
-		}
-	});
 }

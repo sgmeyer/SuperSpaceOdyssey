@@ -9,9 +9,9 @@ width	Optional. The width of the image to use (stretch or reduce the image)
 height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
-var bullets = [];
+//var bullets = [];
 
-var badGuyBullets = [];
+//var badGuyBullets = [];
 
 function Bullet() {
 	

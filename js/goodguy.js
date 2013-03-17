@@ -9,11 +9,6 @@ width	Optional. The width of the image to use (stretch or reduce the image)
 height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
-var goodGuys = [];
-goodGuys.push(new GoodGuy());
-goodGuys.push(new GoodGuy());
-goodGuys.push(new GoodGuy());
-
 function GoodGuy() {
 
 	var sx = 67;
@@ -27,6 +22,7 @@ function GoodGuy() {
 	this.height = 50;
 	this.speed = 5;
 	this.rotation = 0;
+	this.shotBullets = []
 
 	this.draw = function(context) {
 		
@@ -37,10 +33,11 @@ function GoodGuy() {
 		context.rotate(this.rotation);
 		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
 		context.restore();
+
+		game.goodGuys[0].shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
-	this.updateState = function() {
-
+	this.updateState = function(delta) {
 		if (keydown.up) {    
 			this.x -= this.speed;        
             if (this.x < (game.height/2) * -1) {
@@ -70,28 +67,29 @@ function GoodGuy() {
 	    }
 
 	    if(keydown.space) {
-
 	    	this.shoot();
 	    	// Prevents holding down the key to shoot frequently.
 	    	keydown.space = false;
 	    }
 
+	    this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
+		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });	
 	};
 
 	this.shoot = function() {
-
 		var bullet = new Bullet();
 		bullet.rotation = 90;;
 		bullet.generateTravelPath(this.x+(this.width/2), this.y);
-		bullets.push(bullet);
+		this.shotBullets.push(bullet);
 	};
 
 	this.kill = function() {
 		this.active = false;
+		this.shotBullets = [];
 	}
 
-	this.explode = function() {
-		this.active = false;
+	this.explode = function(explosions) {
+		this.kill();
 
 		var explosion = new Explosion();
 		explosion.explode(this);

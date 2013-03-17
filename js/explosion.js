@@ -1,5 +1,3 @@
-var explosions = [];
-
 function Explosion() {
 	
 	var sx = 15;
