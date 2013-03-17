@@ -11,6 +11,8 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 
 var bullets = [];
 
+var badGuyBullets = [];
+
 function Bullet() {
 	
 	var t = 0;
@@ -18,17 +20,18 @@ function Bullet() {
 	var sy = 70;
 	var swidth = 20; 
 	var sheight = 45;
-	this.x = -75;
-	this.y = 200; 
+	this.x = 0;
+	this.y = 0; 
 	this.width = 8;
 	this.height = 20;
+	this.rotation = 90;
 	var travelPath = null;
 
 	this.active = true;
 	this.speed = 8;
 
 	this.draw = function (context) {
-		var rotation = (Math.PI / 180) * 90;
+		var rotation = (Math.PI / 180) * this.rotation;
 
 		context.save();
 		context.translate(game.width/2, game.height/2);
@@ -43,11 +46,13 @@ function Bullet() {
 		if(t > 1) { this.kill(); }
 		var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
 		this.x = point.x;
-		this.y = point.y;		
+		this.y = point.y;	
 	};
 
 	this.generateTravelPath = function (startX, startY) {		
 
+		this.x = startX;
+		this.y = startY;
 		var distance = game.width + this.width;
 		var divisions = distance / 3;
 

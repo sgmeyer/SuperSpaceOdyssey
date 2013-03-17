@@ -6,6 +6,7 @@ var game = {
 	initGame: function () {
 		controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
+		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		canvas = $("#space-odyssey-game")[0];
 		ctx = canvas.getContext("2d");
@@ -26,15 +27,23 @@ var game = {
 		bullets = bullets.filter(function(bullet) { return bullet.active; });
 		bullets.forEach(function(bullet) { bullet.updateState(delta); });	
 
-		lvl.updateLevel(delta, badGuys);
 
+		badGuyBullets = badGuyBullets.filter(function(bullet) { return bullet.active; });
+		badGuyBullets.forEach(function(bullet) { bullet.updateState(delta); });
 
-		
+		explosions.filter(function(explosion) { return explosion.active; });
+		explosions.forEach(function(explosion) { explosion.updateState(delta); });
+
+		lvl.updateLevel(delta, badGuys);	
+
+		explosions[0].updateState(delta);	
 	},
 	renderScene: function() { 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		
 		bullets.forEach(function(bullet) { bullet.draw(ctx); });
+		badGuyBullets.forEach(function(bullet) { bullet.draw(ctx); });
+
 		if(goodGuys.length > 0) { goodGuys[0].draw(ctx); }
 		badGuys.forEach(function (badGuy) { badGuy.draw(ctx); });
 
@@ -44,6 +53,8 @@ var game = {
 			ctx.textAlign = "center";
 			ctx.fillText("You Suck!", game.width/2, game.height/2); 
 		}
+		
+		explosions.forEach(function(explosion) { explosion.draw(ctx); });
 	},
 	loadSprite: function(name) {
 	    var sprite = new Image();
@@ -58,6 +69,15 @@ function handleCollisions() {
 	      	if (collides(bullet, badGuy)) {
 	    		badGuy.kill();
 	        	bullet.kill();
+	      	}
+	    });
+	});
+
+	badGuyBullets.forEach(function(bullet) {
+    	goodGuys.forEach(function(goodGuy) {
+	      	if (collides(bullet, goodGuy)) {
+	    		bullet.kill();
+	    		goodGuy.kill();
 	      	}
 	    });
 	});

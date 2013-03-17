@@ -27,13 +27,14 @@ function BadGuy() {
 
 	this.active = true;
 	this.speed = 3;
+	this.rotation = 0;
 
 	this.draw = function (context) {
-		var rotation = (Math.PI / 180) * 270;
+		this.rotation = (Math.PI / 180) * 270;
 
 		context.save();
 		context.translate(game.width/2, game.height/2);
-		context.rotate(rotation);
+		context.rotate(this.rotation);
 		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
 		context.restore();
 	};
@@ -53,11 +54,21 @@ function BadGuy() {
 
 	this.kill = function() {
 		this.active = false;
+
+		var explosion = new Explosion();
+		explosion.explode(this);
+		explosions.push(explosion);
 	}
+
+	this.shoot = function() {
+		var bullet = new Bullet();
+		bullet.rotation = 270;
+		bullet.generateTravelPath(this.x + (this.width/2), this.y);
+		badGuyBullets.push(bullet);
+	};
 };
 
 function generateBadGuy() {
-
 	var badGuy = new BadGuy();
 	badGuy.generateTravelPath();
 	return badGuy;

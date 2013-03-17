@@ -16,6 +16,7 @@ goodGuys.push(new GoodGuy());
 
 function GoodGuy() {
 
+
 	var sx = 67;
 	var sy = 123;
 	var swidth = 60;
@@ -26,14 +27,14 @@ function GoodGuy() {
 	this.width = 50;
 	this.height = 50;
 	this.speed = 5;
-	
+	this.rotation = 0;	
 	this.draw = function(context) {
 		
-		var rotation = (Math.PI / 180.0) * 90;
+		this.rotation = (Math.PI / 180.0) * 90;
 
 		context.save();
 		context.translate(game.width/2, game.height/2);
-		context.rotate(rotation);
+		context.rotate(this.rotation);
 		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
 		context.restore();
 	};
@@ -80,11 +81,16 @@ function GoodGuy() {
 	this.shoot = function() {
 
 		var bullet = new Bullet();
+		bullet.rotation = 90;;
 		bullet.generateTravelPath(this.x+(this.width/2), this.y);
 		bullets.push(bullet);
 	};
 
 	this.kill = function() {
 		this.active = false;
+
+		var explosion = new Explosion();
+		explosion.explode(this);
+		explosions.push(explosion);
 	}
 }; 
