@@ -16,7 +16,6 @@ goodGuys.push(new GoodGuy());
 
 function GoodGuy() {
 
-
 	var sx = 67;
 	var sy = 123;
 	var swidth = 60;
@@ -27,7 +26,8 @@ function GoodGuy() {
 	this.width = 50;
 	this.height = 50;
 	this.speed = 5;
-	this.rotation = 0;	
+	this.rotation = 0;
+
 	this.draw = function(context) {
 		
 		this.rotation = (Math.PI / 180.0) * 90;
@@ -87,6 +87,10 @@ function GoodGuy() {
 	};
 
 	this.kill = function() {
+		this.active = false;
+	}
+
+	this.explode = function() {
 		this.active = false;
 
 		var explosion = new Explosion();

@@ -1,5 +1,4 @@
 var explosions = [];
-explosions.push(new Explosion());
 
 function Explosion() {
 	
@@ -17,6 +16,7 @@ function Explosion() {
 
 	var t = 0;
 	var rotation = 0;
+	var playAudio = false;
 
 	this.draw = function(context) {
 
@@ -30,12 +30,14 @@ function Explosion() {
 	this.updateState = function(delta) {
 		t += (delta / 10) * this.speed;		
 		
-		if(t > 1.6) { this.kill(); }
-
 		if(t < .1) {
 			sx = 0;
 			sy = 0;
 		} else if(t < .2) {
+			if(playAudio) { 
+				playAudio = false;
+				audio.playExplosion();
+			}
 			sx = 65;
 		} else if(t < .3) {
 			sx = 130;
@@ -83,16 +85,23 @@ function Explosion() {
 		} else if(t < 1.6) {
 			sx = 195;
 			sy = 195;
+		} else {
+			this.kill();
 		}
-	}
+	};
 
 	this.explode = function(spaceCraft) {
+		
 		this.x = spaceCraft.x;
 		this.y = spaceCraft.y;
 		rotation = spaceCraft.rotation;
+		playAudio = true;
 	};
 
 	this.kill = function() {
 		this.active = false;
-	}
+		this.x = null;
+		this.y = null;
+		playAudio = false;
+	};
 }

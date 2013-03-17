@@ -4,6 +4,8 @@ var game = {
 	width: 600,
 	lastTime:0,
 	initGame: function () {
+		
+		audio.initialize();
 		controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
@@ -12,6 +14,7 @@ var game = {
 		ctx = canvas.getContext("2d");
 
 		this.lastTime = new Date().getTime();
+		audio.playThemeSong();
 	},
 	updateScene: function (delta) {
 
@@ -27,16 +30,13 @@ var game = {
 		bullets = bullets.filter(function(bullet) { return bullet.active; });
 		bullets.forEach(function(bullet) { bullet.updateState(delta); });	
 
-
 		badGuyBullets = badGuyBullets.filter(function(bullet) { return bullet.active; });
 		badGuyBullets.forEach(function(bullet) { bullet.updateState(delta); });
 
-		explosions.filter(function(explosion) { return explosion.active; });
+		explosions = explosions.filter(function(explosion) { return explosion.active; });
 		explosions.forEach(function(explosion) { explosion.updateState(delta); });
 
 		lvl.updateLevel(delta, badGuys);	
-
-		explosions[0].updateState(delta);	
 	},
 	renderScene: function() { 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -67,25 +67,23 @@ function handleCollisions() {
 	bullets.forEach(function(bullet) {
     	badGuys.forEach(function(badGuy) {
 	      	if (collides(bullet, badGuy)) {
-	    		badGuy.kill();
+	    		badGuy.explode();
 	        	bullet.kill();
 	      	}
 	    });
 	});
 
 	badGuyBullets.forEach(function(bullet) {
-    	goodGuys.forEach(function(goodGuy) {
-	      	if (collides(bullet, goodGuy)) {
-	    		bullet.kill();
-	    		goodGuy.kill();
-	      	}
-	    });
+      	if (collides(bullet, goodGuys[0])) {
+    		bullet.kill();
+    		goodGuys[0].explode();
+      	}
 	});
 
 	badGuys.forEach(function(badGuy) {
 		if (collides(goodGuys[0], badGuy)) {
-			badGuy.kill();
-			goodGuys[0].kill();
+			badGuy.explode();
+			goodGuys[0].explode();
 		}
 	});
 }

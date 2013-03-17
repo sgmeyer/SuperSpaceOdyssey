@@ -14,6 +14,8 @@ badGuys.push(generateBadGuy());
 
 function BadGuy() {
 
+var temp = 0;
+
 	var t = 0;
 	var sx = 131;
 	var sy = 128;
@@ -53,6 +55,10 @@ function BadGuy() {
 	};
 
 	this.kill = function() {
+		this.active = false;
+	}
+
+	this.explode = function() {
 		this.active = false;
 
 		var explosion = new Explosion();
