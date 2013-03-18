@@ -17,10 +17,10 @@ function GoodGuy() {
 	var swidth = 60;
 	var sheight = 65;
 	this.active = true;
-	this.x = -25;
-	this.y = 250; 
 	this.width = 50;
 	this.height = 50;
+	this.x = this.height/2*-1;
+	this.y = (game.width/2)-this.width; 
 	this.speed = 6;
 	this.rotation = 0;
 	this.shotBullets = [];
@@ -100,6 +100,7 @@ function GoodGuy() {
 			bullet.generateTravelPath(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
 			shotInterval = 0;
+			audio.playLaser();
 		}
 	};
 

@@ -17,8 +17,8 @@ function BadGuy() {
 	var swidth = 54; 
 	var sheight = 56;
 	var travelPath = null;
-	this.x = -75;
-	this.y = 300; 
+	this.x = -game.width;
+	this.y = game.height; 
 	this.width = 50;
 	this.height = 50;
 	this.active = true;
@@ -85,6 +85,5 @@ function BadGuy() {
 			bullet.generateTravelPath(this.x + (this.width/2), this.y);
 			this.shotBullets.push(bullet);
 		}
-
 	};
 };

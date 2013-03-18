@@ -1,7 +1,7 @@
 var game = {
 	frameRate: 60,
-	height: 400,
-	width: 600,
+	height: 600,
+	width: 800,
 	lastTime: 0,
 	scenes: [],
 	goodGuys: [],

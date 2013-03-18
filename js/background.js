@@ -4,7 +4,7 @@ function Background() {
 	
 	this.initialize = function() {
 		for(var x = 0; x < 200; x++) {
-			var star = { location: new Point(), speed: 5 };
+			var star = { location: new Point(), speed: 5 * Math.random() };
 			star.location.x = Math.random() * game.width;
 			star.location.y = Math.random() * game.height;
 			this.stars.push(star);
@@ -12,19 +12,19 @@ function Background() {
 	}
 
 	this.updateState = function(delta) {
-		this.stars.forEach(function(star, delta) {
-			var distance = (delta/1000) * star.speed;
+		this.stars.forEach(function(star) {
+			var distance = (delta*10) * star.speed;
 			star.location.x -= distance;
 		});
 
 		if(this.stars.length < 500 && Math.random() * 5 < 1) {
-			var star = { location: new Point(), speed: 5 };
+			var star = { location: new Point(), speed: 5 * Math.random() };
 			star.location.x = game.width;
 			star.location.y = Math.random() * game.height;
 			this.stars.push(star);
 		}
 
-		this.stars.filter(function() { return location.x < 0; });
+		this.stars = this.stars.filter(function(star) { return star.location.x > 0; });
 	};
 
 	this.draw = function(context) {
