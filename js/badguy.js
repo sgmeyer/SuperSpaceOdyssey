@@ -10,44 +10,52 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
 function BadGuy() {
-
-var temp = 0;
-
+	this.exploding = false;
+	var explosion = null;
 	var t = 0;
 	var sx = 131;
 	var sy = 128;
 	var swidth = 54; 
 	var sheight = 56;
+	var travelPath = null;
 	this.x = -75;
 	this.y = 300; 
 	this.width = 50;
 	this.height = 50;
-	var travelPath = null;
-
 	this.active = true;
 	this.speed = 3;
 	this.rotation = 0;
 	this.shotBullets = [];
 
 	this.updateState = function (delta) {
-		t += (delta / 10) * this.speed;		
-		if(t > 1) { this.kill(); }
-		var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
-		this.x = point.x;
-		this.y = point.y;
+		if(!this.exploding) {
+			t += (delta / 10) * this.speed;		
+			if(t > 1) { this.kill(); }
+			var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
+			this.x = point.x;
+			this.y = point.y;
+		} else {
+			if(explosion.active) { explosion.updateState(delta); }
+		}
+
+		if(this.exploding && explosion.active == false && this.shotBullets.length <= 0) this.kill();
 
 		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
 		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
 	};
 
 	this.draw = function (context) {
-		this.rotation = (Math.PI / 180) * 270;
+		if(!this.exploding) {
+			this.rotation = (Math.PI / 180) * 270;
 
-		context.save();
-		context.translate(game.width/2, game.height/2);
-		context.rotate(this.rotation);
-		context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
-		context.restore();
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
+			context.restore();
+		} else {
+			if(explosion.active) { explosion.draw(ctx); }
+		}
 
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
@@ -62,18 +70,21 @@ var temp = 0;
 		this.ShotBullets = [];
 	}
 
-	this.explode = function(explosions) {
-		this.kill();
-
-		var explosion = new Explosion();
-		explosion.explode(this);
-		explosions.push(explosion);
+	this.explode = function() {
+		if(!this.exploding) {
+			this.exploding = true;
+			explosion = new Explosion();
+			explosion.explode(this);
+		}
 	}
 
 	this.shoot = function() {
-		var bullet = new Bullet();
-		bullet.rotation = 270;
-		bullet.generateTravelPath(this.x + (this.width/2), this.y);
-		this.shotBullets.push(bullet);
+		if(!this.exploding) { 
+			var bullet = new Bullet();
+			bullet.rotation = 270;
+			bullet.generateTravelPath(this.x + (this.width/2), this.y);
+			this.shotBullets.push(bullet);
+		}
+
 	};
 };

@@ -27,7 +27,6 @@ function Explosion() {
 
 	this.updateState = function(delta) {
 		t += (delta / 10) * this.speed;		
-		
 		if(t < .1) {
 			sx = 0;
 			sy = 0;
@@ -89,7 +88,6 @@ function Explosion() {
 	};
 
 	this.explode = function(spaceCraft) {
-		
 		this.x = spaceCraft.x;
 		this.y = spaceCraft.y;
 		rotation = spaceCraft.rotation;

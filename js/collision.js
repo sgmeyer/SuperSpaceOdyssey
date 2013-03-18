@@ -14,11 +14,11 @@ function collides(a, b) {
 			a_y + a.height > b_y;
 }
 
-function handleCollisions(badGuys, explosions, goodGuy) {
+function handleCollisions(badGuys, goodGuy) {
 	goodGuy.shotBullets.forEach(function(bullet) {
     	badGuys.forEach(function(badGuy) {
-	      	if (collides(bullet, badGuy)) {
-	    		badGuy.explode(explosions);
+	      	if (!badGuy.exploding && collides(bullet, badGuy)) {
+	    		badGuy.explode();
 	        	bullet.kill();
 	      	}
 	    });
@@ -26,17 +26,17 @@ function handleCollisions(badGuys, explosions, goodGuy) {
 
 	badGuys.forEach(function(badGuy) {
 		badGuy.shotBullets.forEach(function(bullet){
-	      	if (collides(bullet, game.goodGuys[0])) {
+	      	if (!badGuy.exploding && collides(bullet, game.goodGuys[0])) {
 	    		bullet.kill();
-	    		goodGuy.explode(explosions);
+	    		goodGuy.explode();
 	      	}
 	    });
 	});
 
 	badGuys.forEach(function(badGuy) {
-		if (collides(game.goodGuys[0], badGuy)) {
-			badGuy.explode(explosions);
-			goodGuy.explode(explosions);
+		if (!game.goodGuys[0].exploding && !badGuy.exploding && collides(game.goodGuys[0], badGuy)) {
+			badGuy.explode();
+			goodGuy.explode();
 		}
 	});
 }
