@@ -31,20 +31,6 @@
 	<script>
 		$(function() {
 			game.initialize();
-
-			setInterval(function() {
-				var currentTime = new Date().getTime();
-				var delta = (currentTime - game.lastTime) / 1000.0;
-				game.lastTime = currentTime;
-				
-				// we don't accept too big delta values
-				if (delta > 1.0) delta = 1.0;
-				  game.updateScene(delta);
-				  game.renderScene();
-			}
-			, 1000/game.frameRate);
-
-			
 		});
 
 	</script>

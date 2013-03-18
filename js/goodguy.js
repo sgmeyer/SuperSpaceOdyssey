@@ -10,7 +10,7 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
 function GoodGuy() {
-	this.exploding = false;
+	var shotInterval = 1000;
 	var explosion = null;
 	var sx = 67;
 	var sy = 123;
@@ -21,35 +21,39 @@ function GoodGuy() {
 	this.y = 250; 
 	this.width = 50;
 	this.height = 50;
-	this.speed = 5;
+	this.speed = 6;
 	this.rotation = 0;
 	this.shotBullets = [];
+	this.exploding = false;
 
 	this.updateState = function(delta) {
+		shotInterval += (delta / 10) * this.speed;		
+		var distance = (delta * 50) * this.speed;	
+
 		if(!this.exploding) {
 			if (keydown.up) {    
-				this.x -= this.speed;        
+				this.x -= distance;        
 	            if (this.x < (game.height/2) * -1) {
 					this.x = game.height/2 * -1;
 				}
 	        }
 	        
 		    if (keydown.down) {
-		    	this.x += this.speed;
+		    	this.x += distance;
 		      	if (this.x > (game.height/2)-this.width) {
 		    		this.x = (game.height/2)-this.width;
 		    	}
 		    }
 
 		    if (keydown.right) {
-		    	this.y -= this.speed;
+		    	this.y -= distance;
 		    	if (this.y < (game.width/2) * -1) {
 	    			this.y = (game.width/2) * -1;
 		    	}
 		    }
 
 		    if (keydown.left) {
-		    	this.y += this.speed;
+		    	this.y += distance;
 		    	if (this.y > (game.width/2) - this.height)  {
 	    			this.y = (game.width/2) - this.height;
 		    	}
@@ -57,8 +61,8 @@ function GoodGuy() {
 
 		    if(keydown.space) {
 		    	this.shoot();
-		    	// Prevents holding down the key to shoot frequently.
-		    	keydown.space = false;
+		    } else {
+		    	shotInterval = 1000;
 		    }
 
 		    
@@ -90,10 +94,13 @@ function GoodGuy() {
 	};
 
 	this.shoot = function() {
-		var bullet = new Bullet();
-		bullet.rotation = 90;;
-		bullet.generateTravelPath(this.x+(this.width/2), this.y);
-		this.shotBullets.push(bullet);
+		if(shotInterval >= .2) {
+			var bullet = new Bullet();
+			bullet.rotation = 90;;
+			bullet.generateTravelPath(this.x+(this.width/2), this.y);
+			this.shotBullets.push(bullet);
+			shotInterval = 0;
+		}
 	};
 
 	this.kill = function() {

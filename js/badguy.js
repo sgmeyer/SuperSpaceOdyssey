@@ -10,7 +10,6 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
 function BadGuy() {
-	this.exploding = false;
 	var explosion = null;
 	var t = 0;
 	var sx = 131;
@@ -26,6 +25,7 @@ function BadGuy() {
 	this.speed = 3;
 	this.rotation = 0;
 	this.shotBullets = [];
+	this.exploding = false;
 
 	this.updateState = function (delta) {
 		if(!this.exploding) {

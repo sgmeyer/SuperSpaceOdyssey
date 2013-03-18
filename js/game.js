@@ -2,7 +2,7 @@ var game = {
 	frameRate: 60,
 	height: 400,
 	width: 600,
-	lastTime:0,
+	lastTime: 0,
 	scenes: [],
 	goodGuys: [],
 	initialize: function () {
@@ -17,6 +17,8 @@ var game = {
 		this.lastTime = new Date().getTime();
 		audio.playThemeSong();
 		this.initializeGameStart();
+
+		this.setLoop();
 	},
 	updateScene: function (delta) {
 		this.scenes = this.scenes.filter(function (scene) { return scene.active; });
@@ -53,5 +55,17 @@ var game = {
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
+	},
+	setLoop: function() {
+		setInterval(function() {
+				var currentTime = new Date().getTime();
+				var delta = (currentTime - game.lastTime) / 1000.0;
+				game.lastTime = currentTime;
+				
+				if (delta > 1.0) delta = 1.0;
+				game.updateScene(delta);
+				game.renderScene();
+			}, 
+		1000/this.frameRate);
 	}
 }
