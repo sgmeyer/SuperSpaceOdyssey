@@ -27,7 +27,7 @@ function handleCollisions(badGuys, goodGuy) {
 
 	badGuys.forEach(function(badGuy) {
 		badGuy.shotBullets.forEach(function(bullet){
-	      	if (!badGuy.exploding && collides(bullet, game.goodGuys[0])) {
+	      	if (collides(bullet, game.goodGuys[0])) {
 	    		bullet.kill();
 	    		goodGuy.explode();
 	      	}

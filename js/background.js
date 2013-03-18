@@ -17,7 +17,7 @@ function Background() {
 			star.location.x -= distance;
 		});
 
-		if(Math.random() * 5 < 1) {
+		if(this.stars.length < 500 && Math.random() * 5 < 1) {
 			var star = { location: new Point(), speed: 5 };
 			star.location.x = game.width;
 			star.location.y = Math.random() * game.height;
