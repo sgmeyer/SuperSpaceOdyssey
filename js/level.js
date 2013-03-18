@@ -50,6 +50,11 @@ function Level() {
 			game.goodGuys[0].draw(context);
 			this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
 		}
+
+		context.fillStyle = "orange";
+        context.font = "20px Georgia";
+        context.textAlign = "right";
+        context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
 	}
 
 	this.tryToGenerateBadGuy = function() {

@@ -5,6 +5,7 @@ var game = {
 	lastTime: 0,
 	scenes: [],
 	goodGuys: [],
+	score: 0,
 	initialize: function () {
 		audio.initialize();
 		controls.wireUp();
@@ -51,16 +52,18 @@ var game = {
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
+		this.score = 0;
 	},
  	initializeGameReset: function() {
 		this.scenes = [];
-		
+
 		var lvl = new Level();
 		lvl.initialize();
 		this.scenes.push(lvl);
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
+		this.score = 0;
 	},
 	setLoop: function() {
 		setInterval(function() {

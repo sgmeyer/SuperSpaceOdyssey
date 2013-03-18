@@ -20,6 +20,7 @@ function handleCollisions(badGuys, goodGuy) {
 	      	if (!badGuy.exploding && collides(bullet, badGuy)) {
 	    		badGuy.explode();
 	        	bullet.kill();
+	        	game.score += 10;
 	      	}
 	    });
 	});
