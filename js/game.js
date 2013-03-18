@@ -44,14 +44,20 @@ var game = {
  	initializeGameStart: function() {
 		this.scenes = [];
 		this.scenes.push(new StartMenu());
-		this.scenes.push(new Level());
+
+		var lvl = new Level();
+		lvl.initialize();
+		this.scenes.push(lvl);
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 	},
  	initializeGameReset: function() {
 		this.scenes = [];
-		this.scenes.push(new Level());
+		
+		var lvl = new Level();
+		lvl.initialize();
+		this.scenes.push(lvl);
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());

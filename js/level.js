@@ -6,14 +6,18 @@ function Level() {
 	this.enemiesStager = 1000;
 	this.timing = this.enemiesStager;
 	this.badGuys = [];
+	this.background = new Background();
+
+	this.initialize = function() {
+		this.background = new Background();
+		this.background.initialize();
+	}
 
 	this.updateLevel = function (delta) {
 		this.timing -= delta * 1000;
 
 		if(this.timing <= 0) {
-			
 			this.badGuys.push(this.tryToGenerateBadGuy());
-			
 		}
 
 		this.badGuys.forEach(function(badGuy) {
@@ -23,6 +27,8 @@ function Level() {
 	};
 
 	this.updateState = function(delta) {
+
+		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
@@ -33,13 +39,16 @@ function Level() {
 		this.updateLevel(delta);
 	}
 
-	this.draw = function(ctx) {
+	this.draw = function(context) {
+
+		this.background.draw(context);
+
 		if(game.goodGuys.length <= 0) { 
 			game.scenes[0].active = false;
 			game.initializeGameOver();
 		} else {
-			game.goodGuys[0].draw(ctx);
-			this.badGuys.forEach(function (badGuy) { badGuy.draw(ctx); });
+			game.goodGuys[0].draw(context);
+			this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
 		}
 	}
 
