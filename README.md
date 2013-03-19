@@ -3,7 +3,7 @@ SuperSpaceOdyssey
 
 Html5 and JavaScript Game
 
-Basic retro side scroller shooter.  This reminds me of the olds days, but with slightly better art.
+Basic retro side scrolling shooter.  This reminds me of the olds days, but with slightly better art.
 
 - Side scroller
 - Shoot 'em up
@@ -15,7 +15,7 @@ GAME ART
 
 Thanks to OpenGameArt.org and their contributors for providing the audio and sprites.
 
-Laser Soud:
+Laser Sound:
 http://opengameart.org/content/laser-fire
 
 Space Ships and Bullets (Sprite):
