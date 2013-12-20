@@ -9,9 +9,9 @@ function collides(a, b) {
 	var b_y = (b.x * -1) + (game.height/2) - b.height;	
 
 	return a_x < b_x + b.width &&
-			a_x + a.width > b_x &&
-			a_y < b_y + b.height &&
-			a_y + a.height > b_y;
+			   a_x + a.width > b_x &&
+			   a_y < b_y + b.height &&
+			   a_y + a.height > b_y;
 }
 
 function handleCollisions(badGuys, goodGuy) {
