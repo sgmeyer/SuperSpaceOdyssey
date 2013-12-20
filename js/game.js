@@ -12,7 +12,7 @@ var game = {
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
-		canvas = $("#space-odyssey-game")[0];
+		canvas = document.getElementById('space-odyssey-game');
 		ctx = canvas.getContext("2d");
 
 		this.lastTime = new Date().getTime();

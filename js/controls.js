@@ -18,14 +18,14 @@ var controls = {
 			return event.which;
 		}
 
-		$(document).bind("keydown", function(event) {
+		document.onkeydown = function(event) {
 			keydown[keyName(event)] = true;
 			event.preventDefault();
-		});
+		};
 
-		$(document).bind("keyup", function(event) {
+		document.onkeyup = function(event) {
 			keydown[keyName(event)] = false;
 			event.preventDefault();
-		});
+		};
 	}
 }
