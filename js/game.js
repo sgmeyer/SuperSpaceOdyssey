@@ -8,8 +8,6 @@
 		this.scenes = [];
 		this.goodGuys = [];
 		this.score = 0;
-		this.canvas;
-		this.ctx;
 	}
 
 	Game.prototype.initialize = function () {
@@ -18,8 +16,8 @@
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
-		this.canvas = document.getElementById('space-odyssey-game');
-		this.ctx = canvas.getContext("2d");
+		canvas = document.getElementById('space-odyssey-game');
+		ctx = canvas.getContext("2d");
 
 		this.lastTime = new Date().getTime();
 		audio.playThemeSong();
@@ -91,6 +89,6 @@
 			1000/this.frameRate);
 		};
 
-	window.game = new Game();
+	window.game = window.game || new Game();
 
 })(window);
