@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		#space-odyssey-game {
+			background-color: black;
+		}
+	</style>
+	<script src="src/lib/jquery-1.9.1.min.js"></script>
+	<script src="src/SuperSpaceOdyssey.js"></script>
+</head>
+<body>
+	<header><h1>Super Space Odyssey</h1></header>
+	<section>
+		<canvas id="space-odyssey-game" height="600" width="800">
+		</canvas>
+	</section>
+	<script>
+		$(function() {
+			window.game.initialize();
+		});
+
+	</script>
+<body>
+</html>

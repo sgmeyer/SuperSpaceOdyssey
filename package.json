@@ -1,0 +1,12 @@
+{
+  "name": "SuperSpaceOdyssey",
+  "version": "0.0.2",
+  "private": true,
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-cli": "~0.1.11",
+    "grunt-contrib-jshint": "~0.7.2",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-concat": "~0.3.0"
+  }
+}
