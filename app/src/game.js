@@ -1,6 +1,4 @@
-(function(window) {
-	
-	function Game() {
+		function Game() {
 		this.frameRate = 60;
 		this.height = 600;
 		this.width = 800;
@@ -95,6 +93,5 @@
 			1000/this.frameRate);
 		};
 
+	var canvas, ctx, sprite, spriteExplosion;
 	window.game = new Game();
-
-})(window);

@@ -31,10 +31,14 @@ module.exports = function(grunt) {
     },
     concat: {
       options: {
-        separator: ''
+        separator: '\n'
       },
       dist: {
-        src: ['app/src/*.js', 'app/src/game.js'],
+        src: ['app/src/intro.js', 'app/src/audio.js', 'app/src/background.js',
+              'app/src/badguy.js', 'app/src/bullet.js', 'app/src/collision.js', 
+              'app/src/controls.js', 'app/src/explosion.js', 'app/src/goodguy.js', 
+              'app/src/level.js', 'app/src/math.js', 'app/src/scenes.js', 
+              'app/src/game.js', 'app/src/outro.js'],
         dest: 'build/src/<%= pkg.name %>.js'
       }
     }
