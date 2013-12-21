@@ -4,19 +4,22 @@
 	<style>
 		#space-odyssey-game {
 			background-color: black;
-		}
+	    position:absolute;
+	    width:100%;
+	    height:100%;
+	}
 	</style>
 	<script src="src/SuperSpaceOdyssey.js"></script>
 </head>
 <body>
-	<header><h1>Super Space Odyssey</h1></header>
 	<section>
-		<canvas id="space-odyssey-game" height="600" width="800">
-		</canvas>
+		<canvas id="space-odyssey-game" />
 	</section>
 	<script>
 		(function() {
-			window.game.initialize();
+			var width = window.screen.availWidth;
+			var height = window.screen.availHeight;
+			window.game.initialize(width, height);
 		})();
 	</script>
 <body>

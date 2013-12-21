@@ -422,13 +422,19 @@ function Explosion() {
 		this.score = 0;
 	}
 
-	Game.prototype.initialize = function () {
+	Game.prototype.initialize = function (width, height) {
+
+		this.height = height || this.height;
+		this.width = width || this.width;
+
 		audio.initialize();
 		controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		canvas = document.getElementById('space-odyssey-game');
+		canvas.height = height;
+		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
 		this.lastTime = new Date().getTime();
