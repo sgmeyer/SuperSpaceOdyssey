@@ -95,4 +95,4 @@
 		};
 
 	var canvas, ctx, sprite, spriteExplosion;
-	window.game = new Game();
+	window.game = window.sso = new Game();

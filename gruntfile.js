@@ -1,3 +1,8 @@
+var LIVERELOAD_PORT = 8888;
+var mountFolder = function (connect, dir) {
+  return connect.static(require('path').resolve(dir));
+};
+
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -29,6 +34,29 @@ module.exports = function(grunt) {
       files: '<%= jshint.src %>',
       tasks: ['jshint']
     },
+    connect: {
+      server: {
+        options: {
+          port: 8888,
+          hostname: 'localhost',
+          base: 'build/'
+        }
+      },
+      livereload: {
+        options: {
+          middleware: function (connect) {
+            return [require('connect-livereload')({port: LIVERELOAD_PORT}),
+              mountFolder(connect, '.')
+            ];
+          }
+        }
+      }
+    },
+    open: {
+      server: {
+        path: 'http://localhost:<%= connect.server.options.port %>'
+      }
+    },
     concat: {
       options: {
         separator: '\n'
@@ -48,7 +76,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks('grunt-contrib-livereload');
+  grunt.loadNpmTasks('grunt-open');
 
+
+  grunt.registerTask('server', ['connect:server', 'open', 'watch']);
   // Default task.
   grunt.registerTask('default', 'jshint', 'concat');
 

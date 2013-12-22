@@ -13,18 +13,22 @@
 	    height:100%;
 	}
 	</style>
-	<script src="src/SuperSpaceOdyssey.js"></script>
+
 </head>
-<body>
+<body onload="init()">
 	<section>
 		<canvas id="space-odyssey-game" />
 	</section>
+
+	<script src="src/lib/sound.min.js"></script>
+	<script src="src/SuperSpaceOdyssey.js"></script>
+
 	<script>
-		(function() {
+		function init() {
 			var width = window.screen.availWidth;
 			var height = window.screen.availHeight;
 			window.game.initialize(width, height);
-		})();
+		};
 	</script>
 <body>
 </html>

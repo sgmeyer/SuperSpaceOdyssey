@@ -1,25 +1,28 @@
-var audio = {
-	//explosion: null,
-	//themeSong: null,
-	initialize: function() {
-        audio.themeSong = new Audio("./sound/Grey_Sector_v0_86_0.mp3");
-        audio.themeSong.volume = 1;
-        audio.themeSong.loop = true;
-	},
-	playExplosion: function() {
-		//var xp = new Audio("./sound/8bit_bomb_explosion.wav");
-		//xp.volume = 1;
-    //xp.loop = false;
-		//xp.play();
-		//xp = undefined;
-	},
-	playThemeSong: function() {
-		audio.themeSong.play();
-	},
-	playLaser: function() {
-		//var lzr = new Audio("./sound/laser1.wav"); 
-		//lzr.volume = .25;
-		//lzr.loop = false;
-		//lzr.play();
-	}
-};
+	var audioPath = 'sound/';
+	var manifest = [
+	    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
+	    {id:'lazer', src:'laser1.wav'},
+	    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+	];
+
+	var audio = {
+		explosion: null,
+		themeSong: null,
+		initialize: function() {
+			createjs.Sound.addEventListener("fileload", function(event) {
+				console.log("Preloaded:", event.id, event.src);
+				audio.playThemeSong();
+			});
+			createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+    	createjs.Sound.registerManifest(manifest, audioPath);
+		},
+		playExplosion: function() {
+			createjs.Sound.play('explosion');
+		},
+		playThemeSong: function() {
+			createjs.Sound.play('themeSong');
+		},
+		playLaser: function() {
+			createjs.Sound.play('lazer');
+		}
+	};
