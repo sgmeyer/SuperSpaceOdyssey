@@ -35,45 +35,42 @@
 		if(!this.exploding) {
 			if (keydown.up) {    
 				this.x -= distance;        
-	            if (this.x < (game.height/2) * -1) {
+	      if (this.x < (game.height/2) * -1) {
 					this.x = game.height/2 * -1;
 				}
-	        }
+	    }
 	        
-		    if (keydown.down) {
-		    	this.x += distance;
-		      	if (this.x > (game.height/2)-this.width) {
-		    		this.x = (game.height/2)-this.width;
-		    	}
-		    }
+	    if (keydown.down) {
+	    	this.x += distance;
+      	if (this.x > (game.height/2)-this.width) {
+    			this.x = (game.height/2)-this.width;
+    		}
+	    }
 
-		    if (keydown.right) {
-		    	this.y -= distance;
-		    	if (this.y < (game.width/2) * -1) {
-	    			this.y = (game.width/2) * -1;
-		    	}
-		    }
+	    if (keydown.right) {
+	    	this.y -= distance;
+	    	if (this.y < (game.width/2) * -1) {
+    			this.y = (game.width/2) * -1;
+	    	}
+	    }
 
-		    if (keydown.left) {
-		    	this.y += distance;
-		    	if (this.y > (game.width/2) - this.height)  {
-	    			this.y = (game.width/2) - this.height;
-		    	}
-		    }
+	    if (keydown.left) {
+	    	this.y += distance;
+	    	if (this.y > (game.width/2) - this.height)  {
+					this.y = (game.width/2) - this.height;
+	    	}
+	    }
 
-		    if(keydown.space) {
-		    	this.shoot();
-		    } else {
-		    	this.shotInterval = 1000;
-		    }
-
-		    
+	    if(keydown.space) {
+	    	this.shoot();
+	    } else {
+	    	this.shotInterval = 1000;
+	    }
 		} else {
 			if(this.explosion.active) { this.explosion.updateState(delta); }
 		}
 
-
-		if(this.exploding && !this.explosion.active && this.shotBullets.length <= 0) this.kill();
+		if(this.exploding && !this.explosion.active && this.shotBullets.length <= 0) { this.kill() };
 		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
 		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
 	};
@@ -87,7 +84,6 @@
 			context.rotate(this.rotation);
 			context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
 			context.restore();
-			
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
