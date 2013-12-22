@@ -1,8 +1,8 @@
-function Background() {
+	function Background() {
+		this.stars = [];
+	};
 
-	this.stars = [];
-	
-	this.initialize = function() {
+	Background.prototype.initialize = function() {
 		for(var x = 0; x < 200; x++) {
 			var star = { location: new Point(), speed: 5 * Math.random() };
 			star.location.x = Math.random() * game.width;
@@ -11,7 +11,7 @@ function Background() {
 		}
 	};
 
-	this.updateState = function(delta) {
+	Background.prototype.updateState = function(delta) {
 		this.stars.forEach(function(star) {
 			var distance = (delta*10) * star.speed;
 			star.location.x -= distance;
@@ -27,10 +27,9 @@ function Background() {
 		this.stars = this.stars.filter(function(star) { return star.location.x > 0; });
 	};
 
-	this.draw = function(context) {
+	Background.prototype.draw = function(context) {
 		context.fillStyle = "#FFFFFF";
 		this.stars.forEach(function(star) {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-};

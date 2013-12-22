@@ -1,4 +1,4 @@
-		function Game() {
+	function Game() {
 		this.frameRate = 60;
 		this.height = 600;
 		this.width = 800;
