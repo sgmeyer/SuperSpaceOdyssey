@@ -61,16 +61,16 @@ var audio = {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-/*** 
-sx		Optional. The x coordinate where to start clipping
-sy		Optional. The y coordinate where to start clipping
-swidth	Optional. The width of the clipped image
-sheight	Optional. The height of the clipped image
-x		The x coordinate where to place the image on the canvas
-y		The y coordinate where to place the image on the canvas
-width	Optional. The width of the image to use (stretch or reduce the image)
-height	Optional. The height of the image to use (stretch or reduce the image)
-***/
+	/*** 
+	sx		Optional. The x coordinate where to start clipping
+	sy		Optional. The y coordinate where to start clipping
+	swidth	Optional. The width of the clipped image
+	sheight	Optional. The height of the clipped image
+	x		The x coordinate where to place the image on the canvas
+	y		The y coordinate where to place the image on the canvas
+	width	Optional. The width of the image to use (stretch or reduce the image)
+	height	Optional. The height of the image to use (stretch or reduce the image)
+	***/
 
 	function BadGuy() {
 		this.explosion = null;
@@ -233,49 +233,53 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 	Bullet.prototype.kill = function() {
 		this.active = false;
 	}
-function collides(a, b) {
+	function CollisionEngine() {
 
-	var a_x = (a.y * -1) + (game.width/2) - a.width;
-	var a_y = a.x + (game.height/2);
-	var a_width = a.height;
-	var a_height = a.width;
+	}
 
-	var b_x = b.y + (game.width/2);
-	var b_y = (b.x * -1) + (game.height/2) - b.height;	
+	CollisionEngine.collides = function(a, b) {
 
-	return a_x < b_x + b.width &&
-			   a_x + a.width > b_x &&
-			   a_y < b_y + b.height &&
-			   a_y + a.height > b_y;
-}
+		var a_x = (a.y * -1) + (game.width/2) - a.width;
+		var a_y = a.x + (game.height/2);
+		var a_width = a.height;
+		var a_height = a.width;
 
-function handleCollisions(badGuys, goodGuy) {
-	goodGuy.shotBullets.forEach(function(bullet) {
-    	badGuys.forEach(function(badGuy) {
-	      	if (!badGuy.exploding && collides(bullet, badGuy)) {
-	    		badGuy.explode();
-	        	bullet.kill();
-	        	game.score += 10;
-	      	}
-	    });
-	});
+		var b_x = b.y + (game.width/2);
+		var b_y = (b.x * -1) + (game.height/2) - b.height;	
 
-	badGuys.forEach(function(badGuy) {
-		badGuy.shotBullets.forEach(function(bullet){
-	      	if (collides(bullet, game.goodGuys[0])) {
-	    		bullet.kill();
-	    		goodGuy.explode();
-	      	}
-	    });
-	});
+		return a_x < b_x + b.width &&
+				   a_x + a.width > b_x &&
+				   a_y < b_y + b.height &&
+				   a_y + a.height > b_y;
+	};
 
-	badGuys.forEach(function(badGuy) {
-		if (!game.goodGuys[0].exploding && !badGuy.exploding && collides(game.goodGuys[0], badGuy)) {
-			badGuy.explode();
-			goodGuy.explode();
-		}
-	});
-};
+	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
+		goodGuy.shotBullets.forEach(function(bullet) {
+	    	badGuys.forEach(function(badGuy) {
+		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+		    			badGuy.explode();
+		        	bullet.kill();
+		        	game.score += 10;
+		      	}
+		    });
+		});
+
+		badGuys.forEach(function(badGuy) {
+			badGuy.shotBullets.forEach(function(bullet){
+		      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
+		    		bullet.kill();
+		    		goodGuy.explode();
+		      }
+		    });
+		});
+
+		badGuys.forEach(function(badGuy) {
+			if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
+				badGuy.explode();
+				goodGuy.explode();
+			}
+		});
+	};
 
 var controls = {
 	keycode: {
@@ -567,7 +571,7 @@ function Level() {
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
-		if(game.goodGuys.length > 0) { handleCollisions(this.badGuys, game.goodGuys[0]); }
+		if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); }
 		if(game.goodGuys.length > 0) { game.goodGuys[0].updateState(delta); }
 		this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
 

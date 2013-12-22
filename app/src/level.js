@@ -32,7 +32,7 @@ function Level() {
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
-		if(game.goodGuys.length > 0) { handleCollisions(this.badGuys, game.goodGuys[0]); }
+		if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); }
 		if(game.goodGuys.length > 0) { game.goodGuys[0].updateState(delta); }
 		this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
 
