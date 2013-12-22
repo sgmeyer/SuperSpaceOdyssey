@@ -1,11 +1,9 @@
 function Point() {
-
 	this.x = null;
 	this.y = null;
 };
 
 Math.bezier = function(p0, p1, p2, p3, t) {
-
 	var p4 = Math.linearInterpolation(p0, p1, t);
 	var p5 = Math.linearInterpolation(p1, p2, t);
 	var p6 = Math.linearInterpolation(p2, p3, t);
@@ -17,7 +15,6 @@ Math.bezier = function(p0, p1, p2, p3, t) {
 }
 
 Math.linearInterpolation = function(p0, p1, t) {
-
   var xlerp = p0.x + (p1.x - p0.x) * t;
   var ylerp = p0.y + (p1.y - p0.y) * t;
 
