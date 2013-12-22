@@ -656,11 +656,11 @@ TravelPath.prototype.generateRandom = function() {
 	};
 
 
-function StartMenu() {
-	
-	this.active = true;
+	function StartMenu() {
+		this.active = true;
+	}
 
-	this.draw = function (context) {		
+	StartMenu.prototype.draw = function (context) {		
 		context.fillStyle = "#FF0000";
 		context.font = "40px Georgia";
 		context.textAlign = "center";
@@ -672,7 +672,7 @@ function StartMenu() {
 		context.fillText("Press Spacebar to Start", game.width/2, game.height/2 + 50);
 	};
 
-	this.updateState = function (delta) {
+	StartMenu.prototype.updateState = function (delta) {
 		if(keydown.space) {
 	    	this.end();
 	    	// Prevents holding down the key to shoot frequently.
@@ -680,15 +680,15 @@ function StartMenu() {
 	    }
 	};
 
-	this.end = function() {
+	StartMenu.prototype.end = function() {
 		this.active = false;
 	};
-}
 
-function GameOverMenu() {
-	this.active = true;
+	function GameOverMenu() {
+		this.active = true;
+	};
 
-	this.draw = function (context) {
+	GameOverMenu.prototype.draw = function (context) {
 		context.fillStyle = "#FF0000";
 		context.font = "40px Georgia";
 		context.textAlign = "center";
@@ -700,7 +700,7 @@ function GameOverMenu() {
 		context.fillText("Press Spacebar to Start Over", game.width/2, game.height/2 + 50);
 	};
 
-	this.updateState = function (delta) {
+	GameOverMenu.prototype.updateState = function (delta) {
 		if(keydown.space) {
 	    	this.end();
 	    	// Prevents holding down the key to shoot frequently.
@@ -708,10 +708,9 @@ function GameOverMenu() {
 	    }
 	};
 
-	this.end = function() {
+	GameOverMenu.prototype.end = function() {
 		game.initializeGameReset();
 	};
-};
 
 	function Game() {
 		this.frameRate = 60;
