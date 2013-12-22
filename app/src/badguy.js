@@ -10,13 +10,13 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
 	function BadGuy() {
-		var explosion = null;
-		var t = 0;
-		var sx = 131;
-		var sy = 128;
-		var swidth = 54; 
-		var sheight = 56;
-		var travelPath = null;
+		this.explosion = null;
+		this.t = 0;
+		this.sx = 131;
+		this.sy = 128;
+		this.swidth = 54; 
+		this.sheight = 56;
+		this.travelPath = null;
 
 		this.x = -game.width;
 		this.y = game.height; 
@@ -31,16 +31,16 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 
 	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
-			t += (delta / 10) * this.speed;		
-			if(t > 1) { this.kill(); }
-			var point = bezier(travelPath.P0, travelPath.P1, travelPath.P2, travelPath.P3, t);
+			this.t += (delta / 10) * this.speed;		
+			if(this.t > 1) { this.kill(); }
+			var point = bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 			this.x = point.x;
 			this.y = point.y;
 		} else {
-			if(explosion.active) { explosion.updateState(delta); }
+			if(this.explosion.active) { this.explosion.updateState(delta); }
 		}
 
-		if(this.exploding && explosion.active == false && this.shotBullets.length <= 0) this.kill();
+		if(this.exploding && this.explosion.active == false && this.shotBullets.length <= 0) this.kill();
 
 		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
 		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
@@ -53,18 +53,18 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 			context.save();
 			context.translate(game.width/2, game.height/2);
 			context.rotate(this.rotation);
-			context.drawImage(sprite, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
+			context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
 			context.restore();
 		} else {
-			if(explosion.active) { explosion.draw(ctx); }
+			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
 
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
 	BadGuy.prototype.generateTravelPath = function () {
-		travelPath = new TravelPath();
-		travelPath.generateRandom();
+		this.travelPath = new TravelPath();
+		this.travelPath.generateRandom();
 	};
 
 	BadGuy.prototype.kill = function() {
@@ -75,8 +75,8 @@ height	Optional. The height of the image to use (stretch or reduce the image)
 	BadGuy.prototype.explode = function() {
 		if(!this.exploding) {
 			this.exploding = true;
-			explosion = new Explosion();
-			explosion.explode(this);
+			this.explosion = new Explosion();
+			this.explosion.explode(this);
 		}
 	}
 
