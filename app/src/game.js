@@ -15,8 +15,7 @@
 
 		audio.initialize();
 
-		var controls = new Controls();
-		controls.wireUp();
+		Controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
