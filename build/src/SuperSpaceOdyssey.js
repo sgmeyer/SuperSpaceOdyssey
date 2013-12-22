@@ -281,15 +281,17 @@ var audio = {
 		});
 	};
 
-var controls = {
-	keycode: {
-		space: 32,
-		left: 37,
-		up: 38,
-		right: 39,
-		down: 40
-	},
-	wireUp: function() {
+	function Controls() {
+		this.keycode = {
+			space: 32,
+			left: 37,
+			up: 38,
+			right: 39,
+			down: 40
+		};
+	}
+
+	Controls.prototype.wireUp = function() {
 		window.keydown = {};
 
 		function keyName(event) {
@@ -310,8 +312,7 @@ var controls = {
 			keydown[keyName(event)] = false;
 			event.preventDefault();
 		};
-	}
-};
+	};
 
 function Explosion() {
 	
@@ -736,6 +737,8 @@ function GameOverMenu() {
 		this.width = width || this.width;
 
 		audio.initialize();
+
+		var controls = new Controls();
 		controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");

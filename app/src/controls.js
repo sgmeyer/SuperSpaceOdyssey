@@ -1,12 +1,14 @@
-var controls = {
-	keycode: {
-		space: 32,
-		left: 37,
-		up: 38,
-		right: 39,
-		down: 40
-	},
-	wireUp: function() {
+	function Controls() {
+		this.keycode = {
+			space: 32,
+			left: 37,
+			up: 38,
+			right: 39,
+			down: 40
+		};
+	}
+
+	Controls.prototype.wireUp = function() {
 		window.keydown = {};
 
 		function keyName(event) {
@@ -27,5 +29,4 @@ var controls = {
 			keydown[keyName(event)] = false;
 			event.preventDefault();
 		};
-	}
-};
+	};
