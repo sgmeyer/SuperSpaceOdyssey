@@ -33,7 +33,7 @@
 		if(!this.exploding) {
 			this.t += (delta / 10) * this.speed;		
 			if(this.t > 1) { this.kill(); }
-			var point = bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+			var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 			this.x = point.x;
 			this.y = point.y;
 		} else {
