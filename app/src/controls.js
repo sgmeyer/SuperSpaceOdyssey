@@ -1,20 +1,6 @@
 	function Controls() {
 	}
 
-	Controls.wireUp = function() {
-		window.keydown = {};
-
-		document.onkeydown = function(event) {
-			keydown[Controls.keyName(event)] = true;
-			event.preventDefault();
-		};
-
-		document.onkeyup = function(event) {
-			keydown[Controls.keyName(event)] = false;
-			event.preventDefault();
-		};
-	};
-
 	Controls.keycode = {
 		space: 32,
 		left: 37,
@@ -31,3 +17,17 @@
 		if(Controls.keycode.space == event.which) return "space";
 		return event.which;
 	}
+
+	Controls.wireUp = function() {
+		window.keydown = {};
+
+		document.onkeydown = function(event) {
+			keydown[Controls.keyName(event)] = true;
+			event.preventDefault();
+		};
+
+		document.onkeyup = function(event) {
+			keydown[Controls.keyName(event)] = false;
+			event.preventDefault();
+		};
+	};
