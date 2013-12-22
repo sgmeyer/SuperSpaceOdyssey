@@ -1,103 +1,101 @@
-function Explosion() {
-	
-	var sx = 15;
-	var sy = 15;
-	var swidth = 55;
-	var sheight = 55;
-	this.active = true;
-	this.x = 0;
-	this.y = 0; 
-	this.width = 55;
-	this.height = 55;
-	this.active = true;
-	this.speed = 25;
+	function Explosion() {
+		this.sx = 15;
+		this.sy = 15;
+		this.swidth = 55;
+		this.sheight = 55;
+		this.t = 0;
+		this.rotation = 0;
+		this.playAudio = false;
 
-	var t = 0;
-	var rotation = 0;
-	var playAudio = false;
+		this.active = true;
+		this.x = 0;
+		this.y = 0; 
+		this.width = 55;
+		this.height = 55;
+		this.active = true;
+		this.speed = 25;
+	};
 
-	this.draw = function(context) {
-
+	Explosion.prototype.draw = function(context) {
 		context.save();
 		context.translate(game.width/2, game.height/2);
-		context.rotate(rotation);
-		context.drawImage(spriteExplosion, sx, sy, swidth, sheight, this.x, this.y, this.width, this.height);
+		context.rotate(this.rotation);
+		context.drawImage(spriteExplosion, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
 		context.restore();
 	};
 
-	this.updateState = function(delta) {
-		t += (delta / 10) * this.speed;		
-		if(t < .1) {
-			sx = 0;
-			sy = 0;
-		} else if(t < .2) {
-			if(playAudio) { 
-				playAudio = false;
+	Explosion.prototype.updateState = function(delta) {
+		this.t += (delta / 10) * this.speed;		
+		if(this.t < .1) {
+			this.sx = 0;
+			this.sy = 0;
+		} else if(this.t < .2) {
+			if(this.playAudio) { 
+				this.playAudio = false;
 				audio.playExplosion();
 			}
-			sx = 65;
-		} else if(t < .3) {
-			sx = 130;
-		} else if(t < .4) {
-			sx = 195;
+			this.sx = 65;
+		} else if(this.t < .3) {
+			this.sx = 130;
+		} else if(this.t < .4) {
+			this.sx = 195;
 		} 
 
-		else if(t < .5) {
-			sx = 0;
-			sy = 65;
-		} else if(t < .6) {
-			sx = 65;
-			sy = 65;
-		} else if(t < .7) {
-			sx = 130;
-			sy = 65;
-		} else if(t < .8) {
-			sx = 195;
-			sy = 65;
+		else if(this.t < .5) {
+			this.sx = 0;
+			this.sy = 65;
+		} else if(this.t < .6) {
+			this.sx = 65;
+			this.sy = 65;
+		} else if(this.t < .7) {
+			this.sx = 130;
+			this.sy = 65;
+		} else if(this.t < .8) {
+			this.sx = 195;
+			this.sy = 65;
 		} 
 
-		else if(t < .9) {
-			sx = 0;
-			sy = 130;
-		} else if(t < 1.0) {
-			sx = 65;
-			sy = 130;
-		} else if(t < 1.1) {
-			sx = 130;
-			sy = 130;
-		} else if(t < 1.2) {
-			sx = 195;
-			sy = 130;
+		else if(this.t < .9) {
+			this.sx = 0;
+			this.sy = 130;
+		} else if(this.t < 1.0) {
+			this.sx = 65;
+			this.sy = 130;
+		} else if(this.t < 1.1) {
+			this.sx = 130;
+			this.sy = 130;
+		} else if(this.t < 1.2) {
+			this.sx = 195;
+			this.sy = 130;
 		} 
 
-		else if(t < 1.3) {
-			sx = 0;
-			sy = 195;
-		} else if(t < 1.4) {
-			sx = 65;
-			sy = 195;
-		} else if(t < 1.5) {
-			sx = 130;
-			sy = 195;
-		} else if(t < 1.6) {
-			sx = 195;
-			sy = 195;
+		else if(this.t < 1.3) {
+			this.sx = 0;
+			this.sy = 195;
+		} else if(this.t < 1.4) {
+			this.sx = 65;
+			this.sy = 195;
+		} else if(this.t < 1.5) {
+			this.sx = 130;
+			this.sy = 195;
+		} else if(this.t < 1.6) {
+			this.sx = 195;
+			this.sy = 195;
 		} else {
 			this.kill();
 		}
 	};
 
-	this.explode = function(spaceCraft) {
+	Explosion.prototype.explode = function(spaceCraft) {
 		this.x = spaceCraft.x;
 		this.y = spaceCraft.y;
-		rotation = spaceCraft.rotation;
-		playAudio = true;
+		this.rotation = spaceCraft.rotation;
+		this.playAudio = true;
 	};
 
-	this.kill = function() {
+	Explosion.prototype.kill = function() {
 		this.active = false;
 		this.x = null;
 		this.y = null;
-		playAudio = false;
+		this.playAudio = false;
 	};
-};
