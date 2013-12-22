@@ -9,25 +9,27 @@ width	Optional. The width of the image to use (stretch or reduce the image)
 height	Optional. The height of the image to use (stretch or reduce the image)
 ***/
 
-function BadGuy() {
-	var explosion = null;
-	var t = 0;
-	var sx = 131;
-	var sy = 128;
-	var swidth = 54; 
-	var sheight = 56;
-	var travelPath = null;
-	this.x = -game.width;
-	this.y = game.height; 
-	this.width = 50;
-	this.height = 50;
-	this.active = true;
-	this.speed = 3;
-	this.rotation = 0;
-	this.shotBullets = [];
-	this.exploding = false;
+	function BadGuy() {
+		var explosion = null;
+		var t = 0;
+		var sx = 131;
+		var sy = 128;
+		var swidth = 54; 
+		var sheight = 56;
+		var travelPath = null;
 
-	this.updateState = function (delta) {
+		this.x = -game.width;
+		this.y = game.height; 
+		this.width = 50;
+		this.height = 50;
+		this.active = true;
+		this.speed = 3;
+		this.rotation = 0;
+		this.shotBullets = [];
+		this.exploding = false;
+	};
+
+	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
 			t += (delta / 10) * this.speed;		
 			if(t > 1) { this.kill(); }
@@ -44,7 +46,7 @@ function BadGuy() {
 		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
 	};
 
-	this.draw = function (context) {
+	BadGuy.prototype.draw = function (context) {
 		if(!this.exploding) {
 			this.rotation = (Math.PI / 180) * 270;
 
@@ -60,17 +62,17 @@ function BadGuy() {
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
-	this.generateTravelPath = function () {
+	BadGuy.prototype.generateTravelPath = function () {
 		travelPath = new TravelPath();
 		travelPath.generateRandom();
 	};
 
-	this.kill = function() {
+	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
 	}
 
-	this.explode = function() {
+	BadGuy.prototype.explode = function() {
 		if(!this.exploding) {
 			this.exploding = true;
 			explosion = new Explosion();
@@ -78,7 +80,7 @@ function BadGuy() {
 		}
 	}
 
-	this.shoot = function() {
+	BadGuy.prototype.shoot = function() {
 		if(!this.exploding) { 
 			var bullet = new Bullet();
 			bullet.rotation = 270;
@@ -86,4 +88,3 @@ function BadGuy() {
 			this.shotBullets.push(bullet);
 		}
 	};
-};
