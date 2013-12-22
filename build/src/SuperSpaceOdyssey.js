@@ -533,22 +533,23 @@ var audio = {
 			this.explosion.explode(this);
 		}
 	};
-function Level() {
-	this.game = null;
-	this.active = true;
-	this.enemiesOnScreen = 6;
-	this.length = 60000;
-	this.enemiesStager = 1000;
-	this.timing = this.enemiesStager;
-	this.badGuys = [];
-	this.background = new Background();
+	function Level() {
+		this.game = null;
+		this.active = true;
+		this.enemiesOnScreen = 6;
+		this.length = 60000;
+		this.enemiesStager = 1000;
+		this.timing = this.enemiesStager;
+		this.badGuys = [];
+		this.background = new Background();
+	};
 
-	this.initialize = function() {
+	Level.prototype.initialize = function() {
 		this.background = new Background();
 		this.background.initialize();
 	}
 
-	this.updateLevel = function (delta) {
+	Level.prototype.updateLevel = function (delta) {
 		this.timing -= delta * 1000;
 
 		if(this.timing <= 0) {
@@ -561,7 +562,7 @@ function Level() {
 		});
 	};
 
-	this.updateState = function(delta) {
+	Level.prototype.updateState = function(delta) {
 
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
@@ -574,7 +575,7 @@ function Level() {
 		this.updateLevel(delta);
 	}
 
-	this.draw = function(context) {
+	Level.prototype.draw = function(context) {
 
 		this.background.draw(context);
 
@@ -592,7 +593,7 @@ function Level() {
         context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
 	}
 
-	this.tryToGenerateBadGuy = function() {
+	Level.prototype.tryToGenerateBadGuy = function() {
 		if(this.badGuys.length < this.enemiesOnScreen) {
 			var badGuy = new BadGuy();
 			badGuy.generateTravelPath();
@@ -600,7 +601,6 @@ function Level() {
 			return badGuy;
 		}
 	}
-};
 
 function Point() {
 
