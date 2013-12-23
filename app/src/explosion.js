@@ -10,9 +10,9 @@
 		this.active = true;
 		this.x = 0;
 		this.y = 0; 
-		this.width = 55;
-		this.height = 55;
-		this.active = true;
+		this.width = 55 * game.scale;
+		this.height = 55 * game.scale;
+		this.active = true * game.scale;
 		this.speed = 25;
 	};
 

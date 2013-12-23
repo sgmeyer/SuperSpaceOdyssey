@@ -86,8 +86,8 @@
 
 		this.x = -game.width;
 		this.y = game.height; 
-		this.width = 50;
-		this.height = 50;
+		this.width = 50 * game.scale;
+		this.height = 50 * game.scale;
 		this.active = true;
 		this.speed = 3;
 		this.rotation = 0;
@@ -177,8 +177,8 @@
 
 		this.x = 0;
 		this.y = 0; 
-		this.width = 8;
-		this.height = 20;
+		this.width = 8 * game.scale;
+		this.height = 20 * game.scale;
 		this.rotation = 90;
 		this.active = true;
 		this.speed = 8;
@@ -296,11 +296,11 @@
 	};
 
 	Controls.keyName = function(event) {
-		if(Controls.keycode.left == event.which) return "left";
-		if(Controls.keycode.up == event.which) return "up";
-		if(Controls.keycode.right == event.which) return "right";
-		if(Controls.keycode.down == event.which) return "down";
-		if(Controls.keycode.space == event.which) return "space";
+		if(Controls.keycode.left == event.which) return 'left';
+		if(Controls.keycode.up == event.which) return 'up';
+		if(Controls.keycode.right == event.which) return 'right';
+		if(Controls.keycode.down == event.which) return 'down';
+		if(Controls.keycode.space == event.which) return 'space';
 		return event.which;
 	}
 
@@ -316,6 +316,50 @@
 			keydown[Controls.keyName(event)] = false;
 			event.preventDefault();
 		};
+
+		GameController.init({ 
+	    left: { 
+	    	position: { left: '10%', bottom: '17%' },
+	    	type: 'joystick',
+	      joystick: {
+	      	touchMove: function(details) {
+		      	keydown['left'] = details.normalizedX < 0;
+		      	keydown['up'] = details.normalizedY > 0;
+		      	keydown['right'] = details.normalizedX > 0;
+		      	keydown['down'] = details.normalizedY < 0;
+		      },
+		      touchEnd: function() {
+		      	keydown['left'] = false;
+		      	keydown['up'] = false;
+		      	keydown['right'] = false;
+		      	keydown['down'] = false;
+		      }
+	    	}
+	    }, 
+	    right: { 
+	        position: { right: '5%', bottom: '17%' }, 
+	        type: 'buttons', 
+	        buttons: [
+	        	{ label: 'shoot', fontSize: 13, backgroundColor: 'red', 
+		        	touchStart: function() { 
+		            keydown['space'] = true;
+		         	},
+		         	touchEnd: function() {
+		         		keydown['space'] = false;
+		         	}
+		        }, 
+		        { label: 'start', fontSize: 11, backgroundColor: 'white', fontColor: '000000', offset: { y: '4', x: '-22' }, radius: '4', 
+		        	touchStart: function() { 
+		            //keydown['space'] = true;
+         			},
+         			touchEnd: function() {
+         				//keydown['space'] = false;
+	         		}
+	        	},
+	        	false, false, false
+	        ] 
+	    }
+		});
 	};
 
 	function Explosion() {
@@ -330,9 +374,9 @@
 		this.active = true;
 		this.x = 0;
 		this.y = 0; 
-		this.width = 55;
-		this.height = 55;
-		this.active = true;
+		this.width = 55 * game.scale;
+		this.height = 55 * game.scale;
+		this.active = true * game.scale;
 		this.speed = 25;
 	};
 
@@ -440,10 +484,10 @@
 		this.sheight = 65;
 
 		this.active = true;
-		this.width = 50;
-		this.height = 50;
-		this.x = this.height/2*-1;
-		this.y = (game.width/2)-this.width; 
+		this.width = 50 * game.scale;
+		this.height = 50 * game.scale;
+		this.x = (this.height/2*-1);
+		this.y = ((game.width/2)-this.width); 
 		this.speed = 6;
 		this.rotation = 0;
 		this.shotBullets = [];
@@ -723,23 +767,33 @@ TravelPath.prototype.generateRandom = function() {
 		this.scenes = [];
 		this.goodGuys = [];
 		this.score = 0;
+		this.scale = 1;
 	}
 
 	Game.prototype.initialize = function (width, height) {
+
+		if(this.height < this.width) {
+			this.scale = (height || this.height) /  this.height;
+		}
+		else {
+			this.scal = (width || this.width) / this.width;
+		}
 
 		this.height = height || this.height;
 		this.width = width || this.width;
 
 		audio.initialize();
 
-		Controls.wireUp();
-		sprite = this.loadSprite("./images/shipsall_4.gif");
-		spriteExplosion = this.loadSprite("./images/exp2_0.png");
-
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
+
+		Controls.wireUp();
+		sprite = this.loadSprite("./images/shipsall_4.gif");
+		spriteExplosion = this.loadSprite("./images/exp2_0.png");
+
+		
 
 		this.lastTime = new Date().getTime();
 		audio.playThemeSong();

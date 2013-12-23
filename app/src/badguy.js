@@ -20,8 +20,8 @@
 
 		this.x = -game.width;
 		this.y = game.height; 
-		this.width = 50;
-		this.height = 50;
+		this.width = 50 * game.scale;
+		this.height = 50 * game.scale;
 		this.active = true;
 		this.speed = 3;
 		this.rotation = 0;

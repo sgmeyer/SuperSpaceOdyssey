@@ -6,23 +6,33 @@
 		this.scenes = [];
 		this.goodGuys = [];
 		this.score = 0;
+		this.scale = 1;
 	}
 
 	Game.prototype.initialize = function (width, height) {
+
+		if(this.height < this.width) {
+			this.scale = (height || this.height) /  this.height;
+		}
+		else {
+			this.scal = (width || this.width) / this.width;
+		}
 
 		this.height = height || this.height;
 		this.width = width || this.width;
 
 		audio.initialize();
 
-		Controls.wireUp();
-		sprite = this.loadSprite("./images/shipsall_4.gif");
-		spriteExplosion = this.loadSprite("./images/exp2_0.png");
-
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
+
+		Controls.wireUp();
+		sprite = this.loadSprite("./images/shipsall_4.gif");
+		spriteExplosion = this.loadSprite("./images/exp2_0.png");
+
+		
 
 		this.lastTime = new Date().getTime();
 		audio.playThemeSong();

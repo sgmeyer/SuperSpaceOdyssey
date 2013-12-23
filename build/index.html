@@ -13,20 +13,22 @@
 	    height:100%;
 	}
 	</style>
-
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 </head>
 <body onload="init()">
 	<section>
 		<canvas id="space-odyssey-game" />
 	</section>
 
+	<script src="src/lib/gamecontroller.min.js"></script>
 	<script src="src/lib/sound.min.js"></script>
 	<script src="src/SuperSpaceOdyssey.js"></script>
 
 	<script>
 		function init() {
-			var width = window.screen.availWidth;
-			var height = window.screen.availHeight;
+			var width = window.innerWidth;
+			var height = window.innerHeight;
 			window.game.initialize(width, height);
 		};
 	</script>

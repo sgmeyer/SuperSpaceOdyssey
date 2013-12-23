@@ -18,10 +18,10 @@
 		this.sheight = 65;
 
 		this.active = true;
-		this.width = 50;
-		this.height = 50;
-		this.x = this.height/2*-1;
-		this.y = (game.width/2)-this.width; 
+		this.width = 50 * game.scale;
+		this.height = 50 * game.scale;
+		this.x = (this.height/2*-1);
+		this.y = ((game.width/2)-this.width); 
 		this.speed = 6;
 		this.rotation = 0;
 		this.shotBullets = [];

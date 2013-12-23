@@ -20,8 +20,8 @@
 
 		this.x = 0;
 		this.y = 0; 
-		this.width = 8;
-		this.height = 20;
+		this.width = 8 * game.scale;
+		this.height = 20 * game.scale;
 		this.rotation = 90;
 		this.active = true;
 		this.speed = 8;
