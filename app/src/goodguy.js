@@ -22,7 +22,7 @@
 		this.height = 50 * game.scale;
 		this.x = (this.height/2*-1);
 		this.y = ((game.width/2)-this.width); 
-		this.speed = 6;
+		this.speed = 4;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
@@ -30,7 +30,7 @@
 
 	GoodGuy.prototype.updateState = function(delta) {
 		this.shotInterval += (delta / 10) * this.speed;		
-		var distance = (delta * 50) * this.speed;	
+		var distance = delta * 50 * this.speed;	
 
 		if(!this.exploding) {
 			if (keydown.up) {    
@@ -93,9 +93,9 @@
 
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
-			var bullet = new Bullet();
+			var bullet = new Bullet(8);
 			bullet.rotation = 90;;
-			bullet.generateTravelPath(this.x+(this.width/2), this.y);
+			bullet.shoot(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
 			audio.playLaser();

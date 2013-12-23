@@ -9,7 +9,7 @@
 		this.scale = 1;
 	}
 
-	Game.prototype.initialize = function (width, height) {
+	Game.prototype.initialize = function (width, height, touchEnabled) {
 
 		if(this.height < this.width) {
 			this.scale = (height || this.height) /  this.height;
@@ -28,15 +28,22 @@
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
-		Controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		
 
 		this.lastTime = new Date().getTime();
-		audio.playThemeSong();
 		this.initializeGameStart();
+
+		var gameController;
+		if(touchEnabled) {
+			gameController = new TouchGameController();
+			gameController.initialize();
+		} else {
+			gameController = new KeyboardGameController();
+			gameController.initialize();
+		}
 
 		this.setLoop();
 	};

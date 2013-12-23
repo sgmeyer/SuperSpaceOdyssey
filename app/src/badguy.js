@@ -23,7 +23,7 @@
 		this.width = 50 * game.scale;
 		this.height = 50 * game.scale;
 		this.active = true;
-		this.speed = 3;
+		this.speed = 2;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
@@ -31,7 +31,7 @@
 
 	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
-			this.t += (delta / 10) * this.speed;		
+			this.t += (delta / 10) * this.speed;
 			if(this.t > 1) { this.kill(); }
 			var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 			this.x = point.x;
@@ -84,7 +84,7 @@
 		if(!this.exploding) { 
 			var bullet = new Bullet();
 			bullet.rotation = 270;
-			bullet.generateTravelPath(this.x + (this.width/2), this.y);
+			bullet.shoot(this.x + (this.width/2), this.y);
 			this.shotBullets.push(bullet);
 		}
 	};

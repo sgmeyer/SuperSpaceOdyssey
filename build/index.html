@@ -29,8 +29,12 @@
 		function init() {
 			var width = window.innerWidth;
 			var height = window.innerHeight;
-			window.game.initialize(width, height);
+			window.game.initialize(width, height, is_touch_device());
 		};
+
+		function is_touch_device() {
+		  return !!('ontouchstart' in window);
+		}
 	</script>
 <body>
 </html>

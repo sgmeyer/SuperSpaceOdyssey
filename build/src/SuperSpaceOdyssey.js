@@ -89,7 +89,7 @@
 		this.width = 50 * game.scale;
 		this.height = 50 * game.scale;
 		this.active = true;
-		this.speed = 3;
+		this.speed = 2;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
@@ -97,7 +97,7 @@
 
 	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
-			this.t += (delta / 10) * this.speed;		
+			this.t += (delta / 10) * this.speed;
 			if(this.t > 1) { this.kill(); }
 			var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 			this.x = point.x;
@@ -150,7 +150,7 @@
 		if(!this.exploding) { 
 			var bullet = new Bullet();
 			bullet.rotation = 270;
-			bullet.generateTravelPath(this.x + (this.width/2), this.y);
+			bullet.shoot(this.x + (this.width/2), this.y);
 			this.shotBullets.push(bullet);
 		}
 	};
@@ -166,7 +166,7 @@
 	height	Optional. The height of the image to use (stretch or reduce the image)
 	***/
 
-	function Bullet() {
+	function Bullet(speed) {
 		
 		this.t = 0;
 		this.sx = 131;
@@ -181,7 +181,7 @@
 		this.height = 20 * game.scale;
 		this.rotation = 90;
 		this.active = true;
-		this.speed = 8;
+		this.speed = speed || 8;
 	};
 
 	Bullet.prototype.draw = function (context) {
@@ -196,41 +196,17 @@
 
 	Bullet.prototype.updateState = function (delta) {
 		
-		this.t += (delta / 10) * this.speed;
+		this.t += (delta / 10) * this.speed * game.scale;
 		if(this.t > 1) { this.kill(); }
 		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 		this.x = point.x;
 		this.y = point.y;	
 	};
 
-	Bullet.prototype.generateTravelPath = function (startX, startY) {		
-
+	Bullet.prototype.shoot = function(startX, startY) {
 		this.x = startX;
 		this.y = startY;
-		var distance = game.width + this.width;
-		var divisions = distance / 3;
-
-		var startPoint = new Point();
-		startPoint.x = startX - (this.width/2);
-		startPoint.y = startY;
-
-		var endPoint = new Point();
-		endPoint.x = startPoint.x;
-		endPoint.y =  startPoint.y - game.width - this.width;
-
-		var p1 = new Point();
-		p1.x = startPoint.x;
-		p1.y = startPoint.y - divisions;
-
-		var p2 = new Point();
-		p2.x = p1.x;
-		p2.y = p1.y - divisions;
-
-		this.travelPath = new TravelPath();
-		this.travelPath.P0 = startPoint;
-		this.travelPath.P1 = p1;
-		this.travelPath.P2 = p2;
-		this.travelPath.P3 = endPoint;
+		this.travelPath = TravelPath.generateStraightTravelPath(this.x, this.y, game.width, this.width);
 	};
 
 	Bullet.prototype.kill = function() {
@@ -296,71 +272,72 @@
 	};
 
 	Controls.keyName = function(event) {
-		if(Controls.keycode.left == event.which) return 'left';
-		if(Controls.keycode.up == event.which) return 'up';
-		if(Controls.keycode.right == event.which) return 'right';
-		if(Controls.keycode.down == event.which) return 'down';
-		if(Controls.keycode.space == event.which) return 'space';
-		return event.which;
-	}
+    if(Controls.keycode.left == event.which) { return 'left' };
+    if(Controls.keycode.up == event.which) { return 'up' };
+    if(Controls.keycode.right == event.which) { return 'right' };
+    if(Controls.keycode.down == event.which) { return 'down' };
+    if(Controls.keycode.space == event.which) { return 'space' };
+    return event.which;
+  }
+  
+  function KeyboardGameController() {
+  };
 
-	Controls.wireUp = function() {
-		window.keydown = {};
+  KeyboardGameController.prototype.initialize = function() {
+    window.keydown = {};
 
-		document.onkeydown = function(event) {
-			keydown[Controls.keyName(event)] = true;
-			event.preventDefault();
-		};
+    document.onkeydown = function(event) {
+      keydown[Controls.keyName(event)] = true;
+      event.preventDefault();
+    };
 
-		document.onkeyup = function(event) {
-			keydown[Controls.keyName(event)] = false;
-			event.preventDefault();
-		};
+    document.onkeyup = function(event) {
+      keydown[Controls.keyName(event)] = false;
+      event.preventDefault();
+    };
+  };
 
-		GameController.init({ 
-	    left: { 
-	    	position: { left: '10%', bottom: '17%' },
-	    	type: 'joystick',
-	      joystick: {
-	      	touchMove: function(details) {
-		      	keydown['left'] = details.normalizedX < 0;
-		      	keydown['up'] = details.normalizedY > 0;
-		      	keydown['right'] = details.normalizedX > 0;
-		      	keydown['down'] = details.normalizedY < 0;
-		      },
-		      touchEnd: function() {
-		      	keydown['left'] = false;
-		      	keydown['up'] = false;
-		      	keydown['right'] = false;
-		      	keydown['down'] = false;
-		      }
-	    	}
-	    }, 
-	    right: { 
-	        position: { right: '5%', bottom: '17%' }, 
-	        type: 'buttons', 
-	        buttons: [
-	        	{ label: 'shoot', fontSize: 13, backgroundColor: 'red', 
-		        	touchStart: function() { 
-		            keydown['space'] = true;
-		         	},
-		         	touchEnd: function() {
-		         		keydown['space'] = false;
-		         	}
-		        }, 
-		        { label: 'start', fontSize: 11, backgroundColor: 'white', fontColor: '000000', offset: { y: '4', x: '-22' }, radius: '4', 
-		        	touchStart: function() { 
-		            //keydown['space'] = true;
-         			},
-         			touchEnd: function() {
-         				//keydown['space'] = false;
-	         		}
-	        	},
-	        	false, false, false
-	        ] 
-	    }
-		});
-	};
+  function TouchGameController() {
+  };
+
+  TouchGameController.prototype.initialize = function() {
+    window.keydown = {};
+    GameController.init({ 
+      left: { 
+        position: { left: '10%', bottom: '17%' },
+        type: 'joystick',
+        joystick: {
+          touchMove: function(details) {
+            keydown['left'] = details.normalizedX < 0;
+            keydown['up'] = details.normalizedY > 0;
+            keydown['right'] = details.normalizedX > 0;
+            keydown['down'] = details.normalizedY < 0;
+          },
+          touchEnd: function() {
+            keydown['left'] = false;
+            keydown['up'] = false;
+            keydown['right'] = false;
+            keydown['down'] = false;
+          }
+        }
+      }, 
+      right: { 
+        position: { right: '5%' }, 
+        type: 'buttons', 
+        buttons: [
+          { label: 'shoot', fontSize: 13, backgroundColor: 'red', 
+            touchStart: function() { 
+              keydown['space'] = true;
+            },
+            touchEnd: function() {
+              keydown['space'] = false;
+            }
+          }, 
+          false, false, false
+        ] 
+      }
+    });
+  };
 
 	function Explosion() {
 		this.sx = 15;
@@ -488,7 +465,7 @@
 		this.height = 50 * game.scale;
 		this.x = (this.height/2*-1);
 		this.y = ((game.width/2)-this.width); 
-		this.speed = 6;
+		this.speed = 4;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
@@ -496,7 +473,7 @@
 
 	GoodGuy.prototype.updateState = function(delta) {
 		this.shotInterval += (delta / 10) * this.speed;		
-		var distance = (delta * 50) * this.speed;	
+		var distance = delta * 50 * this.speed;	
 
 		if(!this.exploding) {
 			if (keydown.up) {    
@@ -559,9 +536,9 @@
 
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
-			var bullet = new Bullet();
+			var bullet = new Bullet(8);
 			bullet.rotation = 90;;
-			bullet.generateTravelPath(this.x+(this.width/2), this.y);
+			bullet.shoot(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
 			audio.playLaser();
@@ -702,6 +679,37 @@ TravelPath.prototype.generateRandom = function() {
 		this.P3.y = (game.width / 2* -1)-50;
 	};
 
+	TravelPath.generateStraightTravelPath = function (startX, startY, gameWidth, projectileWidth) {		
+
+
+		var distance = gameWidth + projectileWidth;
+		var divisions = distance / 3;
+
+		var startPoint = new Point();
+		startPoint.x = startX - (projectileWidth/2);
+		startPoint.y = startY;
+
+		var endPoint = new Point();
+		endPoint.x = startPoint.x;
+		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
+
+		var p1 = new Point();
+		p1.x = startPoint.x;
+		p1.y = startPoint.y - divisions;
+
+		var p2 = new Point();
+		p2.x = p1.x;
+		p2.y = p1.y - divisions;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = startPoint;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = endPoint;
+
+		return travelPath;
+	};
+
 
 	function StartMenu() {
 		this.active = true;
@@ -770,7 +778,7 @@ TravelPath.prototype.generateRandom = function() {
 		this.scale = 1;
 	}
 
-	Game.prototype.initialize = function (width, height) {
+	Game.prototype.initialize = function (width, height, touchEnabled) {
 
 		if(this.height < this.width) {
 			this.scale = (height || this.height) /  this.height;
@@ -789,15 +797,22 @@ TravelPath.prototype.generateRandom = function() {
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
-		Controls.wireUp();
 		sprite = this.loadSprite("./images/shipsall_4.gif");
 		spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		
 
 		this.lastTime = new Date().getTime();
-		audio.playThemeSong();
 		this.initializeGameStart();
+
+		var gameController;
+		if(touchEnabled) {
+			gameController = new TouchGameController();
+			gameController.initialize();
+		} else {
+			gameController = new KeyboardGameController();
+			gameController.initialize();
+		}
 
 		this.setLoop();
 	};

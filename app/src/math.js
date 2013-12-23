@@ -51,3 +51,34 @@ TravelPath.prototype.generateRandom = function() {
 		this.P3.y = (game.width / 2* -1)-50;
 	};
 
+	TravelPath.generateStraightTravelPath = function (startX, startY, gameWidth, projectileWidth) {		
+
+
+		var distance = gameWidth + projectileWidth;
+		var divisions = distance / 3;
+
+		var startPoint = new Point();
+		startPoint.x = startX - (projectileWidth/2);
+		startPoint.y = startY;
+
+		var endPoint = new Point();
+		endPoint.x = startPoint.x;
+		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
+
+		var p1 = new Point();
+		p1.x = startPoint.x;
+		p1.y = startPoint.y - divisions;
+
+		var p2 = new Point();
+		p2.x = p1.x;
+		p2.y = p1.y - divisions;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = startPoint;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = endPoint;
+
+		return travelPath;
+	};
+
