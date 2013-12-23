@@ -49,7 +49,7 @@
 	Bullet.prototype.shoot = function(startX, startY) {
 		this.x = startX;
 		this.y = startY;
-		this.travelPath = TravelPath.generateStraightTravelPath(this.x, this.y, game.width, this.width);
+		this.travelPath = TravelPath.generateStraightPath(this.x, this.y, game.width, this.width);
 	};
 
 	Bullet.prototype.kill = function() {

@@ -63,8 +63,7 @@
 	};
 
 	BadGuy.prototype.generateTravelPath = function () {
-		this.travelPath = new TravelPath();
-		this.travelPath.generateRandom();
+		this.travelPath = TravelPath.generateRandomPath(game.height);
 	};
 
 	BadGuy.prototype.kill = function() {

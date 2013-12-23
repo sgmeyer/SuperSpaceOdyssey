@@ -31,29 +31,36 @@ function TravelPath() {
 	this.P3 = undefined;
 };
 
-TravelPath.prototype.generateRandom = function() {
+TravelPath.generateRandomPath = function(gameHeight) {
 		var constraint = 200;
+		var travelPath = new TravelPath();
 
-		this.P0 = new Point();
-		this.P0.x = ((game.height + constraint) / 2) - (Math.random() * (game.height+ constraint));
-		this.P0.y = game.width / 2;
+		var p0 = new Point();
+		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p0.y = game.width / 2;
 
-		this.P1 = new Point();
-		this.P1.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
-		this.P1.y = Math.random() * 100 + 100;
+		var p1 = new Point();
+		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p1.y = Math.random() * 100 + 100;
 
-		this.P2 = new Point();
-		this.P2.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
-		this.P2.y = Math.random() * -200 - 50;
+		var p2 = new Point();
+		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p2.y = Math.random() * -200 - 50;
 
-		this.P3 = new Point();
-		this.P3.x = ((game.height + constraint) / 2) - (Math.random() * (game.height + constraint));
-		this.P3.y = (game.width / 2* -1)-50;
+		var p3 = new Point();
+		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p3.y = (game.width / 2* -1)-50;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = p0;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = p3;
+
+		return travelPath;
 	};
 
-	TravelPath.generateStraightTravelPath = function (startX, startY, gameWidth, projectileWidth) {		
-
-
+	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
 		var distance = gameWidth + projectileWidth;
 		var divisions = distance / 3;
 
