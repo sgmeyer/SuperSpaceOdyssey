@@ -10,7 +10,6 @@
 		themeSong: null,
 		initialize: function() {
 			createjs.Sound.addEventListener("fileload", function(event) {
-				console.log("Preloaded:", event.id, event.src);
 				audio.playThemeSong();
 			});
 			createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);

@@ -12,7 +12,6 @@
 		themeSong: null,
 		initialize: function() {
 			createjs.Sound.addEventListener("fileload", function(event) {
-				console.log("Preloaded:", event.id, event.src);
 				audio.playThemeSong();
 			});
 			createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
@@ -82,7 +81,7 @@
 		this.sy = 128;
 		this.swidth = 54; 
 		this.sheight = 56;
-		this.travelPath = null;
+		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
 		this.y = game.height; 
@@ -128,9 +127,9 @@
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
-	BadGuy.prototype.generateTravelPath = function () {
-		this.travelPath = TravelPath.generateRandomPath(game.height);
-	};
+	//BadGuy.prototype.generateTravelPath = function () {
+	//	this.travelPath = TravelPath.generateRandomPath(game.height);
+	//};
 
 	BadGuy.prototype.kill = function() {
 		this.active = false;
@@ -619,7 +618,6 @@
 	Level.prototype.tryToGenerateBadGuy = function() {
 		if(this.badGuys.length < this.enemiesOnScreen) {
 			var badGuy = new BadGuy();
-			badGuy.generateTravelPath();
 			this.timing = this.enemiesStager;
 			return badGuy;
 		}

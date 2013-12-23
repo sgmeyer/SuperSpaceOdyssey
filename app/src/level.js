@@ -61,7 +61,6 @@
 	Level.prototype.tryToGenerateBadGuy = function() {
 		if(this.badGuys.length < this.enemiesOnScreen) {
 			var badGuy = new BadGuy();
-			badGuy.generateTravelPath();
 			this.timing = this.enemiesStager;
 			return badGuy;
 		}

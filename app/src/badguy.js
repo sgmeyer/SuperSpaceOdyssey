@@ -16,7 +16,7 @@
 		this.sy = 128;
 		this.swidth = 54; 
 		this.sheight = 56;
-		this.travelPath = null;
+		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
 		this.y = game.height; 
@@ -60,10 +60,6 @@
 		}
 
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
-	};
-
-	BadGuy.prototype.generateTravelPath = function () {
-		this.travelPath = TravelPath.generateRandomPath(game.height);
 	};
 
 	BadGuy.prototype.kill = function() {
