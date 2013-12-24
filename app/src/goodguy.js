@@ -84,7 +84,7 @@ function GoodGuy() {
 			bullet.shoot(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
-			audio.playLaser();
+			soundLibrary.playLaser();
 		}
 	};
 

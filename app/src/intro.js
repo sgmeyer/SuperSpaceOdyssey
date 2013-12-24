@@ -2,5 +2,6 @@
 
   var canvas, 
       ctx, 
-      sprites, 
+      sprites,
+      soundLibrary, 
       keydown;

@@ -21,7 +21,8 @@
 		this.height = height || this.height;
 		this.width = width || this.width;
 
-		audio.initialize();
+		soundLibrary = new SoundLibrary();
+		soundLibrary.initialize();
 		sprites = new Sprites();
 
 		canvas = document.getElementById('space-odyssey-game');

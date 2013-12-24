@@ -27,7 +27,7 @@
 
 	Explosion.prototype.updateState = function(delta) {
 		this.t += (delta / 10) * this.speed;
-		if(this.t < .2 && this.playAudio) { this.playAudio = false; audio.playExplosion = true; }
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
 		if(this.t > 1.2) { this.kill(); }
 	};
 

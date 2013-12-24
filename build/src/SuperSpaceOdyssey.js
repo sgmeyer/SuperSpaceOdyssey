@@ -2,36 +2,36 @@
 
   var canvas, 
       ctx, 
-      sprites, 
+      sprites,
+      soundLibrary, 
       keydown;
-	var audioPath = 'sound/';
-	var manifest = [
-	    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-	    {id:'lazer', src:'laser1.wav'},
-	    {id:'explosion', src:'8bit_bomb_explosion.wav'}
-	];
+	function SoundLibrary() {
+	}
 
-	var audio = {
-		explosion: null,
-		themeSong: null,
-		initialize: function() {
-			createjs.Sound.addEventListener("fileload", function(event) {
-				audio.playThemeSong();
-			});
-			createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
-    	createjs.Sound.registerManifest(manifest, audioPath);
-		},
-		playExplosion: function() {
-			createjs.Sound.play('explosion');
-		},
-		playThemeSong: function() {
-			createjs.Sound.play('themeSong');
-		},
-		playLaser: function() {
-			createjs.Sound.play('lazer');
-		}
-	};
+	SoundLibrary.prototype.initialize = function() {
+		var audioPath = 'sound/';
+		var manifest = [
+		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
+		    {id:'lazer', src:'laser1.wav'},
+		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		];
 
+		createjs.Sound.addEventListener("fileload", function(event) { soundLibrary.playThemeSong(); });
+		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+  	createjs.Sound.registerManifest(manifest, audioPath);
+	}
+
+	SoundLibrary.prototype.playExplosion = function() {
+		createjs.Sound.play('explosion');
+	}
+
+	SoundLibrary.prototype.playThemeSong = function() {
+		createjs.Sound.play('themeSong');
+	}
+	
+	SoundLibrary.prototype.playLaser = function() {
+		createjs.Sound.play('lazer');
+	}
 function Sprites() {
   var shipImage = new Image();
   shipImage.src = 'images/shipsall_4.gif'
@@ -392,7 +392,7 @@ function BadGuy() {
 
 	Explosion.prototype.updateState = function(delta) {
 		this.t += (delta / 10) * this.speed;
-		if(this.t < .2 && this.playAudio) { this.playAudio = false; audio.playExplosion = true; }
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
 		if(this.t > 1.2) { this.kill(); }
 	};
 
@@ -496,7 +496,7 @@ function GoodGuy() {
 			bullet.shoot(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
-			audio.playLaser();
+			soundLibrary.playLaser();
 		}
 	};
 
@@ -751,18 +751,14 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.height = height || this.height;
 		this.width = width || this.width;
 
-		audio.initialize();
+		soundLibrary = new SoundLibrary();
+		soundLibrary.initialize();
 		sprites = new Sprites();
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
-
-		//sprite = this.loadSprite("./images/shipsall_4.gif");
-		//spriteExplosion = this.loadSprite("./images/exp2_0.png");
-
-		
 
 		this.lastTime = new Date().getTime();
 		this.initializeGameStart();
@@ -792,12 +788,6 @@ TravelPath.generateRandomPath = function(gameHeight) {
 			this.scenes[0].draw(ctx);
 		}
 	};
-
-	//Game.prototype.loadSprite = function(name) {
-  //  var sprite = new Image();
-  //  sprite.src = name;
-  //  return sprite;
-	//};
 
 	Game.prototype.initializeGameOver = function() {
  		this.scenes = [];
