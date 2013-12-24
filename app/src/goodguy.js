@@ -1,21 +1,7 @@
-	/*** 
-	sx		Optional. The x coordinate where to start clipping
-	sy		Optional. The y coordinate where to start clipping
-	swidth	Optional. The width of the clipped image
-	sheight	Optional. The height of the clipped image
-	x		The x coordinate where to place the image on the canvas
-	y		The y coordinate where to place the image on the canvas
-	width	Optional. The width of the image to use (stretch or reduce the image)
-	height	Optional. The height of the image to use (stretch or reduce the image)
-	***/
-
-	function GoodGuy() {
+function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
-		this.sx = 67;
-		this.sy = 123;
-		this.swidth = 60;
-		this.sheight = 65;
+		this.sprite = sprites.getSprite('goodGuyShip');
 
 		this.active = true;
 		this.width = 50 * game.scale;
@@ -82,7 +68,7 @@
 			context.save();
 			context.translate(game.width/2, game.height/2);
 			context.rotate(this.rotation);
-			context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
+			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
 			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }

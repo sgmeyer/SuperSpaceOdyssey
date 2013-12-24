@@ -2,8 +2,7 @@
 
   var canvas, 
       ctx, 
-      sprite, 
-      spriteExplosion,
+      sprites, 
       keydown;
 	var audioPath = 'sound/';
 	var manifest = [
@@ -33,6 +32,62 @@
 		}
 	};
 
+function Sprites() {
+  var shipImage = new Image();
+  shipImage.src = 'images/shipsall_4.gif'
+
+  var explosionImage = new Image();
+  explosionImage.src = 'images/exp2_0.png';
+
+  this.staticSprites = [
+    {id: 'goodGuyShip', x: 67, y: 123, width: 60, height: 65, image: shipImage},
+    {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
+    {id: 'bullet', x: 131, y: 70, width: 20, height: 45, image: shipImage}
+  ];
+  this.animationSprites = [
+    { id: 'explosion', 
+      intervals: [
+        { time: .1, x: 0, y: 0, height: 55, width: 55},
+        { time: .2, x: 65, y: 0, height: 55, width: 55},
+        { time: .3, x: 130, y: 0, height: 55, width: 55},
+        { time: .4, x: 195, y: 0, height: 55, width: 55},
+        { time: .5, x: 0, y: 65, height: 55, width: 55},
+        { time: .6, x: 65, y: 65, height: 55, width: 55},
+        { time: .7, x: 130, y: 65, height: 55, width: 55},
+        { time: .8, x: 195, y: 65, height: 55, width: 55},
+        { time: .9, x: 0, y: 130, height: 55, width: 55},
+        { time: 1.0, x: 65, y: 130, height: 55, width: 55},
+        { time: 1.1, x: 130, y: 130, height: 55, width: 55},
+        { time: 1.2, x: 195, y: 130, height: 55, width: 55}
+      ],
+      image: explosionImage
+    }
+  ];
+}
+
+Sprites.prototype.getSprite = function(id) {
+  for(var i = 0; i < this.staticSprites.length; i++) {
+    if(this.staticSprites[i].id === id) {
+      return this.staticSprites[i];
+    }
+  }
+}
+
+Sprites.prototype.getAnimation = function(id) {
+  for(var i = 0; i < this.animationSprites.length; i++) {
+    if(this.animationSprites[i].id === id) {
+      return this.animationSprites[i];
+    }
+  }
+}
+
+Sprites.prototype.getAnimationFrame = function(animation, time) {
+  for(var i = 0; i < animation.intervals.length; i++) {
+    if(time < animation.intervals[i].time) {
+      return animation.intervals[i];
+    }
+  }
+}
 	function Background() {
 		this.stars = [];
 	};
@@ -68,24 +123,10 @@
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-	/*** 
-	sx		Optional. The x coordinate where to start clipping
-	sy		Optional. The y coordinate where to start clipping
-	swidth	Optional. The width of the clipped image
-	sheight	Optional. The height of the clipped image
-	x		The x coordinate where to place the image on the canvas
-	y		The y coordinate where to place the image on the canvas
-	width	Optional. The width of the image to use (stretch or reduce the image)
-	height	Optional. The height of the image to use (stretch or reduce the image)
-	***/
-
-	function BadGuy() {
+function BadGuy() {
 		this.explosion = null;
 		this.t = 0;
-		this.sx = 131;
-		this.sy = 128;
-		this.swidth = 54; 
-		this.sheight = 56;
+		this.sprite = sprites.getSprite('badGuyShip');
 		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
@@ -123,7 +164,7 @@
 			context.save();
 			context.translate(game.width/2, game.height/2);
 			context.rotate(this.rotation);
-			context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
+			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
 			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
@@ -154,24 +195,9 @@
 		}
 	};
 
-	/*** 
-	sx		Optional. The x coordinate where to start clipping
-	sy		Optional. The y coordinate where to start clipping
-	swidth	Optional. The width of the clipped image
-	sheight	Optional. The height of the clipped image
-	x		The x coordinate where to place the image on the canvas
-	y		The y coordinate where to place the image on the canvas
-	width	Optional. The width of the image to use (stretch or reduce the image)
-	height	Optional. The height of the image to use (stretch or reduce the image)
-	***/
-
 	function Bullet(speed) {
-		
 		this.t = 0;
-		this.sx = 131;
-		this.sy = 70;
-		this.swidth = 20; 
-		this.sheight = 45;
+		this.sprite = sprites.getSprite('bullet');
 		this.travelPath = null;
 
 		this.x = 0;
@@ -189,7 +215,7 @@
 		context.save();
 		context.translate(game.width/2, game.height/2);
 		context.rotate(rotation);
-		context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
+		context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
 		context.restore();
 	};
 
@@ -338,11 +364,8 @@
   };
 
 	function Explosion() {
-		this.sx = 15;
-		this.sy = 15;
-		this.swidth = 55;
-		this.sheight = 55;
 		this.t = 0;
+		this.animation = sprites.getAnimation('explosion');
 		this.rotation = 0;
 		this.playAudio = false;
 
@@ -356,73 +379,21 @@
 	};
 
 	Explosion.prototype.draw = function(context) {
-		context.save();
-		context.translate(game.width/2, game.height/2);
-		context.rotate(this.rotation);
-		context.drawImage(spriteExplosion, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
-		context.restore();
+		var spriteFrame = sprites.getAnimationFrame(this.animation, this.t);
+
+		if(spriteFrame) {
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		}
 	};
 
 	Explosion.prototype.updateState = function(delta) {
-		this.t += (delta / 10) * this.speed;		
-		if(this.t < .1) {
-			this.sx = 0;
-			this.sy = 0;
-		} else if(this.t < .2) {
-			if(this.playAudio) { 
-				this.playAudio = false;
-				audio.playExplosion();
-			}
-			this.sx = 65;
-		} else if(this.t < .3) {
-			this.sx = 130;
-		} else if(this.t < .4) {
-			this.sx = 195;
-		} 
-
-		else if(this.t < .5) {
-			this.sx = 0;
-			this.sy = 65;
-		} else if(this.t < .6) {
-			this.sx = 65;
-			this.sy = 65;
-		} else if(this.t < .7) {
-			this.sx = 130;
-			this.sy = 65;
-		} else if(this.t < .8) {
-			this.sx = 195;
-			this.sy = 65;
-		} 
-
-		else if(this.t < .9) {
-			this.sx = 0;
-			this.sy = 130;
-		} else if(this.t < 1.0) {
-			this.sx = 65;
-			this.sy = 130;
-		} else if(this.t < 1.1) {
-			this.sx = 130;
-			this.sy = 130;
-		} else if(this.t < 1.2) {
-			this.sx = 195;
-			this.sy = 130;
-		} 
-
-		else if(this.t < 1.3) {
-			this.sx = 0;
-			this.sy = 195;
-		} else if(this.t < 1.4) {
-			this.sx = 65;
-			this.sy = 195;
-		} else if(this.t < 1.5) {
-			this.sx = 130;
-			this.sy = 195;
-		} else if(this.t < 1.6) {
-			this.sx = 195;
-			this.sy = 195;
-		} else {
-			this.kill();
-		}
+		this.t += (delta / 10) * this.speed;
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; audio.playExplosion = true; }
+		if(this.t > 1.2) { this.kill(); }
 	};
 
 	Explosion.prototype.explode = function(spaceCraft) {
@@ -439,24 +410,10 @@
 		this.playAudio = false;
 	};
 
-	/*** 
-	sx		Optional. The x coordinate where to start clipping
-	sy		Optional. The y coordinate where to start clipping
-	swidth	Optional. The width of the clipped image
-	sheight	Optional. The height of the clipped image
-	x		The x coordinate where to place the image on the canvas
-	y		The y coordinate where to place the image on the canvas
-	width	Optional. The width of the image to use (stretch or reduce the image)
-	height	Optional. The height of the image to use (stretch or reduce the image)
-	***/
-
-	function GoodGuy() {
+function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
-		this.sx = 67;
-		this.sy = 123;
-		this.swidth = 60;
-		this.sheight = 65;
+		this.sprite = sprites.getSprite('goodGuyShip');
 
 		this.active = true;
 		this.width = 50 * game.scale;
@@ -523,7 +480,7 @@
 			context.save();
 			context.translate(game.width/2, game.height/2);
 			context.rotate(this.rotation);
-			context.drawImage(sprite, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
+			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
 			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
@@ -795,14 +752,15 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.width = width || this.width;
 
 		audio.initialize();
+		sprites = new Sprites();
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
-		sprite = this.loadSprite("./images/shipsall_4.gif");
-		spriteExplosion = this.loadSprite("./images/exp2_0.png");
+		//sprite = this.loadSprite("./images/shipsall_4.gif");
+		//spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		
 
@@ -835,11 +793,11 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		}
 	};
 
-	Game.prototype.loadSprite = function(name) {
-    var sprite = new Image();
-    sprite.src = name;
-    return sprite;
-	};
+	//Game.prototype.loadSprite = function(name) {
+  //  var sprite = new Image();
+  //  sprite.src = name;
+  //  return sprite;
+	//};
 
 	Game.prototype.initializeGameOver = function() {
  		this.scenes = [];

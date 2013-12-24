@@ -2,6 +2,5 @@
 
   var canvas, 
       ctx, 
-      sprite, 
-      spriteExplosion,
+      sprites, 
       keydown;

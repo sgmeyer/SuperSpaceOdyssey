@@ -22,14 +22,15 @@
 		this.width = width || this.width;
 
 		audio.initialize();
+		sprites = new Sprites();
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
-		sprite = this.loadSprite("./images/shipsall_4.gif");
-		spriteExplosion = this.loadSprite("./images/exp2_0.png");
+		//sprite = this.loadSprite("./images/shipsall_4.gif");
+		//spriteExplosion = this.loadSprite("./images/exp2_0.png");
 
 		
 
@@ -62,11 +63,11 @@
 		}
 	};
 
-	Game.prototype.loadSprite = function(name) {
-    var sprite = new Image();
-    sprite.src = name;
-    return sprite;
-	};
+	//Game.prototype.loadSprite = function(name) {
+  //  var sprite = new Image();
+  //  sprite.src = name;
+  //  return sprite;
+	//};
 
 	Game.prototype.initializeGameOver = function() {
  		this.scenes = [];

@@ -1,9 +1,6 @@
 	function Explosion() {
-		this.sx = 15;
-		this.sy = 15;
-		this.swidth = 55;
-		this.sheight = 55;
 		this.t = 0;
+		this.animation = sprites.getAnimation('explosion');
 		this.rotation = 0;
 		this.playAudio = false;
 
@@ -17,73 +14,21 @@
 	};
 
 	Explosion.prototype.draw = function(context) {
-		context.save();
-		context.translate(game.width/2, game.height/2);
-		context.rotate(this.rotation);
-		context.drawImage(spriteExplosion, this.sx, this.sy, this.swidth, this.sheight, this.x, this.y, this.width, this.height);
-		context.restore();
+		var spriteFrame = sprites.getAnimationFrame(this.animation, this.t);
+
+		if(spriteFrame) {
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		}
 	};
 
 	Explosion.prototype.updateState = function(delta) {
-		this.t += (delta / 10) * this.speed;		
-		if(this.t < .1) {
-			this.sx = 0;
-			this.sy = 0;
-		} else if(this.t < .2) {
-			if(this.playAudio) { 
-				this.playAudio = false;
-				audio.playExplosion();
-			}
-			this.sx = 65;
-		} else if(this.t < .3) {
-			this.sx = 130;
-		} else if(this.t < .4) {
-			this.sx = 195;
-		} 
-
-		else if(this.t < .5) {
-			this.sx = 0;
-			this.sy = 65;
-		} else if(this.t < .6) {
-			this.sx = 65;
-			this.sy = 65;
-		} else if(this.t < .7) {
-			this.sx = 130;
-			this.sy = 65;
-		} else if(this.t < .8) {
-			this.sx = 195;
-			this.sy = 65;
-		} 
-
-		else if(this.t < .9) {
-			this.sx = 0;
-			this.sy = 130;
-		} else if(this.t < 1.0) {
-			this.sx = 65;
-			this.sy = 130;
-		} else if(this.t < 1.1) {
-			this.sx = 130;
-			this.sy = 130;
-		} else if(this.t < 1.2) {
-			this.sx = 195;
-			this.sy = 130;
-		} 
-
-		else if(this.t < 1.3) {
-			this.sx = 0;
-			this.sy = 195;
-		} else if(this.t < 1.4) {
-			this.sx = 65;
-			this.sy = 195;
-		} else if(this.t < 1.5) {
-			this.sx = 130;
-			this.sy = 195;
-		} else if(this.t < 1.6) {
-			this.sx = 195;
-			this.sy = 195;
-		} else {
-			this.kill();
-		}
+		this.t += (delta / 10) * this.speed;
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; audio.playExplosion = true; }
+		if(this.t > 1.2) { this.kill(); }
 	};
 
 	Explosion.prototype.explode = function(spaceCraft) {
