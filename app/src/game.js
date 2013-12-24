@@ -111,5 +111,4 @@
 			1000/this.frameRate);
 		};
 
-	var canvas, ctx, sprite, spriteExplosion;
-	window.game = window.sso = new Game();
+	window.game = new Game();

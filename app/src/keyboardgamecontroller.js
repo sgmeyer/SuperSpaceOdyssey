@@ -2,7 +2,7 @@
   };
 
   KeyboardGameController.prototype.initialize = function() {
-    window.keydown = {};
+    keydown = {};
 
     document.onkeydown = function(event) {
       keydown[Controls.keyName(event)] = true;

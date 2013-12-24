@@ -1,5 +1,10 @@
 (function(window) { 'use strict';
 
+  var canvas, 
+      ctx, 
+      sprite, 
+      spriteExplosion,
+      keydown;
 	var audioPath = 'sound/';
 	var manifest = [
 	    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
@@ -126,10 +131,6 @@
 
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
-
-	//BadGuy.prototype.generateTravelPath = function () {
-	//	this.travelPath = TravelPath.generateRandomPath(game.height);
-	//};
 
 	BadGuy.prototype.kill = function() {
 		this.active = false;
@@ -282,7 +283,7 @@
   };
 
   KeyboardGameController.prototype.initialize = function() {
-    window.keydown = {};
+    keydown = {};
 
     document.onkeydown = function(event) {
       keydown[Controls.keyName(event)] = true;
@@ -299,7 +300,6 @@
   };
 
   TouchGameController.prototype.initialize = function() {
-    window.keydown = {};
     GameController.init({ 
       left: { 
         position: { left: '10%', bottom: '17%' },
@@ -884,7 +884,6 @@ TravelPath.generateRandomPath = function(gameHeight) {
 			1000/this.frameRate);
 		};
 
-	var canvas, ctx, sprite, spriteExplosion;
-	window.game = window.sso = new Game();
+	window.game = new Game();
 
 })(window);
