@@ -29,11 +29,6 @@
 		canvas.width = width;
 		ctx = canvas.getContext("2d");
 
-		//sprite = this.loadSprite("./images/shipsall_4.gif");
-		//spriteExplosion = this.loadSprite("./images/exp2_0.png");
-
-		
-
 		this.lastTime = new Date().getTime();
 		this.initializeGameStart();
 
@@ -62,12 +57,6 @@
 			this.scenes[0].draw(ctx);
 		}
 	};
-
-	//Game.prototype.loadSprite = function(name) {
-  //  var sprite = new Image();
-  //  sprite.src = name;
-  //  return sprite;
-	//};
 
 	Game.prototype.initializeGameOver = function() {
  		this.scenes = [];
