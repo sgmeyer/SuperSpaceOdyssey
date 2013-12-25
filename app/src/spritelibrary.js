@@ -1,4 +1,4 @@
-function Sprites() {
+function SpriteLibrary() {
   var shipImage = new Image();
   shipImage.src = 'images/shipsall_4.gif'
 
@@ -31,7 +31,7 @@ function Sprites() {
   ];
 }
 
-Sprites.prototype.getSprite = function(id) {
+SpriteLibrary.prototype.getSprite = function(id) {
   for(var i = 0; i < this.staticSprites.length; i++) {
     if(this.staticSprites[i].id === id) {
       return this.staticSprites[i];
@@ -39,7 +39,7 @@ Sprites.prototype.getSprite = function(id) {
   }
 }
 
-Sprites.prototype.getAnimation = function(id) {
+SpriteLibrary.prototype.getAnimation = function(id) {
   for(var i = 0; i < this.animationSprites.length; i++) {
     if(this.animationSprites[i].id === id) {
       return this.animationSprites[i];
@@ -47,7 +47,7 @@ Sprites.prototype.getAnimation = function(id) {
   }
 }
 
-Sprites.prototype.getAnimationFrame = function(animation, time) {
+SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
   for(var i = 0; i < animation.intervals.length; i++) {
     if(time < animation.intervals[i].time) {
       return animation.intervals[i];

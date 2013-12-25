@@ -1,6 +1,6 @@
 	function Bullet(speed) {
 		this.t = 0;
-		this.sprite = sprites.getSprite('bullet');
+		this.sprite = spriteLibrary.getSprite('bullet');
 		this.travelPath = null;
 
 		this.x = 0;

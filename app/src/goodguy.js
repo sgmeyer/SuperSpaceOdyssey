@@ -1,7 +1,7 @@
 function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
-		this.sprite = sprites.getSprite('goodGuyShip');
+		this.sprite = spriteLibrary.getSprite('goodGuyShip');
 
 		this.active = true;
 		this.width = 50 * game.scale;

@@ -1,6 +1,6 @@
 	function Explosion() {
 		this.t = 0;
-		this.animation = sprites.getAnimation('explosion');
+		this.animation = spriteLibrary.getAnimation('explosion');
 		this.rotation = 0;
 		this.playAudio = false;
 
@@ -14,7 +14,7 @@
 	};
 
 	Explosion.prototype.draw = function(context) {
-		var spriteFrame = sprites.getAnimationFrame(this.animation, this.t);
+		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
 
 		if(spriteFrame) {
 			context.save();

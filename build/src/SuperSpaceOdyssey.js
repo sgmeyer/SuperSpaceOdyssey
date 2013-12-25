@@ -2,7 +2,7 @@
 
   var canvas, 
       ctx, 
-      sprites,
+      spriteLibrary,
       soundLibrary, 
       keydown;
 	function SoundLibrary() {
@@ -32,7 +32,7 @@
 	SoundLibrary.prototype.playLaser = function() {
 		createjs.Sound.play('lazer');
 	}
-function Sprites() {
+function SpriteLibrary() {
   var shipImage = new Image();
   shipImage.src = 'images/shipsall_4.gif'
 
@@ -65,7 +65,7 @@ function Sprites() {
   ];
 }
 
-Sprites.prototype.getSprite = function(id) {
+SpriteLibrary.prototype.getSprite = function(id) {
   for(var i = 0; i < this.staticSprites.length; i++) {
     if(this.staticSprites[i].id === id) {
       return this.staticSprites[i];
@@ -73,7 +73,7 @@ Sprites.prototype.getSprite = function(id) {
   }
 }
 
-Sprites.prototype.getAnimation = function(id) {
+SpriteLibrary.prototype.getAnimation = function(id) {
   for(var i = 0; i < this.animationSprites.length; i++) {
     if(this.animationSprites[i].id === id) {
       return this.animationSprites[i];
@@ -81,7 +81,7 @@ Sprites.prototype.getAnimation = function(id) {
   }
 }
 
-Sprites.prototype.getAnimationFrame = function(animation, time) {
+SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
   for(var i = 0; i < animation.intervals.length; i++) {
     if(time < animation.intervals[i].time) {
       return animation.intervals[i];
@@ -126,7 +126,7 @@ Sprites.prototype.getAnimationFrame = function(animation, time) {
 function BadGuy() {
 		this.explosion = null;
 		this.t = 0;
-		this.sprite = sprites.getSprite('badGuyShip');
+		this.sprite = spriteLibrary.getSprite('badGuyShip');
 		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
@@ -197,7 +197,7 @@ function BadGuy() {
 
 	function Bullet(speed) {
 		this.t = 0;
-		this.sprite = sprites.getSprite('bullet');
+		this.sprite = spriteLibrary.getSprite('bullet');
 		this.travelPath = null;
 
 		this.x = 0;
@@ -237,6 +237,7 @@ function BadGuy() {
 	Bullet.prototype.kill = function() {
 		this.active = false;
 	}
+	
 	function CollisionEngine() {
 
 	}
@@ -247,10 +248,10 @@ function BadGuy() {
 		var a_y = a.x + (game.height/2);
 		var a_width = a.height;
 		var a_height = a.width;
-
 		var b_x = b.y + (game.width/2);
 		var b_y = (b.x * -1) + (game.height/2) - b.height;	
 
+		// TODO: does this return a boolean or a truth/falsy.
 		return a_x < b_x + b.width &&
 				   a_x + a.width > b_x &&
 				   a_y < b_y + b.height &&
@@ -365,7 +366,7 @@ function BadGuy() {
 
 	function Explosion() {
 		this.t = 0;
-		this.animation = sprites.getAnimation('explosion');
+		this.animation = spriteLibrary.getAnimation('explosion');
 		this.rotation = 0;
 		this.playAudio = false;
 
@@ -379,7 +380,7 @@ function BadGuy() {
 	};
 
 	Explosion.prototype.draw = function(context) {
-		var spriteFrame = sprites.getAnimationFrame(this.animation, this.t);
+		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
 
 		if(spriteFrame) {
 			context.save();
@@ -413,7 +414,7 @@ function BadGuy() {
 function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
-		this.sprite = sprites.getSprite('goodGuyShip');
+		this.sprite = spriteLibrary.getSprite('goodGuyShip');
 
 		this.active = true;
 		this.width = 50 * game.scale;
@@ -432,7 +433,7 @@ function GoodGuy() {
 
 		if(!this.exploding) {
 			if (keydown.up) {    
-				this.x -= distance;        
+				this.x -= distance;    
 	      if (this.x < (game.height/2) * -1) {
 					this.x = game.height/2 * -1;
 				}
@@ -512,6 +513,7 @@ function GoodGuy() {
 			this.explosion.explode(this);
 		}
 	};
+
 	function Level() {
 		this.game = null;
 		this.active = true;
@@ -542,7 +544,6 @@ function GoodGuy() {
 	};
 
 	Level.prototype.updateState = function(delta) {
-
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
@@ -555,7 +556,6 @@ function GoodGuy() {
 	}
 
 	Level.prototype.draw = function(context) {
-
 		this.background.draw(context);
 
 		if(game.goodGuys.length <= 0) { 
@@ -753,7 +753,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
 		soundLibrary = new SoundLibrary();
 		soundLibrary.initialize();
-		sprites = new Sprites();
+		spriteLibrary = new SpriteLibrary();
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
@@ -834,4 +834,4 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
 	window.game = new Game();
 
-})(window);
+})(window, undefined);

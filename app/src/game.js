@@ -23,7 +23,7 @@
 
 		soundLibrary = new SoundLibrary();
 		soundLibrary.initialize();
-		sprites = new Sprites();
+		spriteLibrary = new SpriteLibrary();
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;

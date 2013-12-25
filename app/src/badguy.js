@@ -1,7 +1,7 @@
 function BadGuy() {
 		this.explosion = null;
 		this.t = 0;
-		this.sprite = sprites.getSprite('badGuyShip');
+		this.sprite = spriteLibrary.getSprite('badGuyShip');
 		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
