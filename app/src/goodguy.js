@@ -20,7 +20,7 @@ function GoodGuy() {
 
 		if(!this.exploding) {
 			if (keydown.up) {    
-				this.x -= distance;        
+				this.x -= distance;    
 	      if (this.x < (game.height/2) * -1) {
 					this.x = game.height/2 * -1;
 				}

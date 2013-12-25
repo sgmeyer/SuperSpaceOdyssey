@@ -40,3 +40,4 @@
 	Bullet.prototype.kill = function() {
 		this.active = false;
 	}
+	

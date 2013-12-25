@@ -28,7 +28,6 @@
 	};
 
 	Level.prototype.updateState = function(delta) {
-
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
@@ -41,7 +40,6 @@
 	}
 
 	Level.prototype.draw = function(context) {
-
 		this.background.draw(context);
 
 		if(game.goodGuys.length <= 0) { 
