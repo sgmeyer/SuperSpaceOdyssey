@@ -701,10 +701,10 @@ TravelPath.generateRandomPath = function(gameHeight) {
   };
 
 function SoundOptionsMenu() {
-
+  this.active = true;
 };
 
-SoundOptionsMenu.prototype.update = function(delta) {
+SoundOptionsMenu.prototype.updateState = function(delta) {
 
 };
 
@@ -714,6 +714,10 @@ SoundOptionsMenu.prototype.draw = function(context) {
     context.textAlign = "center";
     context.fillText("Sound Options", game.width/2, 50); 
 };
+
+SoundOptionsMenu.prototype.end = function () {
+  this.active = false;
+}
 
   function StartMenu() {
     this.active = true;
@@ -756,7 +760,7 @@ SoundOptionsMenu.prototype.draw = function(context) {
 
   StartMenu.prototype.end = function() {
     if(this.selectedOption === 2) {
-      game.scenes.splice(1, 0, new SoundOptionsMenu());
+      game.scenes.splice(1, 1, new SoundOptionsMenu());
     }
 
     this.active = false;

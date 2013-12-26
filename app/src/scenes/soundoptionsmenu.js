@@ -1,8 +1,8 @@
 function SoundOptionsMenu() {
-
+  this.active = true;
 };
 
-SoundOptionsMenu.prototype.update = function(delta) {
+SoundOptionsMenu.prototype.updateState = function(delta) {
 
 };
 
@@ -12,3 +12,7 @@ SoundOptionsMenu.prototype.draw = function(context) {
     context.textAlign = "center";
     context.fillText("Sound Options", game.width/2, 50); 
 };
+
+SoundOptionsMenu.prototype.end = function () {
+  this.active = false;
+}

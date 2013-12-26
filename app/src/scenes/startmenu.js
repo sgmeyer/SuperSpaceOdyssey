@@ -39,7 +39,7 @@
 
   StartMenu.prototype.end = function() {
     if(this.selectedOption === 2) {
-      game.scenes.splice(1, 0, new SoundOptionsMenu());
+      game.scenes.splice(1, 1, new SoundOptionsMenu());
     }
 
     this.active = false;
