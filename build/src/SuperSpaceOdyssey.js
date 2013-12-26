@@ -862,7 +862,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
   };
 
   StartMenu.prototype.end = function() {
-    if(this.selectedOption === 2) {
+    if(this.optionsButton.active) {
       game.scenes.splice(1, 0, new SoundOptionsMenu());
     }
 
