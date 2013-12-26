@@ -65,7 +65,7 @@ module.exports = function(grunt) {
         src: ['app/src/intro.js', 'app/src/soundlibrary.js', 'app/src/spritelibrary.js', 'app/src/background.js',
               'app/src/badguy.js', 'app/src/bullet.js', 'app/src/collision.js', 
               'app/src/controls.js', 'app/src/keyboardgamecontroller.js',
-              'app/src/touchgamecontroller.js', 'app/src/explosion.js', 'app/src/goodguy.js', 
+              'app/src/touchgamecontroller.js', 'app/src/explosion.js', 'app/src/goodguy.js', 'app/src/controls/*.js',
               'app/src/level.js', 'app/src/math.js', 'app/src/scenes/*.js', 
               'app/src/game.js', 'app/src/outro.js'],
         dest: 'build/src/<%= pkg.name %>.js'

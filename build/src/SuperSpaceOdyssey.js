@@ -514,6 +514,48 @@ function GoodGuy() {
 		}
 	};
 
+  // TODO: refactor to use configuration instead of many parameters.
+  function RangeSelector(min, max, current, x, y, label) {
+    this.min = min || 0;
+    this.max = max || 1;
+    this.current = current || this.min;
+    this.x = x || 0;
+    this.y = y || 0;
+    this.label = label || '';
+    this.active = false;
+  }
+
+  RangeSelector.prototype.setActive = function(isActive) {
+    this.active = isActive ? true : false;
+  }
+
+  RangeSelector.prototype.adjust = function(adjustedValue) {
+    var val = adjustedValue || 0;
+    this.current = this.current + val;
+
+    if(this.current > this.max) { this.current = this.max; }
+    else if (this.current < this.min) { this.current = this.min }
+  }
+
+  RangeSelector.prototype.draw = function(context) {
+    var startingPoint = this.x;
+    context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
+    context.font = '15px Georgia';
+    context.textAlign = 'left';
+    context.fillText(this.label, 188, startingPoint);
+
+    context.beginPath();
+    context.rect(this.y, startingPoint + 10, 200, 20);
+    context.strokeStyle = this.active ? 'white' : 'grey';
+    context.stroke();
+
+    context.beginPath();
+    context.rect(this.y+2, startingPoint + 12, 196*this.current, 16);
+    context.fillStyle = this.active ? 'red' : 'grey';
+    context.fill();
+    context.strokeStyle = this.active ? 'red' : 'grey';
+    context.stroke();
+  };
 	function Level() {
 		this.game = null;
 		this.active = true;
@@ -702,21 +744,41 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
 function SoundOptionsMenu() {
   this.active = true;
-  this.musicVolume = 1;
-  this.soundEffectsVolume = 1;
+  this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
+  this.soundEffectsVolume = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
+  this.selectedOption = 1;
 };
 
 SoundOptionsMenu.prototype.updateState = function(delta) {
   if(keydown.left) {
-    this.musicVolume -= .1;
-    this.musicVolume = Math.max(this.musicVolume, 0);
+    if(this.selectedOption === 1) {
+      this.musicVolumeControl.adjust(-.1);
+    } else if (this.selectedOption === 2) {
+      this.soundEffectsVolume.adjust(-.1);
+    }
     keydown.left = false;
   }
   if(keydown.right) {
-    this.musicVolume += .1;
-    this.musicVolume = Math.min(this.musicVolume, 1);
+    if(this.selectedOption === 1) {
+      this.musicVolumeControl.adjust(.1);
+    } else if (this.selectedOption === 2) {
+      this.soundEffectsVolume.adjust(.1);
+    }
     keydown.right = false;
   }
+  if(keydown.down) {
+    this.selectedOption++;
+    if(this.selectedOption > 2) { this.selectedOption = 1; }
+    keydown.down = false;
+  }
+  if(keydown.up) {
+    this.selectedOption--;
+    if(this.selectedOption < 1) { this.selectedOption = 2; }
+    keydown.up = false;
+  }
+
+  this.musicVolumeControl.setActive(this.selectedOption === 1);
+  this.soundEffectsVolume.setActive(this.selectedOption === 2);
 };
 
 SoundOptionsMenu.prototype.draw = function(context) {
@@ -725,23 +787,8 @@ SoundOptionsMenu.prototype.draw = function(context) {
   context.textAlign = 'center';
   context.fillText('Sound Options', game.width/2, 50); 
 
-  var startingPoint = 100;
-  context.fillStyle = '#FFFFFF';
-  context.font = '15px Georgia';
-  context.textAlign = 'left';
-  context.fillText('Music Volume', 188, startingPoint);
-
-  context.beginPath();
-  context.rect(188, startingPoint + 10, 200, 20);
-  context.strokeStyle = 'white';
-  context.stroke();
-
-  context.beginPath();
-  context.rect(190, startingPoint + 12, 196*this.musicVolume, 16);
-  context.fillStyle = 'red';
-  context.fill();
-  context.strokeStyle = 'red';
-  context.stroke();
+  this.musicVolumeControl.draw(context);
+  this.soundEffectsVolume.draw(context);
 };
 
 SoundOptionsMenu.prototype.end = function () {

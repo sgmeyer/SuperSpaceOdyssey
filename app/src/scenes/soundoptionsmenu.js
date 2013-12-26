@@ -1,20 +1,40 @@
 function SoundOptionsMenu() {
   this.active = true;
-  this.musicVolume = 1;
-  this.soundEffectsVolume = 1;
+  this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
+  this.soundEffectsVolume = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
+  this.selectedOption = 1;
 };
 
 SoundOptionsMenu.prototype.updateState = function(delta) {
   if(keydown.left) {
-    this.musicVolume -= .1;
-    this.musicVolume = Math.max(this.musicVolume, 0);
+    if(this.selectedOption === 1) {
+      this.musicVolumeControl.adjust(-.1);
+    } else if (this.selectedOption === 2) {
+      this.soundEffectsVolume.adjust(-.1);
+    }
     keydown.left = false;
   }
   if(keydown.right) {
-    this.musicVolume += .1;
-    this.musicVolume = Math.min(this.musicVolume, 1);
+    if(this.selectedOption === 1) {
+      this.musicVolumeControl.adjust(.1);
+    } else if (this.selectedOption === 2) {
+      this.soundEffectsVolume.adjust(.1);
+    }
     keydown.right = false;
   }
+  if(keydown.down) {
+    this.selectedOption++;
+    if(this.selectedOption > 2) { this.selectedOption = 1; }
+    keydown.down = false;
+  }
+  if(keydown.up) {
+    this.selectedOption--;
+    if(this.selectedOption < 1) { this.selectedOption = 2; }
+    keydown.up = false;
+  }
+
+  this.musicVolumeControl.setActive(this.selectedOption === 1);
+  this.soundEffectsVolume.setActive(this.selectedOption === 2);
 };
 
 SoundOptionsMenu.prototype.draw = function(context) {
@@ -23,23 +43,8 @@ SoundOptionsMenu.prototype.draw = function(context) {
   context.textAlign = 'center';
   context.fillText('Sound Options', game.width/2, 50); 
 
-  var startingPoint = 100;
-  context.fillStyle = '#FFFFFF';
-  context.font = '15px Georgia';
-  context.textAlign = 'left';
-  context.fillText('Music Volume', 188, startingPoint);
-
-  context.beginPath();
-  context.rect(188, startingPoint + 10, 200, 20);
-  context.strokeStyle = 'white';
-  context.stroke();
-
-  context.beginPath();
-  context.rect(190, startingPoint + 12, 196*this.musicVolume, 16);
-  context.fillStyle = 'red';
-  context.fill();
-  context.strokeStyle = 'red';
-  context.stroke();
+  this.musicVolumeControl.draw(context);
+  this.soundEffectsVolume.draw(context);
 };
 
 SoundOptionsMenu.prototype.end = function () {
