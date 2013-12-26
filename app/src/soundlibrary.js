@@ -1,4 +1,6 @@
 	function SoundLibrary() {
+		this.musicVolume = 1;
+		this.soundEffectsVolume = 1;
 	}
 
 	SoundLibrary.prototype.initialize = function() {
@@ -15,13 +17,16 @@
 	}
 
 	SoundLibrary.prototype.playExplosion = function() {
-		createjs.Sound.play('explosion');
+		var explosion = createjs.Sound.play('explosion');
+		explosion.volume = this.soundEffectsVolume;
 	}
 
 	SoundLibrary.prototype.playThemeSong = function() {
-		createjs.Sound.play('themeSong');
+		var music = createjs.Sound.play('themeSong');
+		music.volume = this.musicVolume;
 	}
 	
 	SoundLibrary.prototype.playLaser = function() {
-		createjs.Sound.play('lazer');
+		var lazer = createjs.Sound.play('lazer');
+		lazer.volume = this.soundEffectsVolume;
 	}

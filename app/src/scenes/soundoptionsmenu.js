@@ -1,7 +1,7 @@
   function SoundOptionsMenu() {
     this.active = true;
     this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
-    this.soundEffectsVolume = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
+    this.soundEffectsVolumeControl = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
     this.backButton = new LinkButton(188, 220, 'Back');
     this.selectedOption = 1;
   };
@@ -11,7 +11,7 @@
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(-.1);
       } else if (this.selectedOption === 2) {
-        this.soundEffectsVolume.adjust(-.1);
+        this.soundEffectsVolumeControl.adjust(-.1);
       }
       keydown.left = false;
     }
@@ -19,7 +19,7 @@
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(.1);
       } else if (this.selectedOption === 2) {
-        this.soundEffectsVolume.adjust(.1);
+        this.soundEffectsVolumeControl.adjust(.1);
       }
       keydown.right = false;
     }
@@ -39,7 +39,7 @@
     }
 
     this.musicVolumeControl.setActive(this.selectedOption === 1);
-    this.soundEffectsVolume.setActive(this.selectedOption === 2);
+    this.soundEffectsVolumeControl.setActive(this.selectedOption === 2);
     this.backButton.setActive(this.selectedOption === 3);
   };
 
@@ -50,11 +50,13 @@
     context.fillText('Sound Options', game.width/2, 50); 
 
     this.musicVolumeControl.draw(context);
-    this.soundEffectsVolume.draw(context);
+    this.soundEffectsVolumeControl.draw(context);
     this.backButton.draw(context);
   };
 
   SoundOptionsMenu.prototype.end = function () {
     game.scenes.splice(1, 0, new StartMenu());
+    soundLibrary.musicVolume = this.musicVolumeControl.current;
+    soundLibrary.soundEffectsVolume = this.soundEffectsVolumeControl.current;
     this.active = false;
   };
