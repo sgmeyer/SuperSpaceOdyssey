@@ -2,7 +2,7 @@
     this.active = true;
     this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
     this.soundEffectsVolume = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
-    this.backButton = new LinkButton(220, 188, 'Back');
+    this.backButton = new LinkButton(188, 220, 'Back');
     this.selectedOption = 1;
   };
 

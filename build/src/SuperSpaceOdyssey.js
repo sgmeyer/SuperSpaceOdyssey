@@ -514,10 +514,11 @@ function GoodGuy() {
 		}
 	};
 
-  function LinkButton(x, y, label) {
+  function LinkButton(x, y, label, textAlign) {
     this.x = x || 0;
     this.y = y || 0;
     this.label = label || '';
+    this.textAlign = textAlign || 'left';
     this.active = false;
   }
 
@@ -529,8 +530,8 @@ function GoodGuy() {
 
     context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
     context.font = '15px Georgia';
-    context.textAlign = 'left';
-    context.fillText(this.label, this.y, this.x);
+    context.textAlign = this.textAlign;
+    context.fillText(this.label, this.x, this.y);
   }
 
   // TODO: refactor to use configuration instead of many parameters.
@@ -766,7 +767,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
     this.active = true;
     this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
     this.soundEffectsVolume = new RangeSelector(0, 1, 1, 160, 188, 'Sound Effects Volume');
-    this.backButton = new LinkButton(220, 188, 'Back');
+    this.backButton = new LinkButton(188, 220, 'Back');
     this.selectedOption = 1;
   };
 
@@ -826,12 +827,14 @@ TravelPath.generateRandomPath = function(gameHeight) {
   function StartMenu() {
     this.active = true;
     this.selectedOption = 1;
+
+    this.startButton = new LinkButton(game.width/2, game.height/2+50, 'Start Game', 'center');
+    this.optionsButton = new LinkButton(game.width/2, game.height/2 + 70, 'Options', 'center');
   };
 
   StartMenu.prototype.updateState = function (delta) {
     if(keydown.space) {
       this.end();
-      // Prevents holding down the key to shoot frequently.
       keydown.space = false;
     }
     if(keydown.up || keydown.down) {
@@ -843,6 +846,9 @@ TravelPath.generateRandomPath = function(gameHeight) {
         this.selectedOption = 1;
       }
     }
+
+    this.startButton.setActive(this.selectedOption === 1);
+    this.optionsButton.setActive(this.selectedOption === 2);
   };
 
   StartMenu.prototype.draw = function (context) {   
@@ -851,15 +857,8 @@ TravelPath.generateRandomPath = function(gameHeight) {
     context.textAlign = "center";
     context.fillText("Super Space Odyssey", game.width/2, game.height/2-20); 
 
-    context.fillStyle = this.selectedOption === 1 ? "#FFFFFF" : "#777777"; 
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Start Game", game.width/2, game.height/2 + 50);
-
-    context.fillStyle = this.selectedOption === 2 ? "#FFFFFF" : "#777777";
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Options", game.width/2, game.height/2 + 70);
+    this.startButton.draw(context);
+    this.optionsButton.draw(context);
   };
 
   StartMenu.prototype.end = function() {

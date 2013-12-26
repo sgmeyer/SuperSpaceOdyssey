@@ -1,7 +1,8 @@
-  function LinkButton(x, y, label) {
+  function LinkButton(x, y, label, textAlign) {
     this.x = x || 0;
     this.y = y || 0;
     this.label = label || '';
+    this.textAlign = textAlign || 'left';
     this.active = false;
   }
 
@@ -13,6 +14,6 @@
 
     context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
     context.font = '15px Georgia';
-    context.textAlign = 'left';
-    context.fillText(this.label, this.y, this.x);
+    context.textAlign = this.textAlign;
+    context.fillText(this.label, this.x, this.y);
   }

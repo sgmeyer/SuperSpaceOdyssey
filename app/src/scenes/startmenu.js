@@ -1,12 +1,14 @@
   function StartMenu() {
     this.active = true;
     this.selectedOption = 1;
+
+    this.startButton = new LinkButton(game.width/2, game.height/2+50, 'Start Game', 'center');
+    this.optionsButton = new LinkButton(game.width/2, game.height/2 + 70, 'Options', 'center');
   };
 
   StartMenu.prototype.updateState = function (delta) {
     if(keydown.space) {
       this.end();
-      // Prevents holding down the key to shoot frequently.
       keydown.space = false;
     }
     if(keydown.up || keydown.down) {
@@ -18,6 +20,9 @@
         this.selectedOption = 1;
       }
     }
+
+    this.startButton.setActive(this.selectedOption === 1);
+    this.optionsButton.setActive(this.selectedOption === 2);
   };
 
   StartMenu.prototype.draw = function (context) {   
@@ -26,15 +31,8 @@
     context.textAlign = "center";
     context.fillText("Super Space Odyssey", game.width/2, game.height/2-20); 
 
-    context.fillStyle = this.selectedOption === 1 ? "#FFFFFF" : "#777777"; 
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Start Game", game.width/2, game.height/2 + 50);
-
-    context.fillStyle = this.selectedOption === 2 ? "#FFFFFF" : "#777777";
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Options", game.width/2, game.height/2 + 70);
+    this.startButton.draw(context);
+    this.optionsButton.draw(context);
   };
 
   StartMenu.prototype.end = function() {
