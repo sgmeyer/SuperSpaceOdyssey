@@ -1,6 +1,16 @@
 	function SoundLibrary() {
 		this.musicVolume = 1;
 		this.soundEffectsVolume = 1;
+		this.currentMusic = null;
+	}
+
+	SoundLibrary.prototype.setMusicVolume = function(volume) {
+		this.musicVolume = volume || this.musicVolume;
+		this.currentMusic.setVolume(volume)
+	}
+
+	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
+		this.soundEffectsVolume = volume || this.soundEffectsVolume;
 	}
 
 	SoundLibrary.prototype.initialize = function() {
@@ -18,15 +28,15 @@
 
 	SoundLibrary.prototype.playExplosion = function() {
 		var explosion = createjs.Sound.play('explosion');
-		explosion.volume = this.soundEffectsVolume;
+		explosion.setVolume(this.soundEffectsVolume);
 	}
 
 	SoundLibrary.prototype.playThemeSong = function() {
-		var music = createjs.Sound.play('themeSong');
-		music.volume = this.musicVolume;
+		this.currentMusic = createjs.Sound.play('themeSong');
+		this.currentMusic.setVolume(this.musicVolume);
 	}
 	
 	SoundLibrary.prototype.playLaser = function() {
 		var lazer = createjs.Sound.play('lazer');
-		lazer.volume = this.soundEffectsVolume;
+		lazer.setVolume(this.soundEffectsVolume);
 	}

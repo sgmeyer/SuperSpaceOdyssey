@@ -10,16 +10,22 @@
     if(keydown.left) {
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(-.1);
+        soundLibrary.setMusicVolume(this.musicVolumeControl.current);
       } else if (this.selectedOption === 2) {
         this.soundEffectsVolumeControl.adjust(-.1);
+        soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
+        soundLibrary.playLaser();
       }
       keydown.left = false;
     }
     if(keydown.right) {
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(.1);
+        soundLibrary.setMusicVolume(this.musicVolumeControl.current);
       } else if (this.selectedOption === 2) {
         this.soundEffectsVolumeControl.adjust(.1);
+        soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
+        soundLibrary.playLaser();
       }
       keydown.right = false;
     }
@@ -56,7 +62,5 @@
 
   SoundOptionsMenu.prototype.end = function () {
     game.scenes.splice(1, 0, new StartMenu());
-    soundLibrary.musicVolume = this.musicVolumeControl.current;
-    soundLibrary.soundEffectsVolume = this.soundEffectsVolumeControl.current;
     this.active = false;
   };
