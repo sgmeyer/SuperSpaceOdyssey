@@ -1,17 +1,17 @@
   function GameOverMenu() {
     this.active = true;
+    var locationItem1 = Variables.mainItemLocation1();
+    this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
   };
 
   GameOverMenu.prototype.draw = function (context) {
-    context.fillStyle = "#FF0000";
-    context.font = "40px Georgia";
-    context.textAlign = "center";
-    context.fillText("Game Over: You Suck", game.width/2, game.height/2-20); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign();
 
-    context.fillStyle = "#FFFFFF";
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Start Game", game.width/2, game.height/2 + 50);
+    var titleLocation = Variables.headingTitleLocation();
+    context.fillText("Game Over: You Suck", titleLocation.x, titleLocation.y); 
+    this.startButton.draw(context);
   };
 
   GameOverMenu.prototype.updateState = function (delta) {

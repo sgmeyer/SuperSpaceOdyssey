@@ -13,6 +13,22 @@
     return 'center';
   }
 
+  Variables.headingLocation = function() {
+    return new Point(game.width/2, 50);
+  }
+
   Variables.headingTitleLocation = function() {
     return new Point(game.width/2, game.height/2-20);
+  }
+
+  Variables.mainItemTextAlign = function() {
+    return 'center';
+  }
+
+  Variables.mainItemLocation1 = function() {
+    return new Point(game.width/2, game.height/2+50);
+  }
+
+  Variables.mainItemLocation2 = function() {
+    return new Point(game.width/2, game.height/2+70);
   }

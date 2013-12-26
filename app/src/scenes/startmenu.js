@@ -2,8 +2,10 @@
     this.active = true;
     this.selectedOption = 1;
 
-    this.startButton = new LinkButton(game.width/2, game.height/2+50, 'Start Game', 'center');
-    this.optionsButton = new LinkButton(game.width/2, game.height/2 + 70, 'Options', 'center');
+    var locationItem1 = Variables.mainItemLocation1();
+    var locationItem2 = Variables.mainItemLocation2();
+    this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
+    this.optionsButton = new LinkButton(locationItem2.x, locationItem2.y, 'Options', Variables.mainItemTextAlign);
   };
 
   StartMenu.prototype.updateState = function (delta) {
@@ -28,10 +30,9 @@
   StartMenu.prototype.draw = function (context) {   
     context.fillStyle = Variables.headingFontColor();
     context.font = Variables.headingFont();
-    context.textAlign = Variables.headingTextAlign;
+    context.textAlign = Variables.headingTextAlign();
     var titleLocation = Variables.headingTitleLocation();
     context.fillText("Super Space Odyssey", titleLocation.x, titleLocation.y);
-
     this.startButton.draw(context);
     this.optionsButton.draw(context);
   };

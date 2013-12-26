@@ -3,7 +3,7 @@
     this.y = y || 0;
     this.label = label || '';
     this.textAlign = textAlign || 'left';
-    this.active = false;
+    this.active = true;
   }
 
   LinkButton.prototype.setActive = function(isActive) {
@@ -11,7 +11,6 @@
   }
 
   LinkButton.prototype.draw = function (context) {
-
     context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
     context.font = '15px Georgia';
     context.textAlign = this.textAlign;

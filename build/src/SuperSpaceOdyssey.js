@@ -436,7 +436,7 @@ function GoodGuy() {
 		this.height = 50 * game.scale;
 		this.x = (this.height/2*-1);
 		this.y = ((game.width/2)-this.width); 
-		this.speed = 4;
+		this.speed = 8;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
@@ -534,7 +534,7 @@ function GoodGuy() {
     this.y = y || 0;
     this.label = label || '';
     this.textAlign = textAlign || 'left';
-    this.active = false;
+    this.active = true;
   }
 
   LinkButton.prototype.setActive = function(isActive) {
@@ -542,7 +542,6 @@ function GoodGuy() {
   }
 
   LinkButton.prototype.draw = function (context) {
-
     context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
     context.font = '15px Georgia';
     context.textAlign = this.textAlign;
@@ -752,18 +751,18 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   function GameOverMenu() {
     this.active = true;
+    var locationItem1 = Variables.mainItemLocation1();
+    this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
   };
 
   GameOverMenu.prototype.draw = function (context) {
-    context.fillStyle = "#FF0000";
-    context.font = "40px Georgia";
-    context.textAlign = "center";
-    context.fillText("Game Over: You Suck", game.width/2, game.height/2-20); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign();
 
-    context.fillStyle = "#FFFFFF";
-    context.font = "15px Georgia";
-    context.textAlign = "center";
-    context.fillText("Start Game", game.width/2, game.height/2 + 50);
+    var titleLocation = Variables.headingTitleLocation();
+    context.fillText("Game Over: You Suck", titleLocation.x, titleLocation.y); 
+    this.startButton.draw(context);
   };
 
   GameOverMenu.prototype.updateState = function (delta) {
@@ -854,10 +853,11 @@ TravelPath.generateRandomPath = function(gameHeight) {
   };
 
   SoundOptionsMenu.prototype.draw = function(context) {
-    context.fillStyle = '#FF0000';
-    context.font = '40px Georgia';
-    context.textAlign = 'center';
-    context.fillText('Sound Options', game.width/2, 50); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign();
+    var headingLocation = Variables.headingLocation();
+    context.fillText('Sound Options', headingLocation.x, headingLocation.y); 
 
     this.musicVolumeControl.draw(context);
     this.soundEffectsVolumeControl.draw(context);
@@ -873,8 +873,10 @@ TravelPath.generateRandomPath = function(gameHeight) {
     this.active = true;
     this.selectedOption = 1;
 
-    this.startButton = new LinkButton(game.width/2, game.height/2+50, 'Start Game', 'center');
-    this.optionsButton = new LinkButton(game.width/2, game.height/2 + 70, 'Options', 'center');
+    var locationItem1 = Variables.mainItemLocation1();
+    var locationItem2 = Variables.mainItemLocation2();
+    this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
+    this.optionsButton = new LinkButton(locationItem2.x, locationItem2.y, 'Options', Variables.mainItemTextAlign);
   };
 
   StartMenu.prototype.updateState = function (delta) {
@@ -899,10 +901,9 @@ TravelPath.generateRandomPath = function(gameHeight) {
   StartMenu.prototype.draw = function (context) {   
     context.fillStyle = Variables.headingFontColor();
     context.font = Variables.headingFont();
-    context.textAlign = Variables.headingTextAlign;
+    context.textAlign = Variables.headingTextAlign();
     var titleLocation = Variables.headingTitleLocation();
     context.fillText("Super Space Odyssey", titleLocation.x, titleLocation.y);
-
     this.startButton.draw(context);
     this.optionsButton.draw(context);
   };
@@ -932,8 +933,24 @@ TravelPath.generateRandomPath = function(gameHeight) {
     return 'center';
   }
 
+  Variables.headingLocation = function() {
+    return new Point(game.width/2, 50);
+  }
+
   Variables.headingTitleLocation = function() {
     return new Point(game.width/2, game.height/2-20);
+  }
+
+  Variables.mainItemTextAlign = function() {
+    return 'center';
+  }
+
+  Variables.mainItemLocation1 = function() {
+    return new Point(game.width/2, game.height/2+50);
+  }
+
+  Variables.mainItemLocation2 = function() {
+    return new Point(game.width/2, game.height/2+70);
   }
 
 	function Game() {

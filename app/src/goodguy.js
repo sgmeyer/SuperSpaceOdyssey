@@ -8,7 +8,7 @@ function GoodGuy() {
 		this.height = 50 * game.scale;
 		this.x = (this.height/2*-1);
 		this.y = ((game.width/2)-this.width); 
-		this.speed = 4;
+		this.speed = 8;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;

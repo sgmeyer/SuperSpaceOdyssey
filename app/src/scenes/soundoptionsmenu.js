@@ -50,10 +50,11 @@
   };
 
   SoundOptionsMenu.prototype.draw = function(context) {
-    context.fillStyle = '#FF0000';
-    context.font = '40px Georgia';
-    context.textAlign = 'center';
-    context.fillText('Sound Options', game.width/2, 50); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign();
+    var headingLocation = Variables.headingLocation();
+    context.fillText('Sound Options', headingLocation.x, headingLocation.y); 
 
     this.musicVolumeControl.draw(context);
     this.soundEffectsVolumeControl.draw(context);
