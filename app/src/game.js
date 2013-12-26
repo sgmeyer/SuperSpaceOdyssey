@@ -20,9 +20,7 @@
 		this.height = height || this.height;
 		this.width = width || this.width;
 
-		soundLibrary = new SoundLibrary();
-		soundLibrary.initialize();
-		spriteLibrary = new SpriteLibrary();
+		
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
@@ -65,6 +63,7 @@
 
 	Game.prototype.initializeGameStart = function() {
 		this.scenes = [];
+		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
 		var lvl = new Level();

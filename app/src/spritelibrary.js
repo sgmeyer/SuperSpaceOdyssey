@@ -29,6 +29,7 @@ function SpriteLibrary() {
       image: explosionImage
     }
   ];
+  this.isLoadComplete = true;
 }
 
 SpriteLibrary.prototype.getSprite = function(id) {

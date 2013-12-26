@@ -9,6 +9,18 @@
 		this.musicVolume = 1;
 		this.soundEffectsVolume = 1;
 		this.currentMusic = null;
+		this.isLoadComplete = false;
+
+		var audioPath = 'sound/';
+		var manifest = [
+		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
+		    {id:'lazer', src:'laser1.wav'},
+		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		];
+
+		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
+		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+  	createjs.Sound.registerManifest(manifest, audioPath);
 	}
 
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
@@ -18,19 +30,6 @@
 
 	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
 		this.soundEffectsVolume = volume || this.soundEffectsVolume;
-	}
-
-	SoundLibrary.prototype.initialize = function() {
-		var audioPath = 'sound/';
-		var manifest = [
-		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-		    {id:'lazer', src:'laser1.wav'},
-		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
-		];
-
-		createjs.Sound.addEventListener("fileload", function(event) { soundLibrary.playThemeSong(); });
-		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
-  	createjs.Sound.registerManifest(manifest, audioPath);
 	}
 
 	SoundLibrary.prototype.playExplosion = function() {
@@ -78,6 +77,7 @@ function SpriteLibrary() {
       image: explosionImage
     }
   ];
+  this.isLoadComplete = true;
 }
 
 SpriteLibrary.prototype.getSprite = function(id) {
@@ -778,6 +778,30 @@ TravelPath.generateRandomPath = function(gameHeight) {
     game.initializeGameReset();
   };
 
+  function LoadingMenu() {
+    this.active = true;
+  
+    soundLibrary = new SoundLibrary();
+    spriteLibrary = new SpriteLibrary();
+  }
+
+  LoadingMenu.prototype.updateState = function(delta) {
+    if(soundLibrary.isLoadComplete && spriteLibrary.isLoadComplete) {
+      this.end();
+    }
+  }
+
+  LoadingMenu.prototype.draw = function(context) {
+    context.fillStyle = "#FF0000";
+    context.font = "40px Georgia";
+    context.textAlign = "center";
+    context.fillText("Loading...", game.width/2, game.height/2-20); 
+  }
+
+  LoadingMenu.prototype.end = function() {
+    this.active = false;
+  }
+
   function SoundOptionsMenu() {
     this.active = true;
     this.musicVolumeControl = new RangeSelector(0, 1, 1, 100, 188, 'Music Volume');
@@ -885,6 +909,8 @@ TravelPath.generateRandomPath = function(gameHeight) {
   StartMenu.prototype.end = function() {
     if(this.optionsButton.active) {
       game.scenes.splice(1, 0, new SoundOptionsMenu());
+    } else {
+      soundLibrary.playThemeSong();
     }
 
     this.active = false;
@@ -912,9 +938,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.height = height || this.height;
 		this.width = width || this.width;
 
-		soundLibrary = new SoundLibrary();
-		soundLibrary.initialize();
-		spriteLibrary = new SpriteLibrary();
+		
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
@@ -957,6 +981,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
 	Game.prototype.initializeGameStart = function() {
 		this.scenes = [];
+		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
 		var lvl = new Level();

@@ -2,6 +2,18 @@
 		this.musicVolume = 1;
 		this.soundEffectsVolume = 1;
 		this.currentMusic = null;
+		this.isLoadComplete = false;
+
+		var audioPath = 'sound/';
+		var manifest = [
+		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
+		    {id:'lazer', src:'laser1.wav'},
+		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		];
+
+		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
+		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+  	createjs.Sound.registerManifest(manifest, audioPath);
 	}
 
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
@@ -11,19 +23,6 @@
 
 	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
 		this.soundEffectsVolume = volume || this.soundEffectsVolume;
-	}
-
-	SoundLibrary.prototype.initialize = function() {
-		var audioPath = 'sound/';
-		var manifest = [
-		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-		    {id:'lazer', src:'laser1.wav'},
-		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
-		];
-
-		createjs.Sound.addEventListener("fileload", function(event) { soundLibrary.playThemeSong(); });
-		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
-  	createjs.Sound.registerManifest(manifest, audioPath);
 	}
 
 	SoundLibrary.prototype.playExplosion = function() {

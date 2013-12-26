@@ -38,6 +38,8 @@
   StartMenu.prototype.end = function() {
     if(this.optionsButton.active) {
       game.scenes.splice(1, 0, new SoundOptionsMenu());
+    } else {
+      soundLibrary.playThemeSong();
     }
 
     this.active = false;
