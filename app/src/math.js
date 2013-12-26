@@ -1,6 +1,6 @@
-function Point() {
-	this.x = null;
-	this.y = null;
+function Point(x, y) {
+	this.x = x || null;
+	this.y = y || null;
 };
 
 Math.bezier = function(p0, p1, p2, p3, t) {

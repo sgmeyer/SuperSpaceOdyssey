@@ -26,10 +26,11 @@
   };
 
   StartMenu.prototype.draw = function (context) {   
-    context.fillStyle = "#FF0000";
-    context.font = "40px Georgia";
-    context.textAlign = "center";
-    context.fillText("Super Space Odyssey", game.width/2, game.height/2-20); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign;
+    var titleLocation = Variables.headingTitleLocation();
+    context.fillText("Super Space Odyssey", titleLocation.x, titleLocation.y);
 
     this.startButton.draw(context);
     this.optionsButton.draw(context);

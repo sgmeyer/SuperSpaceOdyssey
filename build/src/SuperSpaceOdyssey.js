@@ -658,9 +658,9 @@ function GoodGuy() {
 		}
 	}
 
-function Point() {
-	this.x = null;
-	this.y = null;
+function Point(x, y) {
+	this.x = x || null;
+	this.y = y || null;
 };
 
 Math.bezier = function(p0, p1, p2, p3, t) {
@@ -897,10 +897,11 @@ TravelPath.generateRandomPath = function(gameHeight) {
   };
 
   StartMenu.prototype.draw = function (context) {   
-    context.fillStyle = "#FF0000";
-    context.font = "40px Georgia";
-    context.textAlign = "center";
-    context.fillText("Super Space Odyssey", game.width/2, game.height/2-20); 
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign;
+    var titleLocation = Variables.headingTitleLocation();
+    context.fillText("Super Space Odyssey", titleLocation.x, titleLocation.y);
 
     this.startButton.draw(context);
     this.optionsButton.draw(context);
@@ -915,6 +916,25 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
     this.active = false;
   };
+
+  function Variables() {
+  }
+
+  Variables.headingFontColor = function() {
+    return '#FF0000';
+  }
+
+  Variables.headingFont= function() {
+    return '40px Georgia';
+  }
+
+  Variables.headingTextAlign = function() {
+    return 'center';
+  }
+
+  Variables.headingTitleLocation = function() {
+    return new Point(game.width/2, game.height/2-20);
+  }
 
 	function Game() {
 		this.frameRate = 60;
