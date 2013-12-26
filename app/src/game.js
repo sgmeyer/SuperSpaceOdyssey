@@ -10,9 +10,8 @@
 	}
 
 	Game.prototype.initialize = function (width, height, touchEnabled) {
-
 		if(this.height < this.width) {
-			this.scale = (height || this.height) /  this.height;
+			this.scale = (height || this.height) / this.height;
 		}
 		else {
 			this.scal = (width || this.width) / this.width;

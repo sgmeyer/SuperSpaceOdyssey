@@ -11,7 +11,7 @@
     context.fillStyle = "#FFFFFF";
     context.font = "15px Georgia";
     context.textAlign = "center";
-    context.fillText("Press Spacebar to Start Over", game.width/2, game.height/2 + 50);
+    context.fillText("Start Game", game.width/2, game.height/2 + 50);
   };
 
   GameOverMenu.prototype.updateState = function (delta) {
