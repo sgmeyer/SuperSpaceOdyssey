@@ -26,7 +26,7 @@
     context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
     context.font = '15px Georgia';
     context.textAlign = 'left';
-    context.fillText(this.label, 188, startingPoint);
+    context.fillText(this.label, this.y, startingPoint);
 
     context.beginPath();
     context.rect(this.y, startingPoint + 10, 200, 20);
