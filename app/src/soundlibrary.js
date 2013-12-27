@@ -18,7 +18,10 @@
 
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
 		this.musicVolume = volume || this.musicVolume;
-		this.currentMusic.setVolume(volume)
+
+		if(this.currentMusic) { 
+			this.currentMusic.setVolume(volume);
+		}
 	}
 
 	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {

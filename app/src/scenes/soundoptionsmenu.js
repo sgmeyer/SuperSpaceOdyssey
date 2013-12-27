@@ -8,6 +8,7 @@
 
   SoundOptionsMenu.prototype.updateState = function(delta) {
     if(keydown.left) {
+      keydown.left = false;
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(-.1);
         soundLibrary.setMusicVolume(this.musicVolumeControl.current);
@@ -16,9 +17,9 @@
         soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
         soundLibrary.playLaser();
       }
-      keydown.left = false;
     }
     if(keydown.right) {
+      keydown.right = false;
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(.1);
         soundLibrary.setMusicVolume(this.musicVolumeControl.current);
@@ -27,21 +28,20 @@
         soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
         soundLibrary.playLaser();
       }
-      keydown.right = false;
     }
     if(keydown.down) {
+      keydown.down = false;
       this.selectedOption++;
       if(this.selectedOption > 3) { this.selectedOption = 1; }
-      keydown.down = false;
     }
     if(keydown.up) {
+      keydown.up = false;
       this.selectedOption--;
       if(this.selectedOption < 1) { this.selectedOption = 3; }
-      keydown.up = false;
     }
     if(keydown.space) {
-      if(this.selectedOption === 3) { this.end(); }
       keydown.space = false;
+      if(this.selectedOption === 3) { this.end(); }
     }
 
     this.musicVolumeControl.setActive(this.selectedOption === 1);
