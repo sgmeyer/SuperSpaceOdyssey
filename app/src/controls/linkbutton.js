@@ -2,7 +2,7 @@
     this.x = x || 0;
     this.y = y || 0;
     this.label = label || '';
-    this.textAlign = textAlign || 'left';
+    this.textAlign = textAlign || '';
     this.active = true;
   }
 
@@ -11,8 +11,8 @@
   }
 
   LinkButton.prototype.draw = function (context) {
-    context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
-    context.font = '15px Georgia';
+    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
+    context.font = Variables.optionsFont();
     context.textAlign = this.textAlign;
     context.fillText(this.label, this.x, this.y);
   }

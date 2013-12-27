@@ -32,3 +32,15 @@
   Variables.mainItemLocation2 = function() {
     return new Point(game.width/2, game.height/2+70);
   }
+
+  Variables.optionsFont = function() {
+    return '15px Georgia';
+  }
+
+  Variables.optionsInFocusTextColor = function() {
+    return '#FFFFFF';
+  }
+
+  Variables.optionsOutOfFocusTextColor = function() {
+    return '#777777';
+  }

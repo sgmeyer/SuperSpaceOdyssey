@@ -533,7 +533,7 @@ function GoodGuy() {
     this.x = x || 0;
     this.y = y || 0;
     this.label = label || '';
-    this.textAlign = textAlign || 'left';
+    this.textAlign = textAlign || '';
     this.active = true;
   }
 
@@ -542,8 +542,8 @@ function GoodGuy() {
   }
 
   LinkButton.prototype.draw = function (context) {
-    context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
-    context.font = '15px Georgia';
+    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
+    context.font = Variables.optionsFont();
     context.textAlign = this.textAlign;
     context.fillText(this.label, this.x, this.y);
   }
@@ -951,6 +951,18 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   Variables.mainItemLocation2 = function() {
     return new Point(game.width/2, game.height/2+70);
+  }
+
+  Variables.optionsFont = function() {
+    return '15px Georgia';
+  }
+
+  Variables.optionsInFocusTextColor = function() {
+    return '#FFFFFF';
+  }
+
+  Variables.optionsOutOfFocusTextColor = function() {
+    return '#777777';
   }
 
 	function Game() {
