@@ -44,3 +44,20 @@
   Variables.optionsOutOfFocusTextColor = function() {
     return '#777777';
   }
+
+  Variables.optionsRangeSelectorInFocusBorderColor = function() {
+    return 'white';
+  }
+
+  Variables.optionsRangeSelectorInFocusFillColor = function() {
+    return 'red';
+  }
+
+
+  Variables.optionsRangeSelectorOutOfFocusBorderColor = function() {
+    return 'grey';
+  }
+
+  Variables.optionsRangeSelectorOutOfFocusFillColor = function() {
+    return 'grey';
+  }

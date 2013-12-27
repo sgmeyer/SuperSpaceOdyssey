@@ -23,20 +23,20 @@
 
   RangeSelector.prototype.draw = function(context) {
     var startingPoint = this.x;
-    context.fillStyle = this.active ? '#FFFFFF' : '#777777';;
-    context.font = '15px Georgia';
+    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
+    context.font = Variables.optionsFont();
     context.textAlign = 'left';
     context.fillText(this.label, this.y, startingPoint);
 
     context.beginPath();
     context.rect(this.y, startingPoint + 10, 200, 20);
-    context.strokeStyle = this.active ? 'white' : 'grey';
+    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusBorderColor() : Variables.optionsRangeSelectorOutOfFocusBorderColor();
     context.stroke();
 
     context.beginPath();
     context.rect(this.y+2, startingPoint + 12, 196*this.current, 16);
-    context.fillStyle = this.active ? 'red' : 'grey';
+    context.fillStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
     context.fill();
-    context.strokeStyle = this.active ? 'red' : 'grey';
+    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
     context.stroke();
   };
