@@ -1,12 +1,16 @@
 function SpriteLibrary() {
   var shipImage = new Image();
-  shipImage.src = 'images/shipsall_4.gif'
+  shipImage.src = 'images/shipsall_4.gif';
+
+  var shipImageTransparent = new Image();
+  shipImageTransparent.src = 'images/ships-semi-transparent.png';
 
   var explosionImage = new Image();
   explosionImage.src = 'images/exp2_0.png';
 
   this.staticSprites = [
     {id: 'goodGuyShip', x: 67, y: 123, width: 60, height: 65, image: shipImage},
+    {id: 'goodGuyShipInvincible', x: 67, y: 123, width: 60, height: 65, image: shipImageTransparent},
     {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
     {id: 'bullet', x: 131, y: 70, width: 20, height: 45, image: shipImage}
   ];

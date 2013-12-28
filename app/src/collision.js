@@ -29,19 +29,21 @@
 		    });
 		});
 
-		badGuys.forEach(function(badGuy) {
-			badGuy.shotBullets.forEach(function(bullet){
-		      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
-		    		bullet.kill();
-		    		goodGuy.explode();
-		      }
-		    });
-		});
+		if(goodGuy.invincibilityTimeRemaining <= 0) {
+			badGuys.forEach(function(badGuy) {
+				badGuy.shotBullets.forEach(function(bullet){
+			      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
+			    		bullet.kill();
+			    		goodGuy.explode();
+			      }
+			    });
+			});
 
-		badGuys.forEach(function(badGuy) {
-			if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
-				badGuy.explode();
-				goodGuy.explode();
-			}
-		});
+			badGuys.forEach(function(badGuy) {
+				if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
+					badGuy.explode();
+					goodGuy.explode();
+				}
+			});
+		}
 	};

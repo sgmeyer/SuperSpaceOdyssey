@@ -2,7 +2,6 @@ function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
 		this.sprite = spriteLibrary.getSprite('goodGuyShip');
-
 		this.active = true;
 		this.width = 50 * game.scale;
 		this.height = 50 * game.scale;
@@ -12,9 +11,17 @@ function GoodGuy() {
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
+		this.invincibilityTimeRemaining = 3;
 	}; 
 
 	GoodGuy.prototype.updateState = function(delta) {
+		this.invincibilityTimeRemaining -= delta;
+		if(this.invincibilityTimeRemaining > 0) {
+			this.sprite = spriteLibrary.getSprite('goodGuyShipInvincible');
+		} else {
+			this.sprite = spriteLibrary.getSprite('goodGuyShip');
+		}
+
 		this.shotInterval += (delta / 10) * this.speed;		
 		var distance = delta * 50 * this.speed;	
 
@@ -100,3 +107,8 @@ function GoodGuy() {
 			this.explosion.explode(this);
 		}
 	};
+
+	GoodGuy.prototype.setInvincability = function(time) {
+		this.invincibilityTimeRemaining = time || 0;
+	}
+

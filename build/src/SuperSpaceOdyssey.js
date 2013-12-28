@@ -51,13 +51,17 @@
 	}
 function SpriteLibrary() {
   var shipImage = new Image();
-  shipImage.src = 'images/shipsall_4.gif'
+  shipImage.src = 'images/shipsall_4.gif';
+
+  var shipImageTransparent = new Image();
+  shipImageTransparent.src = 'images/ships-semi-transparent.png';
 
   var explosionImage = new Image();
   explosionImage.src = 'images/exp2_0.png';
 
   this.staticSprites = [
     {id: 'goodGuyShip', x: 67, y: 123, width: 60, height: 65, image: shipImage},
+    {id: 'goodGuyShipInvincible', x: 67, y: 123, width: 60, height: 65, image: shipImageTransparent},
     {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
     {id: 'bullet', x: 131, y: 70, width: 20, height: 45, image: shipImage}
   ];
@@ -287,21 +291,23 @@ function BadGuy() {
 		    });
 		});
 
-		badGuys.forEach(function(badGuy) {
-			badGuy.shotBullets.forEach(function(bullet){
-		      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
-		    		bullet.kill();
-		    		goodGuy.explode();
-		      }
-		    });
-		});
+		if(goodGuy.invincibilityTimeRemaining <= 0) {
+			badGuys.forEach(function(badGuy) {
+				badGuy.shotBullets.forEach(function(bullet){
+			      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
+			    		bullet.kill();
+			    		goodGuy.explode();
+			      }
+			    });
+			});
 
-		badGuys.forEach(function(badGuy) {
-			if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
-				badGuy.explode();
-				goodGuy.explode();
-			}
-		});
+			badGuys.forEach(function(badGuy) {
+				if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
+					badGuy.explode();
+					goodGuy.explode();
+				}
+			});
+		}
 	};
 
 	function Controls() {
@@ -433,7 +439,6 @@ function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
 		this.sprite = spriteLibrary.getSprite('goodGuyShip');
-
 		this.active = true;
 		this.width = 50 * game.scale;
 		this.height = 50 * game.scale;
@@ -443,9 +448,17 @@ function GoodGuy() {
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
+		this.invincibilityTimeRemaining = 3;
 	}; 
 
 	GoodGuy.prototype.updateState = function(delta) {
+		this.invincibilityTimeRemaining -= delta;
+		if(this.invincibilityTimeRemaining > 0) {
+			this.sprite = spriteLibrary.getSprite('goodGuyShipInvincible');
+		} else {
+			this.sprite = spriteLibrary.getSprite('goodGuyShip');
+		}
+
 		this.shotInterval += (delta / 10) * this.speed;		
 		var distance = delta * 50 * this.speed;	
 
@@ -531,6 +544,11 @@ function GoodGuy() {
 			this.explosion.explode(this);
 		}
 	};
+
+	GoodGuy.prototype.setInvincability = function(time) {
+		this.invincibilityTimeRemaining = time || 0;
+	}
+
 
   function LinkButton(x, y, label, textAlign) {
     this.x = x || 0;
@@ -721,7 +739,6 @@ TravelPath.generateRandomPath = function(gameHeight) {
     this.distance = levelData ? levelData.distance || 0 : 0;
     this.currentDistance = 0;
     this.bogies = levelData.obstacles;
-
     this.active = true;
     this.badGuys = [];
     this.background = new Background();
@@ -748,7 +765,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
     game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
-    if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); }
+    if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); } 
     if(game.goodGuys.length > 0) { game.goodGuys[0].updateState(delta); }
     this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
 
