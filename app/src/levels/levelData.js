@@ -8,7 +8,7 @@
                 { distance: 10, type: 'enemy', entity: new BadGuy() },
                 { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip2') },
                 { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip3') },
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 20, type: 'enemy', entity: new BadGuy() },
                 { distance: 28, type: 'enemy', entity: new BadGuy() },
                 { distance: 30, type: 'enemy', entity: new BadGuy() },
