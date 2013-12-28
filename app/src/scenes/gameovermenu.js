@@ -1,5 +1,6 @@
   function GameOverMenu() {
     this.active = true;
+    this.eventDelay = .75;
     var locationItem1 = Variables.mainItemLocation1();
     this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
   };
@@ -15,9 +16,10 @@
   };
 
   GameOverMenu.prototype.updateState = function (delta) {
-    if(keydown.space) {
+    this.eventDelay -= delta;
+
+    if(this.eventDelay <= 0 && keydown.space) {
         this.end();
-        // Prevents holding down the key to shoot frequently.
         keydown.space = false;
       }
   };

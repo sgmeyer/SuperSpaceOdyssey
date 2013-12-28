@@ -610,7 +610,6 @@ function GoodGuy() {
 	}
 
 	Level.prototype.updateLevel = function (delta) {
-
 		this.currentDistance += 6 * delta;
 		this.generateBadGuy();
 		this.badGuys.forEach(function(badGuy) {
@@ -620,8 +619,7 @@ function GoodGuy() {
 	};
 
 	Level.prototype.updateState = function(delta) {
-
-		if(this.currentDistance >= this.distance) { this.end(); }
+		if(this.currentDistance >= this.distance || game.goodGuys.length < 1) { this.end(); }
 
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
@@ -637,9 +635,7 @@ function GoodGuy() {
 	Level.prototype.draw = function(context) {
 		this.background.draw(context);
 
-		if(game.goodGuys.length <= 0) { 
-			this.end();
-		} else {
+		if(game.goodGuys.length > 0) { 
 			game.goodGuys[0].draw(context);
 			this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
 		}
@@ -647,7 +643,7 @@ function GoodGuy() {
 		context.fillStyle = "orange";
     context.font = "20px Georgia";
     context.textAlign = "right";
-    context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
+    context.fillText("Score: " + game.score.toString(), game.width - 50, 20);
 	}
 
 	Level.prototype.generateBadGuy = function() {
@@ -772,6 +768,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   function GameOverMenu() {
     this.active = true;
+    this.eventDelay = .5;
     var locationItem1 = Variables.mainItemLocation1();
     this.startButton = new LinkButton(locationItem1.x, locationItem1.y, 'Start Game', Variables.mainItemTextAlign);
   };
@@ -787,9 +784,10 @@ TravelPath.generateRandomPath = function(gameHeight) {
   };
 
   GameOverMenu.prototype.updateState = function (delta) {
-    if(keydown.space) {
+    this.eventDelay -= delta;
+
+    if(this.eventDelay <= 0 && keydown.space) {
         this.end();
-        // Prevents holding down the key to shoot frequently.
         keydown.space = false;
       }
   };
@@ -945,77 +943,93 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   Levels.getAll = function() {
    
-    return [{ 
-            distance: 500,
-            obstacles: [
-              { distance: 10, type: 'enemy', entity: new BadGuy() },
-              { distance: 10, type: 'enemy', entity: new BadGuy() },
-              { distance: 10, type: 'enemy', entity: new BadGuy() },
-              { distance: 10, type: 'enemy', entity: new BadGuy() },
-              { distance: 20, type: 'enemy', entity: new BadGuy() },
-              { distance: 28, type: 'enemy', entity: new BadGuy() },
-              { distance: 30, type: 'enemy', entity: new BadGuy() },
-              { distance: 35, type: 'enemy', entity: new BadGuy() },
-              { distance: 35, type: 'enemy', entity: new BadGuy() },
-              { distance: 40, type: 'enemy', entity: new BadGuy() },
-              { distance: 50, type: 'enemy', entity: new BadGuy() },
-              { distance: 60, type: 'enemy', entity: new BadGuy() },
-              { distance: 70, type: 'enemy', entity: new BadGuy() },
-              { distance: 80, type: 'enemy', entity: new BadGuy() },
-              { distance: 85, type: 'enemy', entity: new BadGuy() },
-              { distance: 85, type: 'enemy', entity: new BadGuy() },
-              { distance: 87, type: 'enemy', entity: new BadGuy() },
-              { distance: 90, type: 'enemy', entity: new BadGuy() },
-              { distance: 95, type: 'enemy', entity: new BadGuy() },
-              { distance: 105, type: 'enemy', entity: new BadGuy() },
-              { distance: 110, type: 'enemy', entity: new BadGuy() },
-              { distance: 110, type: 'enemy', entity: new BadGuy() },
-              { distance: 115, type: 'enemy', entity: new BadGuy() },
-              { distance: 120, type: 'enemy', entity: new BadGuy() }, 
-
-              { distance: 240, type: 'enemy', entity: new BadGuy() },
-              { distance: 245, type: 'enemy', entity: new BadGuy() },
-              { distance: 248, type: 'enemy', entity: new BadGuy() },
-              { distance: 250, type: 'enemy', entity: new BadGuy() },
-              { distance: 270, type: 'enemy', entity: new BadGuy() },
-              { distance: 280, type: 'enemy', entity: new BadGuy() },
-              { distance: 285, type: 'enemy', entity: new BadGuy() },
-              { distance: 285, type: 'enemy', entity: new BadGuy() },
-              { distance: 300, type: 'enemy', entity: new BadGuy() },
-              { distance: 300, type: 'enemy', entity: new BadGuy() },
-              { distance: 310, type: 'enemy', entity: new BadGuy() },
-              { distance: 310, type: 'enemy', entity: new BadGuy() },
-              { distance: 310, type: 'enemy', entity: new BadGuy() },
-              { distance: 310, type: 'enemy', entity: new BadGuy() },
-              { distance: 320, type: 'enemy', entity: new BadGuy() },
-              { distance: 328, type: 'enemy', entity: new BadGuy() },
-              { distance: 330, type: 'enemy', entity: new BadGuy() },
-              { distance: 335, type: 'enemy', entity: new BadGuy() },
-              { distance: 335, type: 'enemy', entity: new BadGuy() },
-              { distance: 340, type: 'enemy', entity: new BadGuy() },
-              { distance: 350, type: 'enemy', entity: new BadGuy() },
-              { distance: 360, type: 'enemy', entity: new BadGuy() },
-              { distance: 370, type: 'enemy', entity: new BadGuy() },
-              { distance: 380, type: 'enemy', entity: new BadGuy() },
-              { distance: 385, type: 'enemy', entity: new BadGuy() },
-              { distance: 385, type: 'enemy', entity: new BadGuy() },
-              { distance: 387, type: 'enemy', entity: new BadGuy() },
-              { distance: 390, type: 'enemy', entity: new BadGuy() },
-              { distance: 395, type: 'enemy', entity: new BadGuy() },
-              { distance: 405, type: 'enemy', entity: new BadGuy() },
-              { distance: 410, type: 'enemy', entity: new BadGuy() },
-              { distance: 410, type: 'enemy', entity: new BadGuy() },
-              { distance: 415, type: 'enemy', entity: new BadGuy() },
-              { distance: 420, type: 'enemy', entity: new BadGuy() },              
-              { distance: 440, type: 'enemy', entity: new BadGuy() },
-              { distance: 445, type: 'enemy', entity: new BadGuy() },
-              { distance: 448, type: 'enemy', entity: new BadGuy() },
-              { distance: 450, type: 'enemy', entity: new BadGuy() },
-              { distance: 470, type: 'enemy', entity: new BadGuy() },
-              { distance: 480, type: 'enemy', entity: new BadGuy() }
-
-            ]
-          }];
+    return [{ distance: 500,
+              obstacles: [
+                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 20, type: 'enemy', entity: new BadGuy() },
+                { distance: 28, type: 'enemy', entity: new BadGuy() },
+                { distance: 30, type: 'enemy', entity: new BadGuy() },
+                { distance: 35, type: 'enemy', entity: new BadGuy() },
+                { distance: 35, type: 'enemy', entity: new BadGuy() },
+                { distance: 40, type: 'enemy', entity: new BadGuy() },
+                { distance: 50, type: 'enemy', entity: new BadGuy() },
+                { distance: 60, type: 'enemy', entity: new BadGuy() },
+                { distance: 70, type: 'enemy', entity: new BadGuy() },
+                { distance: 80, type: 'enemy', entity: new BadGuy() },
+                { distance: 85, type: 'enemy', entity: new BadGuy() },
+                { distance: 85, type: 'enemy', entity: new BadGuy() },
+                { distance: 87, type: 'enemy', entity: new BadGuy() },
+                { distance: 90, type: 'enemy', entity: new BadGuy() },
+                { distance: 95, type: 'enemy', entity: new BadGuy() },
+                { distance: 105, type: 'enemy', entity: new BadGuy() },
+                { distance: 110, type: 'enemy', entity: new BadGuy() },
+                { distance: 110, type: 'enemy', entity: new BadGuy() },
+                { distance: 115, type: 'enemy', entity: new BadGuy() },
+                { distance: 120, type: 'enemy', entity: new BadGuy() }, 
+                { distance: 128, type: 'enemy', entity: new BadGuy() },
+                { distance: 130, type: 'enemy', entity: new BadGuy() },
+                { distance: 135, type: 'enemy', entity: new BadGuy() },
+                { distance: 135, type: 'enemy', entity: new BadGuy() },
+                { distance: 140, type: 'enemy', entity: new BadGuy() },
+                { distance: 150, type: 'enemy', entity: new BadGuy() },
+                { distance: 160, type: 'enemy', entity: new BadGuy() },
+                { distance: 170, type: 'enemy', entity: new BadGuy() },
+                { distance: 180, type: 'enemy', entity: new BadGuy() },
+                { distance: 185, type: 'enemy', entity: new BadGuy() },
+                { distance: 185, type: 'enemy', entity: new BadGuy() },
+                { distance: 187, type: 'enemy', entity: new BadGuy() },
+                { distance: 190, type: 'enemy', entity: new BadGuy() },
+                { distance: 195, type: 'enemy', entity: new BadGuy() },
+                { distance: 205, type: 'enemy', entity: new BadGuy() },
+                { distance: 210, type: 'enemy', entity: new BadGuy() },
+                { distance: 210, type: 'enemy', entity: new BadGuy() },
+                { distance: 215, type: 'enemy', entity: new BadGuy() },
+                { distance: 220, type: 'enemy', entity: new BadGuy() }, 
+                { distance: 240, type: 'enemy', entity: new BadGuy() },
+                { distance: 245, type: 'enemy', entity: new BadGuy() },
+                { distance: 248, type: 'enemy', entity: new BadGuy() },
+                { distance: 250, type: 'enemy', entity: new BadGuy() },
+                { distance: 270, type: 'enemy', entity: new BadGuy() },
+                { distance: 280, type: 'enemy', entity: new BadGuy() },
+                { distance: 285, type: 'enemy', entity: new BadGuy() },
+                { distance: 285, type: 'enemy', entity: new BadGuy() },
+                { distance: 300, type: 'enemy', entity: new BadGuy() },
+                { distance: 300, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 320, type: 'enemy', entity: new BadGuy() },
+                { distance: 328, type: 'enemy', entity: new BadGuy() },
+                { distance: 330, type: 'enemy', entity: new BadGuy() },
+                { distance: 335, type: 'enemy', entity: new BadGuy() },
+                { distance: 335, type: 'enemy', entity: new BadGuy() },
+                { distance: 340, type: 'enemy', entity: new BadGuy() },
+                { distance: 350, type: 'enemy', entity: new BadGuy() },
+                { distance: 360, type: 'enemy', entity: new BadGuy() },
+                { distance: 370, type: 'enemy', entity: new BadGuy() },
+                { distance: 380, type: 'enemy', entity: new BadGuy() },
+                { distance: 385, type: 'enemy', entity: new BadGuy() },
+                { distance: 385, type: 'enemy', entity: new BadGuy() },
+                { distance: 387, type: 'enemy', entity: new BadGuy() },
+                { distance: 390, type: 'enemy', entity: new BadGuy() },
+                { distance: 395, type: 'enemy', entity: new BadGuy() },
+                { distance: 405, type: 'enemy', entity: new BadGuy() },
+                { distance: 410, type: 'enemy', entity: new BadGuy() },
+                { distance: 410, type: 'enemy', entity: new BadGuy() },
+                { distance: 415, type: 'enemy', entity: new BadGuy() },
+                { distance: 420, type: 'enemy', entity: new BadGuy() },              
+                { distance: 440, type: 'enemy', entity: new BadGuy() },
+                { distance: 445, type: 'enemy', entity: new BadGuy() },
+                { distance: 448, type: 'enemy', entity: new BadGuy() },
+                { distance: 450, type: 'enemy', entity: new BadGuy() },
+                { distance: 470, type: 'enemy', entity: new BadGuy() },
+                { distance: 480, type: 'enemy', entity: new BadGuy() }
+              ]
+            }];
   }
 
   function Variables() {
