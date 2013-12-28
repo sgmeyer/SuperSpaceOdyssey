@@ -12,6 +12,7 @@ function SpriteLibrary() {
     {id: 'goodGuyShip', x: 67, y: 123, width: 60, height: 65, image: shipImage},
     {id: 'goodGuyShipInvincible', x: 67, y: 123, width: 60, height: 65, image: shipImageTransparent},
     {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
+    {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
     {id: 'bullet', x: 131, y: 70, width: 20, height: 45, image: shipImage}
   ];
   this.animationSprites = [

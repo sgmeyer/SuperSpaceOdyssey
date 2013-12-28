@@ -6,7 +6,7 @@
     return [{ distance: 500,
               obstacles: [
                 { distance: 10, type: 'enemy', entity: new BadGuy() },
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip2') },
                 { distance: 10, type: 'enemy', entity: new BadGuy() },
                 { distance: 10, type: 'enemy', entity: new BadGuy() },
                 { distance: 20, type: 'enemy', entity: new BadGuy() },
