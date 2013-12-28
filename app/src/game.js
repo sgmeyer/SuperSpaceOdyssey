@@ -66,9 +66,17 @@
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
+		/*
 		var lvl = new Level();
 		lvl.initialize();
 		this.scenes.push(lvl);
+		
+		*/
+
+		var levelManager = new LevelManager();
+		var level = levelManager.getCurrentLevel();
+		this.scenes.push(level);
+
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
@@ -78,9 +86,10 @@
 	Game.prototype.initializeGameReset = function() {
 		this.scenes = [];
 
-		var lvl = new Level();
-		lvl.initialize();
-		this.scenes.push(lvl);
+		var levelManager = new LevelManager();
+		var level = levelManager.getCurrentLevel();
+		this.scenes.push(level);
+
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());

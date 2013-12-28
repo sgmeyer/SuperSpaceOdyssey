@@ -1,10 +1,9 @@
-	function Level() {
-		this.game = null;
+	function Level(levelData) {
+		this.distance = levelData ? levelData.distance || 0 : 0;
+		this.currentDistance = 0;
+		this.bogies = levelData.obstacles;
+
 		this.active = true;
-		this.enemiesOnScreen = 6;
-		this.length = 60000;
-		this.enemiesStager = 1000;
-		this.timing = this.enemiesStager;
 		this.badGuys = [];
 		this.background = new Background();
 	};
@@ -15,12 +14,8 @@
 	}
 
 	Level.prototype.updateLevel = function (delta) {
-		this.timing -= delta * 1000;
-
-		if(this.timing <= 0) {
-			this.badGuys.push(this.tryToGenerateBadGuy());
-		}
-
+		this.currentDistance += 6 * delta;
+		this.generateBadGuy();
 		this.badGuys.forEach(function(badGuy) {
 			var num = Math.random() * 70;
 			if(num <= 1) { badGuy.shoot(); }
@@ -28,6 +23,8 @@
 	};
 
 	Level.prototype.updateState = function(delta) {
+		if(this.currentDistance >= this.distance || game.goodGuys.length < 1) { this.end(); }
+
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
@@ -42,24 +39,41 @@
 	Level.prototype.draw = function(context) {
 		this.background.draw(context);
 
-		if(game.goodGuys.length <= 0) { 
-			game.scenes[0].active = false;
-			game.initializeGameOver();
-		} else {
+		if(game.goodGuys.length > 0) { 
 			game.goodGuys[0].draw(context);
 			this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
 		}
 
 		context.fillStyle = "orange";
-        context.font = "20px Georgia";
-        context.textAlign = "right";
-        context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
+    context.font = "20px Georgia";
+    context.textAlign = "right";
+    context.fillText("Score: " + game.score.toString(), game.width - 50, 20);
 	}
 
-	Level.prototype.tryToGenerateBadGuy = function() {
-		if(this.badGuys.length < this.enemiesOnScreen) {
-			var badGuy = new BadGuy();
-			this.timing = this.enemiesStager;
-			return badGuy;
+	Level.prototype.generateBadGuy = function() {
+		var newBogies = this.bogies.filter((function (currentDistance) { return function(bogie) { return bogie.distance <= currentDistance; } })(this.currentDistance));
+		this.bogies = this.bogies.filter((function (currentDistance) { return function(bogie) { return bogie.distance > currentDistance; } })(this.currentDistance));
+
+		for(var i = 0; i < newBogies.length; i++) {
+			this.badGuys.push(newBogies[i].entity);
 		}
+	}
+
+	Level.prototype.end = function() {
+		this.active = false;
+		game.initializeGameOver();
+	}
+
+	function LevelManager() {
+		var levels = Levels.getAll();
+		this.currentLevel = levels[0];
+	}
+
+	LevelManager.prototype.getCurrentLevel = function() {
+		var levelData = this.currentLevel;
+
+		var level = new Level(levelData);
+		level.initialize();
+
+		return level;
 	}

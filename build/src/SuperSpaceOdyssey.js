@@ -25,7 +25,10 @@
 
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
 		this.musicVolume = volume || this.musicVolume;
-		this.currentMusic.setVolume(volume)
+
+		if(this.currentMusic) { 
+			this.currentMusic.setVolume(volume);
+		}
 	}
 
 	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
@@ -591,13 +594,12 @@ function GoodGuy() {
     context.stroke();
   };
 
-	function Level() {
-		this.game = null;
+	function Level(levelData) {
+		this.distance = levelData ? levelData.distance || 0 : 0;
+		this.currentDistance = 0;
+		this.bogies = levelData.obstacles;
+
 		this.active = true;
-		this.enemiesOnScreen = 6;
-		this.length = 60000;
-		this.enemiesStager = 1000;
-		this.timing = this.enemiesStager;
 		this.badGuys = [];
 		this.background = new Background();
 	};
@@ -608,12 +610,9 @@ function GoodGuy() {
 	}
 
 	Level.prototype.updateLevel = function (delta) {
-		this.timing -= delta * 1000;
 
-		if(this.timing <= 0) {
-			this.badGuys.push(this.tryToGenerateBadGuy());
-		}
-
+		this.currentDistance += 6 * delta;
+		this.generateBadGuy();
 		this.badGuys.forEach(function(badGuy) {
 			var num = Math.random() * 70;
 			if(num <= 1) { badGuy.shoot(); }
@@ -621,6 +620,9 @@ function GoodGuy() {
 	};
 
 	Level.prototype.updateState = function(delta) {
+
+		if(this.currentDistance >= this.distance) { this.end(); }
+
 		this.background.updateState(delta);
 		game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
 		this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
@@ -636,25 +638,44 @@ function GoodGuy() {
 		this.background.draw(context);
 
 		if(game.goodGuys.length <= 0) { 
-			game.scenes[0].active = false;
-			game.initializeGameOver();
+			this.end();
 		} else {
 			game.goodGuys[0].draw(context);
 			this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
 		}
 
 		context.fillStyle = "orange";
-        context.font = "20px Georgia";
-        context.textAlign = "right";
-        context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
+    context.font = "20px Georgia";
+    context.textAlign = "right";
+    context.fillText("Score: " + game.score.toString(), game.width- 50, 20);
 	}
 
-	Level.prototype.tryToGenerateBadGuy = function() {
-		if(this.badGuys.length < this.enemiesOnScreen) {
-			var badGuy = new BadGuy();
-			this.timing = this.enemiesStager;
-			return badGuy;
+	Level.prototype.generateBadGuy = function() {
+		var newBogies = this.bogies.filter((function (currentDistance) { return function(bogie) { return bogie.distance <= currentDistance; } })(this.currentDistance));
+		this.bogies = this.bogies.filter((function (currentDistance) { return function(bogie) { return bogie.distance > currentDistance; } })(this.currentDistance));
+
+		for(var i = 0; i < newBogies.length; i++) {
+			this.badGuys.push(newBogies[i].entity);
 		}
+	}
+
+	Level.prototype.end = function() {
+		this.active = false;
+		game.initializeGameOver();
+	}
+
+	function LevelManager() {
+		var levels = Levels.getAll();
+		this.currentLevel = levels[0];
+	}
+
+	LevelManager.prototype.getCurrentLevel = function() {
+		var levelData = this.currentLevel;
+
+		var level = new Level(levelData);
+		level.initialize();
+
+		return level;
 	}
 
 function Point(x, y) {
@@ -775,6 +796,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   GameOverMenu.prototype.end = function() {
     game.initializeGameReset();
+    this.active = false;
   };
 
   function LoadingMenu() {
@@ -811,6 +833,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
   SoundOptionsMenu.prototype.updateState = function(delta) {
     if(keydown.left) {
+      keydown.left = false;
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(-.1);
         soundLibrary.setMusicVolume(this.musicVolumeControl.current);
@@ -819,9 +842,9 @@ TravelPath.generateRandomPath = function(gameHeight) {
         soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
         soundLibrary.playLaser();
       }
-      keydown.left = false;
     }
     if(keydown.right) {
+      keydown.right = false;
       if(this.selectedOption === 1) {
         this.musicVolumeControl.adjust(.1);
         soundLibrary.setMusicVolume(this.musicVolumeControl.current);
@@ -830,21 +853,20 @@ TravelPath.generateRandomPath = function(gameHeight) {
         soundLibrary.setSoundEffectsVolume(this.soundEffectsVolumeControl.current);
         soundLibrary.playLaser();
       }
-      keydown.right = false;
     }
     if(keydown.down) {
+      keydown.down = false;
       this.selectedOption++;
       if(this.selectedOption > 3) { this.selectedOption = 1; }
-      keydown.down = false;
     }
     if(keydown.up) {
+      keydown.up = false;
       this.selectedOption--;
       if(this.selectedOption < 1) { this.selectedOption = 3; }
-      keydown.up = false;
     }
     if(keydown.space) {
-      if(this.selectedOption === 3) { this.end(); }
       keydown.space = false;
+      if(this.selectedOption === 3) { this.end(); }
     }
 
     this.musicVolumeControl.setActive(this.selectedOption === 1);
@@ -917,6 +939,84 @@ TravelPath.generateRandomPath = function(gameHeight) {
 
     this.active = false;
   };
+
+  function Levels() {
+  }
+
+  Levels.getAll = function() {
+   
+    return [{ 
+            distance: 500,
+            obstacles: [
+              { distance: 10, type: 'enemy', entity: new BadGuy() },
+              { distance: 10, type: 'enemy', entity: new BadGuy() },
+              { distance: 10, type: 'enemy', entity: new BadGuy() },
+              { distance: 10, type: 'enemy', entity: new BadGuy() },
+              { distance: 20, type: 'enemy', entity: new BadGuy() },
+              { distance: 28, type: 'enemy', entity: new BadGuy() },
+              { distance: 30, type: 'enemy', entity: new BadGuy() },
+              { distance: 35, type: 'enemy', entity: new BadGuy() },
+              { distance: 35, type: 'enemy', entity: new BadGuy() },
+              { distance: 40, type: 'enemy', entity: new BadGuy() },
+              { distance: 50, type: 'enemy', entity: new BadGuy() },
+              { distance: 60, type: 'enemy', entity: new BadGuy() },
+              { distance: 70, type: 'enemy', entity: new BadGuy() },
+              { distance: 80, type: 'enemy', entity: new BadGuy() },
+              { distance: 85, type: 'enemy', entity: new BadGuy() },
+              { distance: 85, type: 'enemy', entity: new BadGuy() },
+              { distance: 87, type: 'enemy', entity: new BadGuy() },
+              { distance: 90, type: 'enemy', entity: new BadGuy() },
+              { distance: 95, type: 'enemy', entity: new BadGuy() },
+              { distance: 105, type: 'enemy', entity: new BadGuy() },
+              { distance: 110, type: 'enemy', entity: new BadGuy() },
+              { distance: 110, type: 'enemy', entity: new BadGuy() },
+              { distance: 115, type: 'enemy', entity: new BadGuy() },
+              { distance: 120, type: 'enemy', entity: new BadGuy() }, 
+
+              { distance: 240, type: 'enemy', entity: new BadGuy() },
+              { distance: 245, type: 'enemy', entity: new BadGuy() },
+              { distance: 248, type: 'enemy', entity: new BadGuy() },
+              { distance: 250, type: 'enemy', entity: new BadGuy() },
+              { distance: 270, type: 'enemy', entity: new BadGuy() },
+              { distance: 280, type: 'enemy', entity: new BadGuy() },
+              { distance: 285, type: 'enemy', entity: new BadGuy() },
+              { distance: 285, type: 'enemy', entity: new BadGuy() },
+              { distance: 300, type: 'enemy', entity: new BadGuy() },
+              { distance: 300, type: 'enemy', entity: new BadGuy() },
+              { distance: 310, type: 'enemy', entity: new BadGuy() },
+              { distance: 310, type: 'enemy', entity: new BadGuy() },
+              { distance: 310, type: 'enemy', entity: new BadGuy() },
+              { distance: 310, type: 'enemy', entity: new BadGuy() },
+              { distance: 320, type: 'enemy', entity: new BadGuy() },
+              { distance: 328, type: 'enemy', entity: new BadGuy() },
+              { distance: 330, type: 'enemy', entity: new BadGuy() },
+              { distance: 335, type: 'enemy', entity: new BadGuy() },
+              { distance: 335, type: 'enemy', entity: new BadGuy() },
+              { distance: 340, type: 'enemy', entity: new BadGuy() },
+              { distance: 350, type: 'enemy', entity: new BadGuy() },
+              { distance: 360, type: 'enemy', entity: new BadGuy() },
+              { distance: 370, type: 'enemy', entity: new BadGuy() },
+              { distance: 380, type: 'enemy', entity: new BadGuy() },
+              { distance: 385, type: 'enemy', entity: new BadGuy() },
+              { distance: 385, type: 'enemy', entity: new BadGuy() },
+              { distance: 387, type: 'enemy', entity: new BadGuy() },
+              { distance: 390, type: 'enemy', entity: new BadGuy() },
+              { distance: 395, type: 'enemy', entity: new BadGuy() },
+              { distance: 405, type: 'enemy', entity: new BadGuy() },
+              { distance: 410, type: 'enemy', entity: new BadGuy() },
+              { distance: 410, type: 'enemy', entity: new BadGuy() },
+              { distance: 415, type: 'enemy', entity: new BadGuy() },
+              { distance: 420, type: 'enemy', entity: new BadGuy() },              
+              { distance: 440, type: 'enemy', entity: new BadGuy() },
+              { distance: 445, type: 'enemy', entity: new BadGuy() },
+              { distance: 448, type: 'enemy', entity: new BadGuy() },
+              { distance: 450, type: 'enemy', entity: new BadGuy() },
+              { distance: 470, type: 'enemy', entity: new BadGuy() },
+              { distance: 480, type: 'enemy', entity: new BadGuy() }
+
+            ]
+          }];
+  }
 
   function Variables() {
   }
@@ -1050,9 +1150,17 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
+		/*
 		var lvl = new Level();
 		lvl.initialize();
 		this.scenes.push(lvl);
+		
+		*/
+
+		var levelManager = new LevelManager();
+		var level = levelManager.getCurrentLevel();
+		this.scenes.push(level);
+
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
@@ -1062,9 +1170,10 @@ TravelPath.generateRandomPath = function(gameHeight) {
 	Game.prototype.initializeGameReset = function() {
 		this.scenes = [];
 
-		var lvl = new Level();
-		lvl.initialize();
-		this.scenes.push(lvl);
+		var levelManager = new LevelManager();
+		var level = levelManager.getCurrentLevel();
+		this.scenes.push(level);
+
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());
 		this.goodGuys.push(new GoodGuy());

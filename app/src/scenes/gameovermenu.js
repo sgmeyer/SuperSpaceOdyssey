@@ -24,4 +24,5 @@
 
   GameOverMenu.prototype.end = function() {
     game.initializeGameReset();
+    this.active = false;
   };
