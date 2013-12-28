@@ -4,4 +4,5 @@
       ctx, 
       spriteLibrary,
       soundLibrary, 
-      keydown;
+      keydown,
+      player;

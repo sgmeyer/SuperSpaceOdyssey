@@ -22,31 +22,33 @@
   }
 
   Level.prototype.updateState = function(delta) {
-    if(this.currentDistance >= this.distance || game.goodGuys.length < 1) { this.end(); }
+    if(this.currentDistance >= this.distance || !player.hasLives()) { this.end(); }
 
     this.background.updateState(delta);
-    game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
-    if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); } 
-    if(game.goodGuys.length > 0) { game.goodGuys[0].updateState(delta); }
-    this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
+    if(player.hasLives()) { 
+      var goodGuy = player.getCurrentGoodGuy();
+      CollisionEngine.handleCollisions(this.badGuys, goodGuy);
+      goodGuy.updateState(delta); 
+    }
 
+    this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
     this.updateLevel(delta);
   }
 
   Level.prototype.draw = function(context) {
     this.background.draw(context);
 
-    if(game.goodGuys.length > 0) { 
-      game.goodGuys[0].draw(context);
+    if(player.hasLives()) { 
+      player.getCurrentGoodGuy().draw(context);
       this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
     }
 
     context.fillStyle = "orange";
     context.font = "20px Georgia";
     context.textAlign = "right";
-    context.fillText("Score: " + game.score.toString(), game.width - 50, 20);
+    context.fillText("Score: " + player.getScore(), game.width - 50, 20);
   }
 
   Level.prototype.generateBadGuy = function() {

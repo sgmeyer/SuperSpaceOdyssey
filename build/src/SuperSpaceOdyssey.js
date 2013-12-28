@@ -4,7 +4,8 @@
       ctx, 
       spriteLibrary,
       soundLibrary, 
-      keydown;
+      keydown,
+      player;
 	function SoundLibrary() {
 		this.musicVolume = 1;
 		this.soundEffectsVolume = 1;
@@ -60,10 +61,13 @@ function SpriteLibrary() {
   explosionImage.src = 'images/exp2_0.png';
 
   this.staticSprites = [
-    {id: 'goodGuyShip', x: 67, y: 123, width: 60, height: 65, image: shipImage},
-    {id: 'goodGuyShipInvincible', x: 67, y: 123, width: 60, height: 65, image: shipImageTransparent},
+    {id: 'goodGuyShip', x: 69, y: 125, width: 56, height: 59, image: shipImage},
+    {id: 'goodGuyShipInvincible', x: 69, y: 125, width: 56, height: 59, image: shipImageTransparent},
     {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
-    {id: 'bullet', x: 131, y: 70, width: 20, height: 45, image: shipImage}
+    {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
+    {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
+    {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
+    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage}
   ];
   this.animationSprites = [
     { id: 'explosion', 
@@ -145,10 +149,10 @@ SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-function BadGuy() {
+function BadGuy(shipId) {
 		this.explosion = null;
 		this.t = 0;
-		this.sprite = spriteLibrary.getSprite('badGuyShip');
+		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
 		this.travelPath = TravelPath.generateRandomPath(game.height);
 
 		this.x = -game.width;
@@ -286,7 +290,7 @@ function BadGuy() {
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
 		    			badGuy.explode();
 		        	bullet.kill();
-		        	game.score += 10;
+		        	player.addPoints(10);
 		      	}
 		    });
 		});
@@ -294,7 +298,7 @@ function BadGuy() {
 		if(goodGuy.invincibilityTimeRemaining <= 0) {
 			badGuys.forEach(function(badGuy) {
 				badGuy.shotBullets.forEach(function(bullet){
-			      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
+			      if (CollisionEngine.collides(bullet, goodGuy)) {
 			    		bullet.kill();
 			    		goodGuy.explode();
 			      }
@@ -302,7 +306,7 @@ function BadGuy() {
 			});
 
 			badGuys.forEach(function(badGuy) {
-				if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
+				if (!goodGuy.exploding && !badGuy.exploding && CollisionEngine.collides(goodGuy, badGuy)) {
 					badGuy.explode();
 					goodGuy.explode();
 				}
@@ -347,6 +351,40 @@ function BadGuy() {
     };
   };
 
+function Player() {
+  this.points = 0;
+  this.lives = 3;
+  this.currentGoodGuy;
+}
+
+Player.prototype.addPoints = function(points) {
+  this.points += points || 0;
+};
+
+Player.prototype.addLife = function() {
+  this.lives++;
+}
+
+Player.prototype.removeLife = function() {
+  this.lives--;
+}
+
+Player.prototype.getScore = function() {
+  return this.points.toString();
+}
+
+Player.prototype.getCurrentGoodGuy = function() {
+  return this.currentGoodGuy = this.currentGoodGuy || new GoodGuy();
+}
+
+Player.prototype.hasLives = function() {
+  return this.lives > 0;
+}
+
+Player.prototype.kill = function() {
+  this.removeLife();
+  this.currentGoodGuy = undefined;
+}
   function TouchGameController() {
   };
 
@@ -518,7 +556,7 @@ function GoodGuy() {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
 
-		game.goodGuys[0].shotBullets.forEach(function(bullet) { bullet.draw(context); });
+		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
 	GoodGuy.prototype.shoot = function() {
@@ -535,6 +573,7 @@ function GoodGuy() {
 	GoodGuy.prototype.kill = function() {
 		this.active = false;
 		this.shotBullets = [];
+		player.kill();
 	};
 
 	GoodGuy.prototype.explode = function() {
@@ -759,31 +798,33 @@ TravelPath.generateRandomPath = function(gameHeight) {
   }
 
   Level.prototype.updateState = function(delta) {
-    if(this.currentDistance >= this.distance || game.goodGuys.length < 1) { this.end(); }
+    if(this.currentDistance >= this.distance || !player.hasLives()) { this.end(); }
 
     this.background.updateState(delta);
-    game.goodGuys = game.goodGuys.filter(function(goodGuy) { return goodGuy.active; });
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
 
-    if(game.goodGuys.length > 0) { CollisionEngine.handleCollisions(this.badGuys, game.goodGuys[0]); } 
-    if(game.goodGuys.length > 0) { game.goodGuys[0].updateState(delta); }
-    this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
+    if(player.hasLives()) { 
+      var goodGuy = player.getCurrentGoodGuy();
+      CollisionEngine.handleCollisions(this.badGuys, goodGuy);
+      goodGuy.updateState(delta); 
+    }
 
+    this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
     this.updateLevel(delta);
   }
 
   Level.prototype.draw = function(context) {
     this.background.draw(context);
 
-    if(game.goodGuys.length > 0) { 
-      game.goodGuys[0].draw(context);
+    if(player.hasLives()) { 
+      player.getCurrentGoodGuy().draw(context);
       this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
     }
 
     context.fillStyle = "orange";
     context.font = "20px Georgia";
     context.textAlign = "right";
-    context.fillText("Score: " + game.score.toString(), game.width - 50, 20);
+    context.fillText("Score: " + player.getScore(), game.width - 50, 20);
   }
 
   Level.prototype.generateBadGuy = function() {
@@ -949,9 +990,9 @@ TravelPath.generateRandomPath = function(gameHeight) {
     return [{ distance: 500,
               obstacles: [
                 { distance: 10, type: 'enemy', entity: new BadGuy() },
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip2') },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip3') },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 20, type: 'enemy', entity: new BadGuy() },
                 { distance: 28, type: 'enemy', entity: new BadGuy() },
                 { distance: 30, type: 'enemy', entity: new BadGuy() },
@@ -1120,7 +1161,6 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.lastTime = 0;
 		this.scenes = [];
 		this.goodGuys = [];
-		this.score = 0;
 		this.scale = 1;
 	}
 
@@ -1181,21 +1221,10 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
-		/*
-		var lvl = new Level();
-		lvl.initialize();
-		this.scenes.push(lvl);
-		
-		*/
-
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();
 		this.scenes.push(level);
-
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.score = 0;
+		player = new Player();
 	};
 
 	Game.prototype.initializeGameReset = function() {
@@ -1204,11 +1233,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();
 		this.scenes.push(level);
-
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.score = 0;
+		player = new Player();
 	};
 
 	Game.prototype.setLoop = function() {

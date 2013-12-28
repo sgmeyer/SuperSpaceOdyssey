@@ -24,7 +24,7 @@
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
 		    			badGuy.explode();
 		        	bullet.kill();
-		        	game.score += 10;
+		        	player.addPoints(10);
 		      	}
 		    });
 		});
@@ -32,7 +32,7 @@
 		if(goodGuy.invincibilityTimeRemaining <= 0) {
 			badGuys.forEach(function(badGuy) {
 				badGuy.shotBullets.forEach(function(bullet){
-			      if (CollisionEngine.collides(bullet, game.goodGuys[0])) {
+			      if (CollisionEngine.collides(bullet, goodGuy)) {
 			    		bullet.kill();
 			    		goodGuy.explode();
 			      }
@@ -40,7 +40,7 @@
 			});
 
 			badGuys.forEach(function(badGuy) {
-				if (!game.goodGuys[0].exploding && !badGuy.exploding && CollisionEngine.collides(game.goodGuys[0], badGuy)) {
+				if (!goodGuy.exploding && !badGuy.exploding && CollisionEngine.collides(goodGuy, badGuy)) {
 					badGuy.explode();
 					goodGuy.explode();
 				}

@@ -5,7 +5,6 @@
 		this.lastTime = 0;
 		this.scenes = [];
 		this.goodGuys = [];
-		this.score = 0;
 		this.scale = 1;
 	}
 
@@ -66,21 +65,10 @@
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
 
-		/*
-		var lvl = new Level();
-		lvl.initialize();
-		this.scenes.push(lvl);
-		
-		*/
-
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();
 		this.scenes.push(level);
-
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.score = 0;
+		player = new Player();
 	};
 
 	Game.prototype.initializeGameReset = function() {
@@ -89,11 +77,7 @@
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();
 		this.scenes.push(level);
-
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.goodGuys.push(new GoodGuy());
-		this.score = 0;
+		player = new Player();
 	};
 
 	Game.prototype.setLoop = function() {

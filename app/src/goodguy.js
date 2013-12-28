@@ -81,7 +81,7 @@ function GoodGuy() {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
 
-		game.goodGuys[0].shotBullets.forEach(function(bullet) { bullet.draw(context); });
+		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
 	GoodGuy.prototype.shoot = function() {
@@ -98,6 +98,7 @@ function GoodGuy() {
 	GoodGuy.prototype.kill = function() {
 		this.active = false;
 		this.shotBullets = [];
+		player.kill();
 	};
 
 	GoodGuy.prototype.explode = function() {
