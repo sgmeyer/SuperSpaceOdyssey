@@ -1,6 +1,6 @@
-	function Bullet(speed) {
+	function Bullet(speed, spriteId) {
 		this.t = 0;
-		this.sprite = spriteLibrary.getSprite('lazer');
+		this.sprite = spriteLibrary.getSprite(spriteId || 'lazerBlue');
 		this.travelPath = null;
 
 		this.x = 0;

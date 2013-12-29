@@ -86,7 +86,7 @@ function GoodGuy() {
 
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
-			var bullet = new Bullet(8);
+			var bullet = new Bullet(8, 'lazerBlue');
 			bullet.rotation = 90;;
 			bullet.shoot(this.x+(this.width/2), this.y);
 			this.shotBullets.push(bullet);
