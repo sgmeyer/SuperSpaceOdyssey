@@ -6,118 +6,6 @@
       soundLibrary, 
       keydown,
       player;
-	function SoundLibrary() {
-		this.musicVolume = 1;
-		this.soundEffectsVolume = 1;
-		this.currentMusic = null;
-		this.isLoadComplete = false;
-
-		var audioPath = 'sound/';
-		var manifest = [
-		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-		    {id:'lazer', src:'laser1.wav'},
-		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
-		];
-
-		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
-		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
-  	createjs.Sound.registerManifest(manifest, audioPath);
-	}
-
-	SoundLibrary.prototype.setMusicVolume = function(volume) {
-		this.musicVolume = volume || this.musicVolume;
-
-		if(this.currentMusic) { 
-			this.currentMusic.setVolume(volume);
-		}
-	}
-
-	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
-		this.soundEffectsVolume = volume || this.soundEffectsVolume;
-	}
-
-	SoundLibrary.prototype.playExplosion = function() {
-		var explosion = createjs.Sound.play('explosion');
-		explosion.setVolume(this.soundEffectsVolume);
-	}
-
-	SoundLibrary.prototype.playThemeSong = function() {
-		this.currentMusic = createjs.Sound.play('themeSong');
-		this.currentMusic.setVolume(this.musicVolume);
-	}
-	
-	SoundLibrary.prototype.playLaser = function() {
-		var lazer = createjs.Sound.play('lazer');
-		lazer.setVolume(this.soundEffectsVolume);
-	}
-function SpriteLibrary() {
-  var shipImage = new Image();
-  shipImage.src = 'images/shipsall_4.gif';
-
-  var shipImageTransparent = new Image();
-  shipImageTransparent.src = 'images/ships-semi-transparent.png';
-
-  var boss1 = new Image();
-   boss1.src = 'images/boss1.png';
-
-  var explosionImage = new Image();
-  explosionImage.src = 'images/exp2_0.png';
-
-  this.staticSprites = [
-    {id: 'goodGuyShip', x: 69, y: 125, width: 56, height: 59, image: shipImage},
-    {id: 'goodGuyShipInvincible', x: 69, y: 125, width: 56, height: 59, image: shipImageTransparent},
-    {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
-    {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
-    {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
-    {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
-    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage},
-    {id: 'boss1', x: 0, y: 0, width: 347, height: 278, image:boss1}
-  ];
-  this.animationSprites = [
-    { id: 'explosion', 
-      intervals: [
-        { time: .1, x: 0, y: 0, height: 55, width: 55},
-        { time: .2, x: 65, y: 0, height: 55, width: 55},
-        { time: .3, x: 130, y: 0, height: 55, width: 55},
-        { time: .4, x: 195, y: 0, height: 55, width: 55},
-        { time: .5, x: 0, y: 65, height: 55, width: 55},
-        { time: .6, x: 65, y: 65, height: 55, width: 55},
-        { time: .7, x: 130, y: 65, height: 55, width: 55},
-        { time: .8, x: 195, y: 65, height: 55, width: 55},
-        { time: .9, x: 0, y: 130, height: 55, width: 55},
-        { time: 1.0, x: 65, y: 130, height: 55, width: 55},
-        { time: 1.1, x: 130, y: 130, height: 55, width: 55},
-        { time: 1.2, x: 195, y: 130, height: 55, width: 55}
-      ],
-      image: explosionImage
-    }
-  ];
-  this.isLoadComplete = true;
-}
-
-SpriteLibrary.prototype.getSprite = function(id) {
-  for(var i = 0; i < this.staticSprites.length; i++) {
-    if(this.staticSprites[i].id === id) {
-      return this.staticSprites[i];
-    }
-  }
-}
-
-SpriteLibrary.prototype.getAnimation = function(id) {
-  for(var i = 0; i < this.animationSprites.length; i++) {
-    if(this.animationSprites[i].id === id) {
-      return this.animationSprites[i];
-    }
-  }
-}
-
-SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
-  for(var i = 0; i < animation.intervals.length; i++) {
-    if(time < animation.intervals[i].time) {
-      return animation.intervals[i];
-    }
-  }
-}
 	function Background() {
 		this.stars = [];
 	};
@@ -153,60 +41,6 @@ SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-	function CollisionEngine() {
-
-	}
-
-	CollisionEngine.collides = function(a, b) {
-
-		var a_x = (a.y * -1) + (game.width/2) - a.width;
-		var a_y = a.x + (game.height/2);
-		var a_width = a.height;
-		var a_height = a.width;
-		var b_x = b.y + (game.width/2);
-		var b_y = (b.x * -1) + (game.height/2) - b.height;	
-
-		// TODO: does this return a boolean or a truth/falsy.
-		return a_x < b_x + b.width &&
-				   a_x + a.width > b_x &&
-				   a_y < b_y + b.height &&
-				   a_y + a.height > b_y;
-	};
-
-	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
-		goodGuy.shotBullets.forEach(function(bullet) {
-	    	badGuys.forEach(function(badGuy) {
-		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		      		badGuy.hitpoints--;
-		      		if(badGuy.hitpoints <= 0) {
-			    			badGuy.explode();
-			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
-			    		}
-		        	bullet.kill();
-		        	player.addPoints(10);
-		      	}
-		    });
-		});
-
-		if(goodGuy.invincibilityTimeRemaining <= 0) {
-			badGuys.forEach(function(badGuy) {
-				badGuy.shotBullets.forEach(function(bullet){
-			      if (CollisionEngine.collides(bullet, goodGuy)) {
-			    		bullet.kill();
-			    		goodGuy.explode();
-			      }
-			    });
-			});
-
-			badGuys.forEach(function(badGuy) {
-				if (!goodGuy.exploding && !badGuy.exploding && CollisionEngine.collides(goodGuy, badGuy)) {
-					badGuy.explode();
-					goodGuy.explode();
-				}
-			});
-		}
-	};
-
   function Levels() {
   }
 
@@ -859,6 +693,172 @@ function GoodGuy() {
 	}
 
 
+	function CollisionEngine() {
+
+	}
+
+	CollisionEngine.collides = function(a, b) {
+
+		var a_x = (a.y * -1) + (game.width/2) - a.width;
+		var a_y = a.x + (game.height/2);
+		var a_width = a.height;
+		var a_height = a.width;
+		var b_x = b.y + (game.width/2);
+		var b_y = (b.x * -1) + (game.height/2) - b.height;	
+
+		// TODO: does this return a boolean or a truth/falsy.
+		return a_x < b_x + b.width &&
+				   a_x + a.width > b_x &&
+				   a_y < b_y + b.height &&
+				   a_y + a.height > b_y;
+	};
+
+	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
+		goodGuy.shotBullets.forEach(function(bullet) {
+	    	badGuys.forEach(function(badGuy) {
+		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+		      		badGuy.hitpoints--;
+		      		if(badGuy.hitpoints <= 0) {
+			    			badGuy.explode();
+			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
+			    		}
+		        	bullet.kill();
+		        	player.addPoints(10);
+		      	}
+		    });
+		});
+
+		if(goodGuy.invincibilityTimeRemaining <= 0) {
+			badGuys.forEach(function(badGuy) {
+				badGuy.shotBullets.forEach(function(bullet){
+			      if (CollisionEngine.collides(bullet, goodGuy)) {
+			    		bullet.kill();
+			    		goodGuy.explode();
+			      }
+			    });
+			});
+
+			badGuys.forEach(function(badGuy) {
+				if (!goodGuy.exploding && !badGuy.exploding && CollisionEngine.collides(goodGuy, badGuy)) {
+					badGuy.explode();
+					goodGuy.explode();
+				}
+			});
+		}
+	};
+
+	function SoundLibrary() {
+		this.musicVolume = 1;
+		this.soundEffectsVolume = 1;
+		this.currentMusic = null;
+		this.isLoadComplete = false;
+
+		var audioPath = 'sound/';
+		var manifest = [
+		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
+		    {id:'lazer', src:'laser1.wav'},
+		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		];
+
+		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
+		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+  	createjs.Sound.registerManifest(manifest, audioPath);
+	}
+
+	SoundLibrary.prototype.setMusicVolume = function(volume) {
+		this.musicVolume = volume || this.musicVolume;
+
+		if(this.currentMusic) { 
+			this.currentMusic.setVolume(volume);
+		}
+	}
+
+	SoundLibrary.prototype.setSoundEffectsVolume = function(volume) {
+		this.soundEffectsVolume = volume || this.soundEffectsVolume;
+	}
+
+	SoundLibrary.prototype.playExplosion = function() {
+		var explosion = createjs.Sound.play('explosion');
+		explosion.setVolume(this.soundEffectsVolume);
+	}
+
+	SoundLibrary.prototype.playThemeSong = function() {
+		this.currentMusic = createjs.Sound.play('themeSong');
+		this.currentMusic.setVolume(this.musicVolume);
+	}
+	
+	SoundLibrary.prototype.playLaser = function() {
+		var lazer = createjs.Sound.play('lazer');
+		lazer.setVolume(this.soundEffectsVolume);
+	}
+function SpriteLibrary() {
+  var shipImage = new Image();
+  shipImage.src = 'images/shipsall_4.gif';
+
+  var shipImageTransparent = new Image();
+  shipImageTransparent.src = 'images/ships-semi-transparent.png';
+
+  var boss1 = new Image();
+   boss1.src = 'images/boss1.png';
+
+  var explosionImage = new Image();
+  explosionImage.src = 'images/exp2_0.png';
+
+  this.staticSprites = [
+    {id: 'goodGuyShip', x: 69, y: 125, width: 56, height: 59, image: shipImage},
+    {id: 'goodGuyShipInvincible', x: 69, y: 125, width: 56, height: 59, image: shipImageTransparent},
+    {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
+    {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
+    {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
+    {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
+    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage},
+    {id: 'boss1', x: 0, y: 0, width: 347, height: 278, image:boss1}
+  ];
+  this.animationSprites = [
+    { id: 'explosion', 
+      intervals: [
+        { time: .1, x: 0, y: 0, height: 55, width: 55},
+        { time: .2, x: 65, y: 0, height: 55, width: 55},
+        { time: .3, x: 130, y: 0, height: 55, width: 55},
+        { time: .4, x: 195, y: 0, height: 55, width: 55},
+        { time: .5, x: 0, y: 65, height: 55, width: 55},
+        { time: .6, x: 65, y: 65, height: 55, width: 55},
+        { time: .7, x: 130, y: 65, height: 55, width: 55},
+        { time: .8, x: 195, y: 65, height: 55, width: 55},
+        { time: .9, x: 0, y: 130, height: 55, width: 55},
+        { time: 1.0, x: 65, y: 130, height: 55, width: 55},
+        { time: 1.1, x: 130, y: 130, height: 55, width: 55},
+        { time: 1.2, x: 195, y: 130, height: 55, width: 55}
+      ],
+      image: explosionImage
+    }
+  ];
+  this.isLoadComplete = true;
+}
+
+SpriteLibrary.prototype.getSprite = function(id) {
+  for(var i = 0; i < this.staticSprites.length; i++) {
+    if(this.staticSprites[i].id === id) {
+      return this.staticSprites[i];
+    }
+  }
+}
+
+SpriteLibrary.prototype.getAnimation = function(id) {
+  for(var i = 0; i < this.animationSprites.length; i++) {
+    if(this.animationSprites[i].id === id) {
+      return this.animationSprites[i];
+    }
+  }
+}
+
+SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
+  for(var i = 0; i < animation.intervals.length; i++) {
+    if(time < animation.intervals[i].time) {
+      return animation.intervals[i];
+    }
+  }
+}
 	function Controls() {
 	}
 
