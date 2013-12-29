@@ -614,13 +614,13 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 	function Bullet(speed) {
 		this.t = 0;
-		this.sprite = spriteLibrary.getSprite('bullet');
+		this.sprite = spriteLibrary.getSprite('lazer');
 		this.travelPath = null;
 
 		this.x = 0;
 		this.y = 0; 
-		this.width = 8 * game.scale;
-		this.height = 20 * game.scale;
+		this.width = 5 * game.scale;
+		this.height = 25 * game.scale;
 		this.rotation = 90;
 		this.active = true;
 		this.speed = speed || 8;
@@ -1016,7 +1016,10 @@ function SpriteLibrary() {
   shipImageTransparent.src = 'images/ships-semi-transparent.png';
 
   var boss1 = new Image();
-   boss1.src = 'images/boss1.png';
+  boss1.src = 'images/boss1.png';
+
+  var bulletImage = new Image();
+  bulletImage.src = 'images/bullets.png';
 
   var explosionImage = new Image();
   explosionImage.src = 'images/exp2_0.png';
@@ -1028,8 +1031,9 @@ function SpriteLibrary() {
     {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
     {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
     {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
-    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage},
-    {id: 'boss1', x: 0, y: 0, width: 347, height: 278, image:boss1}
+    {id: 'bomb', x: 133, y: 69, width: 18, height: 45, image: shipImage},
+    {id: 'lazer', x: 85, y: 69, width: 49, height: 13, image: bulletImage},
+    {id: 'boss1', x: 0, y: 0, width: 278, height: 347, image:boss1}
   ];
   this.animationSprites = [
     { id: 'explosion', 

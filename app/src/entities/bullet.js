@@ -1,12 +1,12 @@
 	function Bullet(speed) {
 		this.t = 0;
-		this.sprite = spriteLibrary.getSprite('bullet');
+		this.sprite = spriteLibrary.getSprite('lazer');
 		this.travelPath = null;
 
 		this.x = 0;
 		this.y = 0; 
-		this.width = 8 * game.scale;
-		this.height = 20 * game.scale;
+		this.width = 5 * game.scale;
+		this.height = 25 * game.scale;
 		this.rotation = 90;
 		this.active = true;
 		this.speed = speed || 8;
