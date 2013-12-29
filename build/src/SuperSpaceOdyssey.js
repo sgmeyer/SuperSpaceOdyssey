@@ -57,6 +57,9 @@ function SpriteLibrary() {
   var shipImageTransparent = new Image();
   shipImageTransparent.src = 'images/ships-semi-transparent.png';
 
+  var boss1 = new Image();
+   boss1.src = 'images/boss1.png';
+
   var explosionImage = new Image();
   explosionImage.src = 'images/exp2_0.png';
 
@@ -67,7 +70,8 @@ function SpriteLibrary() {
     {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
     {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
     {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
-    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage}
+    {id: 'bullet', x: 133, y: 69, width: 18, height: 45, image: shipImage},
+    {id: 'boss1', x: 0, y: 0, width: 347, height: 278, image:boss1}
   ];
   this.animationSprites = [
     { id: 'explosion', 
@@ -149,30 +153,40 @@ SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-function BadGuy(shipId) {
+function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.explosion = null;
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
-		this.travelPath = TravelPath.generateRandomPath(game.height);
-
 		this.x = -game.width;
 		this.y = game.height; 
-		this.width = 50 * game.scale;
-		this.height = 50 * game.scale;
+		this.width = (width || 50) * game.scale;
+		this.height = (height || 50) * game.scale;
 		this.active = true;
 		this.speed = 2;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
+
+		this.hitpoints = hitpoints || 1;
+		this.endLevelOnKill = endLevelOnKill || false;
+		if(this.endLevelOnKill) {
+			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
+		} else {
+			this.travelPath = TravelPath.generateRandomPath(game.height);
+		}
 	};
 
 	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
 			this.t += (delta / 10) * this.speed;
-			if(this.t > 1) { this.kill(); }
-			var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
-			this.x = point.x;
-			this.y = point.y;
+
+			if(this.t <= 1) {
+				var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+				this.x = point.x;
+				this.y = point.y;
+			} else if(!this.endLevelOnKill) {
+				this.kill();
+			}
 		} else {
 			if(this.explosion.active) { this.explosion.updateState(delta); }
 		}
@@ -213,7 +227,7 @@ function BadGuy(shipId) {
 	}
 
 	BadGuy.prototype.shoot = function() {
-		if(!this.exploding) { 
+		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
 			var bullet = new Bullet();
 			bullet.rotation = 270;
 			bullet.shoot(this.x + (this.width/2), this.y);
@@ -288,7 +302,11 @@ function BadGuy(shipId) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		    			badGuy.explode();
+		      		badGuy.hitpoints--;
+		      		if(badGuy.hitpoints <= 0) {
+			    			badGuy.explode();
+			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
+			    		}
 		        	bullet.kill();
 		        	player.addPoints(10);
 		      	}
@@ -353,7 +371,7 @@ function BadGuy(shipId) {
 
 function Player() {
   this.points = 0;
-  this.lives = 3;
+  this.lives = 30;
   this.currentGoodGuy;
 }
 
@@ -798,7 +816,7 @@ TravelPath.generateRandomPath = function(gameHeight) {
   }
 
   Level.prototype.updateState = function(delta) {
-    if(this.currentDistance >= this.distance || !player.hasLives()) { this.end(); }
+    if(/*this.currentDistance >= this.distance || */!player.hasLives()) { this.end(); }
 
     this.background.updateState(delta);
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
@@ -1065,13 +1083,15 @@ TravelPath.generateRandomPath = function(gameHeight) {
                 { distance: 410, type: 'enemy', entity: new BadGuy() },
                 { distance: 410, type: 'enemy', entity: new BadGuy() },
                 { distance: 415, type: 'enemy', entity: new BadGuy() },
-                { distance: 420, type: 'enemy', entity: new BadGuy() },              
-                { distance: 440, type: 'enemy', entity: new BadGuy() },
-                { distance: 445, type: 'enemy', entity: new BadGuy() },
-                { distance: 448, type: 'enemy', entity: new BadGuy() },
-                { distance: 450, type: 'enemy', entity: new BadGuy() },
-                { distance: 470, type: 'enemy', entity: new BadGuy() },
-                { distance: 480, type: 'enemy', entity: new BadGuy() }
+                { distance: 420, type: 'enemy', entity: new BadGuy('badGuyShip4') },              
+                { distance: 440, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 445, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 448, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 450, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+
+                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];
   }

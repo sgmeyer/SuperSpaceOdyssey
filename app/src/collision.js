@@ -22,7 +22,11 @@
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		    			badGuy.explode();
+		      		badGuy.hitpoints--;
+		      		if(badGuy.hitpoints <= 0) {
+			    			badGuy.explode();
+			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
+			    		}
 		        	bullet.kill();
 		        	player.addPoints(10);
 		      	}

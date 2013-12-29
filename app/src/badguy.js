@@ -1,27 +1,37 @@
-function BadGuy(shipId) {
+function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.explosion = null;
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
-		this.travelPath = TravelPath.generateRandomPath(game.height);
-
 		this.x = -game.width;
 		this.y = game.height; 
-		this.width = 50 * game.scale;
-		this.height = 50 * game.scale;
+		this.width = (width || 50) * game.scale;
+		this.height = (height || 50) * game.scale;
 		this.active = true;
 		this.speed = 2;
 		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
+
+		this.hitpoints = hitpoints || 1;
+		this.endLevelOnKill = endLevelOnKill || false;
+		if(this.endLevelOnKill) {
+			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
+		} else {
+			this.travelPath = TravelPath.generateRandomPath(game.height);
+		}
 	};
 
 	BadGuy.prototype.updateState = function (delta) {
 		if(!this.exploding) {
 			this.t += (delta / 10) * this.speed;
-			if(this.t > 1) { this.kill(); }
-			var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
-			this.x = point.x;
-			this.y = point.y;
+
+			if(this.t <= 1) {
+				var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+				this.x = point.x;
+				this.y = point.y;
+			} else if(!this.endLevelOnKill) {
+				this.kill();
+			}
 		} else {
 			if(this.explosion.active) { this.explosion.updateState(delta); }
 		}
@@ -62,7 +72,7 @@ function BadGuy(shipId) {
 	}
 
 	BadGuy.prototype.shoot = function() {
-		if(!this.exploding) { 
+		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
 			var bullet = new Bullet();
 			bullet.rotation = 270;
 			bullet.shoot(this.x + (this.width/2), this.y);

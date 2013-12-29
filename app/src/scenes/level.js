@@ -22,7 +22,7 @@
   }
 
   Level.prototype.updateState = function(delta) {
-    if(this.currentDistance >= this.distance || !player.hasLives()) { this.end(); }
+    if(/*this.currentDistance >= this.distance || */!player.hasLives()) { this.end(); }
 
     this.background.updateState(delta);
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
