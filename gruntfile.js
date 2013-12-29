@@ -63,12 +63,16 @@ module.exports = function(grunt) {
       },
       dist: {
         src: ['app/src/intro.js', 
-              'app/src/levels/*.js', 'app/src/scenes/*.js', 'app/src/controls/*.js', 'app/src/entities/*.js',
+              'app/src/levels/*.js', 
+              'app/src/scenes/*.js', 
+              'app/src/controls/*.js', 
+              'app/src/uicontrols/*.js', 
+              'app/src/entities/*.js',
               'app/src/engine/*.js',
-              'app/src/controls.js', 'app/src/keyboardgamecontroller.js', 'app/src/player.js',
-              'app/src/touchgamecontroller.js',
+              'app/src/player.js',
               'app/src/uivariables.js',
-              'app/src/game.js', 'app/src/outro.js'],
+              'app/src/game.js', 
+              'app/src/outro.js'],
         dest: 'build/src/<%= pkg.name %>.js'
       }
     }
