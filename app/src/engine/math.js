@@ -60,18 +60,19 @@ TravelPath.generateRandomPath = function() {
 		return travelPath;
 	};
 
-	TravelPath.generateStraightPathToRight = function(startPoint, entityWidth) {
+	TravelPath.generateLinearPath = function(startPoint, endPoint) {
+		var slope = (endPoint.y - startPoint.y) / (endPoint.x - startPoint.x);
+		var distance = endPoint.y - startPoint.y;
+		var increment = distance / 3;
+		var yintercept = startPoint.y - slope * startPoint.x;
+
 		var p1 = new Point();
-		p1.x = (game.width - startPoint.x) * .33 + startPoint.x;
-		p1.y = startPoint.y;
+		p1.x = startPoint.x + increment;
+		p1.y = slope * p1.x + yintercept;
 
 		var p2 = new Point();
-		p2.x = (game.width - startPoint.x) * .66 + startPoint.x;
-		p2.y =  startPoint.y;
-
-		var endPoint = new Point();
-		endPoint.x = (game.width - startPoint.x) + startPoint.x;
-		endPoint.y = startPoint.y;
+		p2.x = startPoint.x + increment * 2;
+		p2.y = slope * p2.x + yintercept;
 
 		var travelPath = new TravelPath();
 		travelPath.P0 = startPoint;
@@ -80,29 +81,4 @@ TravelPath.generateRandomPath = function() {
 		travelPath.P3 = endPoint;
 
 		return travelPath;
-	};
-
-	TravelPath.generateStraightPathToLeft = function(startPoint, entityWidth) {
-
-		startPoint.x -= entityWidth;
-
-		var p1 = new Point();
-		p1.x = (startPoint.x - entityWidth) * .66;
-		p1.y = startPoint.y;
-
-		var p2 = new Point();
-		p2.x = (startPoint.x - entityWidth) * .33;
-		p2.y =  startPoint.y;
-
-		var endPoint = new Point();
-		endPoint.x = -entityWidth;
-		endPoint.y = startPoint.y;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = startPoint;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = endPoint;
-
-		return travelPath;
-	};
+	}

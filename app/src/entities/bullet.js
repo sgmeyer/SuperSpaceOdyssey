@@ -3,6 +3,9 @@
 		this.sprite = spriteLibrary.getSprite(spriteId || 'lazerBlue');
 		this.travelPath = null;
 
+		this.startPoint = new Point();
+		this.endPoint = new Point();
+
 		this.x = 0;
 		this.y = 0; 
 		this.height = 5 * game.scale;
@@ -18,19 +21,20 @@
 	Bullet.prototype.updateState = function (delta) {
 		this.t += (delta / 10) * this.speed;
 		if(this.t > 1) { this.kill(); }
-		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+		var point = Math.linearInterpolation(this.startPoint, this.endPoint, this.t);
 		this.x = point.x;
 		this.y = point.y;	
+
+
 	};
 
 	Bullet.prototype.shoot = function(startX, startY, leftToRight) {
 		this.x = startX;
 		this.y = startY;
-		if(leftToRight) {
-			this.travelPath = TravelPath.generateStraightPathToRight(new Point(this.x, this.y), this.width);
-		} else {
-			this.travelPath = TravelPath.generateStraightPathToLeft(new Point(this.x, this.y), this.width);
-		}
+		this.startPoint = new Point(startX, startY);
+		if(leftToRight) { this.endPoint = new Point(this.x + game.width, this.y); }
+		else { this.endPoint = new Point(this.x - game.width, this.y); }
+			
 	};
 
 	Bullet.prototype.kill = function() {

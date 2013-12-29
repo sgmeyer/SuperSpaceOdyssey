@@ -547,7 +547,10 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.hitpoints = hitpoints || 1;
 		this.endLevelOnKill = endLevelOnKill || false;
 		if(this.endLevelOnKill) {
-			this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
+			//this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
+			var startX = game.width;
+			var startY = (game.height / 2) - (this.height /2);
+			this.travelPath = TravelPath.generateLinearPath(new Point(startX, startY), new Point(startX - this.width - (25 * game.scale), startY));
 		} else {
 			this.travelPath = TravelPath.generateRandomPath(game.height);
 		}
@@ -611,6 +614,9 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.sprite = spriteLibrary.getSprite(spriteId || 'lazerBlue');
 		this.travelPath = null;
 
+		this.startPoint = new Point();
+		this.endPoint = new Point();
+
 		this.x = 0;
 		this.y = 0; 
 		this.height = 5 * game.scale;
@@ -626,19 +632,20 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	Bullet.prototype.updateState = function (delta) {
 		this.t += (delta / 10) * this.speed;
 		if(this.t > 1) { this.kill(); }
-		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+		var point = Math.linearInterpolation(this.startPoint, this.endPoint, this.t);
 		this.x = point.x;
 		this.y = point.y;	
+
+
 	};
 
 	Bullet.prototype.shoot = function(startX, startY, leftToRight) {
 		this.x = startX;
 		this.y = startY;
-		if(leftToRight) {
-			this.travelPath = TravelPath.generateStraightPathToRight(new Point(this.x, this.y), this.width);
-		} else {
-			this.travelPath = TravelPath.generateStraightPathToLeft(new Point(this.x, this.y), this.width);
-		}
+		this.startPoint = new Point(startX, startY);
+		if(leftToRight) { this.endPoint = new Point(this.x + game.width, this.y); }
+		else { this.endPoint = new Point(this.x - game.width, this.y); }
+			
 	};
 
 	Bullet.prototype.kill = function() {
@@ -743,7 +750,7 @@ function GoodGuy() {
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
 			var bullet = new Bullet(8, 'lazerBlue');
-			bullet.shoot(this.x + this.width - 5, this.y + this.height / 2, true);
+			bullet.shoot(this.x + this.width, this.y + this.height / 2, true);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
 			soundLibrary.playLaser();
@@ -875,18 +882,19 @@ TravelPath.generateRandomPath = function() {
 		return travelPath;
 	};
 
-	TravelPath.generateStraightPathToRight = function(startPoint, entityWidth) {
+	TravelPath.generateLinearPath = function(startPoint, endPoint) {
+		var slope = (endPoint.y - startPoint.y) / (endPoint.x - startPoint.x);
+		var distance = endPoint.y - startPoint.y;
+		var increment = distance / 3;
+		var yintercept = startPoint.y - slope * startPoint.x;
+
 		var p1 = new Point();
-		p1.x = (game.width - startPoint.x) * .33 + startPoint.x;
-		p1.y = startPoint.y;
+		p1.x = startPoint.x + increment;
+		p1.y = slope * p1.x + yintercept;
 
 		var p2 = new Point();
-		p2.x = (game.width - startPoint.x) * .66 + startPoint.x;
-		p2.y =  startPoint.y;
-
-		var endPoint = new Point();
-		endPoint.x = (game.width - startPoint.x) + startPoint.x;
-		endPoint.y = startPoint.y;
+		p2.x = startPoint.x + increment * 2;
+		p2.y = slope * p2.x + yintercept;
 
 		var travelPath = new TravelPath();
 		travelPath.P0 = startPoint;
@@ -895,33 +903,7 @@ TravelPath.generateRandomPath = function() {
 		travelPath.P3 = endPoint;
 
 		return travelPath;
-	};
-
-	TravelPath.generateStraightPathToLeft = function(startPoint, entityWidth) {
-
-		startPoint.x -= entityWidth;
-
-		var p1 = new Point();
-		p1.x = (startPoint.x - entityWidth) * .66;
-		p1.y = startPoint.y;
-
-		var p2 = new Point();
-		p2.x = (startPoint.x - entityWidth) * .33;
-		p2.y =  startPoint.y;
-
-		var endPoint = new Point();
-		endPoint.x = -entityWidth;
-		endPoint.y = startPoint.y;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = startPoint;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = endPoint;
-
-		return travelPath;
-	};
-
+	}
 
 	function SoundLibrary() {
 		this.musicVolume = 1;

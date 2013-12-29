@@ -53,7 +53,7 @@ function GoodGuy() {
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
 			var bullet = new Bullet(8, 'lazerBlue');
-			bullet.shoot(this.x + this.width - 5, this.y + this.height / 2, true);
+			bullet.shoot(this.x + this.width, this.y + this.height / 2, true);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
 			soundLibrary.playLaser();

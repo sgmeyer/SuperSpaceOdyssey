@@ -15,7 +15,9 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.hitpoints = hitpoints || 1;
 		this.endLevelOnKill = endLevelOnKill || false;
 		if(this.endLevelOnKill) {
-			this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
+			var startX = game.width;
+			var startY = (game.height / 2) - (this.height /2);
+			this.travelPath = TravelPath.generateLinearPath(new Point(startX, startY), new Point(startX - this.width - (25 * game.scale), startY));
 		} else {
 			this.travelPath = TravelPath.generateRandomPath(game.height);
 		}
