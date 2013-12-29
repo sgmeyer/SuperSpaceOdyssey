@@ -6,41 +6,6 @@
       soundLibrary, 
       keydown,
       player;
-	function Background() {
-		this.stars = [];
-	};
-
-	Background.prototype.initialize = function() {
-		for(var x = 0; x < 200; x++) {
-			var star = { location: new Point(), speed: 5 * Math.random() };
-			star.location.x = Math.random() * game.width;
-			star.location.y = Math.random() * game.height;
-			this.stars.push(star);
-		}
-	};
-
-	Background.prototype.updateState = function(delta) {
-		this.stars.forEach(function(star) {
-			var distance = (delta*10) * star.speed;
-			star.location.x -= distance;
-		});
-
-		if(this.stars.length < 500 && Math.random() * 5 < 1) {
-			var star = { location: new Point(), speed: 5 * Math.random() };
-			star.location.x = game.width;
-			star.location.y = Math.random() * game.height;
-			this.stars.push(star);
-		}
-
-		this.stars = this.stars.filter(function(star) { return star.location.x > 0; });
-	};
-
-	Background.prototype.draw = function(context) {
-		context.fillStyle = "#FFFFFF";
-		this.stars.forEach(function(star) {
-			context.fillRect(star.location.x, star.location.y, 1, 1);
-		});
-	};
   function Levels() {
   }
 
@@ -452,6 +417,41 @@
     context.stroke();
   };
 
+	function Background() {
+		this.stars = [];
+	};
+
+	Background.prototype.initialize = function() {
+		for(var x = 0; x < 200; x++) {
+			var star = { location: new Point(), speed: 5 * Math.random() };
+			star.location.x = Math.random() * game.width;
+			star.location.y = Math.random() * game.height;
+			this.stars.push(star);
+		}
+	};
+
+	Background.prototype.updateState = function(delta) {
+		this.stars.forEach(function(star) {
+			var distance = (delta*10) * star.speed;
+			star.location.x -= distance;
+		});
+
+		if(this.stars.length < 500 && Math.random() * 5 < 1) {
+			var star = { location: new Point(), speed: 5 * Math.random() };
+			star.location.x = game.width;
+			star.location.y = Math.random() * game.height;
+			this.stars.push(star);
+		}
+
+		this.stars = this.stars.filter(function(star) { return star.location.x > 0; });
+	};
+
+	Background.prototype.draw = function(context) {
+		context.fillStyle = "#FFFFFF";
+		this.stars.forEach(function(star) {
+			context.fillRect(star.location.x, star.location.y, 1, 1);
+		});
+	};
 function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.explosion = null;
 		this.t = 0;
@@ -577,6 +577,53 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.active = false;
 	}
 	
+	function Explosion() {
+		this.t = 0;
+		this.animation = spriteLibrary.getAnimation('explosion');
+		this.rotation = 0;
+		this.playAudio = false;
+
+		this.active = true;
+		this.x = 0;
+		this.y = 0; 
+		this.width = 55 * game.scale;
+		this.height = 55 * game.scale;
+		this.active = true * game.scale;
+		this.speed = 25;
+	};
+
+	Explosion.prototype.draw = function(context) {
+		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
+
+		if(spriteFrame) {
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		}
+	};
+
+	Explosion.prototype.updateState = function(delta) {
+		this.t += (delta / 10) * this.speed;
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
+		if(this.t > 1.2) { this.kill(); }
+	};
+
+	Explosion.prototype.explode = function(spaceCraft) {
+		this.x = spaceCraft.x;
+		this.y = spaceCraft.y;
+		this.rotation = spaceCraft.rotation;
+		this.playAudio = true;
+	};
+
+	Explosion.prototype.kill = function() {
+		this.active = false;
+		this.x = null;
+		this.y = null;
+		this.playAudio = false;
+	};
+
 function GoodGuy() {
 		this.shotInterval = 1000;
 		this.explosion = new Explosion();
@@ -746,6 +793,98 @@ function GoodGuy() {
 			});
 		}
 	};
+
+function Point(x, y) {
+	this.x = x || null;
+	this.y = y || null;
+};
+
+Math.bezier = function(p0, p1, p2, p3, t) {
+	var p4 = Math.linearInterpolation(p0, p1, t);
+	var p5 = Math.linearInterpolation(p1, p2, t);
+	var p6 = Math.linearInterpolation(p2, p3, t);
+	var p7 = Math.linearInterpolation(p4, p5, t);
+	var p8 = Math.linearInterpolation(p5, p6, t);
+	var p9 = Math.linearInterpolation(p7, p8, t);
+
+	return p9;
+}
+
+Math.linearInterpolation = function(p0, p1, t) {
+  var xlerp = p0.x + (p1.x - p0.x) * t;
+  var ylerp = p0.y + (p1.y - p0.y) * t;
+
+  var newPoint = new Point();
+  newPoint.x = xlerp;
+  newPoint.y = ylerp;
+  return newPoint;
+}
+
+function TravelPath() {
+	this.P0 = undefined;
+	this.P1 = undefined;
+	this.P2 = undefined;
+	this.P3 = undefined;
+};
+
+TravelPath.generateRandomPath = function(gameHeight) {
+		var constraint = 200;
+		var travelPath = new TravelPath();
+
+		var p0 = new Point();
+		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p0.y = game.width / 2;
+
+		var p1 = new Point();
+		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p1.y = Math.random() * 100 + 100;
+
+		var p2 = new Point();
+		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p2.y = Math.random() * -200 - 50;
+
+		var p3 = new Point();
+		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p3.y = (game.width / 2* -1)-50;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = p0;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = p3;
+
+		return travelPath;
+	};
+
+	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
+		var distance = gameWidth + projectileWidth;
+		var divisions = distance / 3;
+
+		var startPoint = new Point();
+		startPoint.x = startX - (projectileWidth/2);
+		startPoint.y = startY;
+
+		var endPoint = new Point();
+		endPoint.x = startPoint.x;
+		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
+
+		var p1 = new Point();
+		p1.x = startPoint.x;
+		p1.y = startPoint.y - divisions;
+
+		var p2 = new Point();
+		p2.x = p1.x;
+		p2.y = p1.y - divisions;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = startPoint;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = endPoint;
+
+		return travelPath;
+	};
+
 
 	function SoundLibrary() {
 		this.musicVolume = 1;
@@ -970,145 +1109,6 @@ Player.prototype.kill = function() {
       }
     });
   };
-
-	function Explosion() {
-		this.t = 0;
-		this.animation = spriteLibrary.getAnimation('explosion');
-		this.rotation = 0;
-		this.playAudio = false;
-
-		this.active = true;
-		this.x = 0;
-		this.y = 0; 
-		this.width = 55 * game.scale;
-		this.height = 55 * game.scale;
-		this.active = true * game.scale;
-		this.speed = 25;
-	};
-
-	Explosion.prototype.draw = function(context) {
-		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
-
-		if(spriteFrame) {
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
-			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
-			context.restore();
-		}
-	};
-
-	Explosion.prototype.updateState = function(delta) {
-		this.t += (delta / 10) * this.speed;
-		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
-		if(this.t > 1.2) { this.kill(); }
-	};
-
-	Explosion.prototype.explode = function(spaceCraft) {
-		this.x = spaceCraft.x;
-		this.y = spaceCraft.y;
-		this.rotation = spaceCraft.rotation;
-		this.playAudio = true;
-	};
-
-	Explosion.prototype.kill = function() {
-		this.active = false;
-		this.x = null;
-		this.y = null;
-		this.playAudio = false;
-	};
-
-function Point(x, y) {
-	this.x = x || null;
-	this.y = y || null;
-};
-
-Math.bezier = function(p0, p1, p2, p3, t) {
-	var p4 = Math.linearInterpolation(p0, p1, t);
-	var p5 = Math.linearInterpolation(p1, p2, t);
-	var p6 = Math.linearInterpolation(p2, p3, t);
-	var p7 = Math.linearInterpolation(p4, p5, t);
-	var p8 = Math.linearInterpolation(p5, p6, t);
-	var p9 = Math.linearInterpolation(p7, p8, t);
-
-	return p9;
-}
-
-Math.linearInterpolation = function(p0, p1, t) {
-  var xlerp = p0.x + (p1.x - p0.x) * t;
-  var ylerp = p0.y + (p1.y - p0.y) * t;
-
-  var newPoint = new Point();
-  newPoint.x = xlerp;
-  newPoint.y = ylerp;
-  return newPoint;
-}
-
-function TravelPath() {
-	this.P0 = undefined;
-	this.P1 = undefined;
-	this.P2 = undefined;
-	this.P3 = undefined;
-};
-
-TravelPath.generateRandomPath = function(gameHeight) {
-		var constraint = 200;
-		var travelPath = new TravelPath();
-
-		var p0 = new Point();
-		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p0.y = game.width / 2;
-
-		var p1 = new Point();
-		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p1.y = Math.random() * 100 + 100;
-
-		var p2 = new Point();
-		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p2.y = Math.random() * -200 - 50;
-
-		var p3 = new Point();
-		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p3.y = (game.width / 2* -1)-50;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = p0;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = p3;
-
-		return travelPath;
-	};
-
-	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
-		var distance = gameWidth + projectileWidth;
-		var divisions = distance / 3;
-
-		var startPoint = new Point();
-		startPoint.x = startX - (projectileWidth/2);
-		startPoint.y = startY;
-
-		var endPoint = new Point();
-		endPoint.x = startPoint.x;
-		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
-
-		var p1 = new Point();
-		p1.x = startPoint.x;
-		p1.y = startPoint.y - divisions;
-
-		var p2 = new Point();
-		p2.x = p1.x;
-		p2.y = p1.y - divisions;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = startPoint;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = endPoint;
-
-		return travelPath;
-	};
-
 
   function Variables() {
   }
