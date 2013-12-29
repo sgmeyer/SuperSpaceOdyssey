@@ -97,7 +97,7 @@
                 { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
 
-                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
+                { distance: 20, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];
   }
@@ -534,7 +534,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.explosion = null;
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
-		this.x = -game.width;
+		this.x = game.width;
 		this.y = game.height; 
 		this.width = (width || 50) * game.scale;
 		this.height = (height || 50) * game.scale;
@@ -547,7 +547,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.hitpoints = hitpoints || 1;
 		this.endLevelOnKill = endLevelOnKill || false;
 		if(this.endLevelOnKill) {
-			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
+			this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
 		} else {
 			this.travelPath = TravelPath.generateRandomPath(game.height);
 		}
@@ -576,13 +576,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 	BadGuy.prototype.draw = function (context) {
 		if(!this.exploding) {
-			this.rotation = (Math.PI / 180) * 270;
-
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
 			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
@@ -605,9 +599,9 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
-			var bullet = new Bullet(8, 'lazerRed');
+			var bullet = new Bullet(4, 'lazerRed');
 			bullet.rotation = 270;
-			bullet.shoot(this.x + (this.width/2), this.y);
+			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);
 		}
 	};
@@ -619,36 +613,32 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 		this.x = 0;
 		this.y = 0; 
-		this.width = 5 * game.scale;
-		this.height = 25 * game.scale;
-		this.rotation = 90;
+		this.height = 5 * game.scale;
+		this.width = 20 * game.scale;
 		this.active = true;
 		this.speed = speed || 8;
 	};
 
 	Bullet.prototype.draw = function (context) {
-		var rotation = (Math.PI / 180) * this.rotation;
-
-		context.save();
-		context.translate(game.width/2, game.height/2);
-		context.rotate(rotation);
 		context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-		context.restore();
 	};
 
 	Bullet.prototype.updateState = function (delta) {
-		
-		this.t += (delta / 10) * this.speed * game.scale;
+		this.t += (delta / 10) * this.speed;
 		if(this.t > 1) { this.kill(); }
 		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
 		this.x = point.x;
 		this.y = point.y;	
 	};
 
-	Bullet.prototype.shoot = function(startX, startY) {
+	Bullet.prototype.shoot = function(startX, startY, leftToRight) {
 		this.x = startX;
 		this.y = startY;
-		this.travelPath = TravelPath.generateStraightPath(this.x, this.y, game.width, this.width);
+		if(leftToRight) {
+			this.travelPath = TravelPath.generateStraightPathToRight(new Point(this.x, this.y), this.width);
+		} else {
+			this.travelPath = TravelPath.generateStraightPathToLeft(new Point(this.x, this.y), this.width);
+		}
 	};
 
 	Bullet.prototype.kill = function() {
@@ -674,11 +664,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
 
 		if(spriteFrame) {
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
 			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
-			context.restore();
 		}
 	};
 
@@ -709,8 +695,8 @@ function GoodGuy() {
 		this.active = true;
 		this.width = 50 * game.scale;
 		this.height = 50 * game.scale;
-		this.x = (this.height/2*-1);
-		this.y = ((game.width/2)-this.width); 
+		this.x = 0;
+		this.y = game.height / 2 - this.height / 2; 
 		this.speed = 8;
 		this.rotation = 0;
 		this.shotBullets = [];
@@ -720,49 +706,21 @@ function GoodGuy() {
 
 	GoodGuy.prototype.updateState = function(delta) {
 		this.invincibilityTimeRemaining -= delta;
-		if(this.invincibilityTimeRemaining > 0) {
-			this.sprite = spriteLibrary.getSprite('goodGuyShipInvincible');
-		} else {
-			this.sprite = spriteLibrary.getSprite('goodGuyShip');
-		}
+
+		var spriteId = this.invincibilityTimeRemaining > 0 ? 'goodGuyShipInvincible' : 'goodGuyShip';
+		this.sprite = spriteLibrary.getSprite(spriteId);
 
 		this.shotInterval += (delta / 10) * this.speed;		
-		var distance = delta * 50 * this.speed;	
+		var distance = delta * (50 * game.scale ) * this.speed;	
 
 		if(!this.exploding) {
-			if (keydown.up) {    
-				this.x -= distance;    
-	      if (this.x < (game.height/2) * -1) {
-					this.x = game.height/2 * -1;
-				}
-	    }
-	        
-	    if (keydown.down) {
-	    	this.x += distance;
-      	if (this.x > (game.height/2)-this.width) {
-    			this.x = (game.height/2)-this.width;
-    		}
-	    }
+			if (keydown.left) { this.x = Math.max(this.x - distance, 0); }
+	    if (keydown.right) { this.x = Math.min(this.x + distance, game.width - this.width); }
+	    if (keydown.up) { this.y = Math.max(this.y - distance, 0); }
+	    if (keydown.down) { this.y = Math.min(this.y + distance, game.height - this.height); }
 
-	    if (keydown.right) {
-	    	this.y -= distance;
-	    	if (this.y < (game.width/2) * -1) {
-    			this.y = (game.width/2) * -1;
-	    	}
-	    }
-
-	    if (keydown.left) {
-	    	this.y += distance;
-	    	if (this.y > (game.width/2) - this.height)  {
-					this.y = (game.width/2) - this.height;
-	    	}
-	    }
-
-	    if(keydown.space) {
-	    	this.shoot();
-	    } else {
-	    	this.shotInterval = 1000;
-	    }
+	    if(keydown.space) { this.shoot(); }
+	    else { this.shotInterval = 1000; }
 		} else {
 			if(this.explosion.active) { this.explosion.updateState(delta); }
 		}
@@ -774,13 +732,7 @@ function GoodGuy() {
 
 	GoodGuy.prototype.draw = function(context) {
 		if(!this.exploding) {
-			this.rotation = (Math.PI / 180.0) * 90;
-
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
 			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
@@ -791,8 +743,7 @@ function GoodGuy() {
 	GoodGuy.prototype.shoot = function() {
 		if(this.shotInterval >= .2) {
 			var bullet = new Bullet(8, 'lazerBlue');
-			bullet.rotation = 90;;
-			bullet.shoot(this.x+(this.width/2), this.y);
+			bullet.shoot(this.x + this.width - 5, this.y + this.height / 2, true);
 			this.shotBullets.push(bullet);
 			this.shotInterval = 0;
 			soundLibrary.playLaser();
@@ -817,25 +768,15 @@ function GoodGuy() {
 		this.invincibilityTimeRemaining = time || 0;
 	}
 
-
 	function CollisionEngine() {
 
 	}
 
 	CollisionEngine.collides = function(a, b) {
-
-		var a_x = (a.y * -1) + (game.width/2) - a.width;
-		var a_y = a.x + (game.height/2);
-		var a_width = a.height;
-		var a_height = a.width;
-		var b_x = b.y + (game.width/2);
-		var b_y = (b.x * -1) + (game.height/2) - b.height;	
-
-		// TODO: does this return a boolean or a truth/falsy.
-		return a_x < b_x + b.width &&
-				   a_x + a.width > b_x &&
-				   a_y < b_y + b.height &&
-				   a_y + a.height > b_y;
+		return a.x < b.x + b.width &&
+					 a.x + a.width > b.x &&
+					 a.y < b.y + b.height &&
+					 a.y + a.height > b.y;
 	};
 
 	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
@@ -905,26 +846,26 @@ function TravelPath() {
 	this.P3 = undefined;
 };
 
-TravelPath.generateRandomPath = function(gameHeight) {
-		var constraint = 200;
+TravelPath.generateRandomPath = function() {
+		var constraint = 200 * game.scale;
 		var travelPath = new TravelPath();
 
 		var p0 = new Point();
-		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p0.y = game.width / 2;
+		p0.x = game.width;
+		p0.y = game.height - (Math.random() * (game.height + constraint) - constraint/2);
 
 		var p1 = new Point();
-		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p1.y = Math.random() * 100 + 100;
+		p1.x = game.width * .33;
+		p1.y = game.height - (Math.random() * (game.height + constraint) - constraint/2);
 
 		var p2 = new Point();
-		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p2.y = Math.random() * -200 - 50;
+		p2.x = game.width * .66;
+		p2.y = game.height - (Math.random() * (game.height + constraint) - constraint/2);
 
 		var p3 = new Point();
-		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p3.y = (game.width / 2* -1)-50;
-
+		p3.x = 0;
+		p3.y = game.height - (Math.random() * (game.height + constraint) - constraint/2);
+		
 		var travelPath = new TravelPath();
 		travelPath.P0 = p0;
 		travelPath.P1 = p1;
@@ -934,25 +875,43 @@ TravelPath.generateRandomPath = function(gameHeight) {
 		return travelPath;
 	};
 
-	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
-		var distance = gameWidth + projectileWidth;
-		var divisions = distance / 3;
-
-		var startPoint = new Point();
-		startPoint.x = startX - (projectileWidth/2);
-		startPoint.y = startY;
-
-		var endPoint = new Point();
-		endPoint.x = startPoint.x;
-		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
-
+	TravelPath.generateStraightPathToRight = function(startPoint, entityWidth) {
 		var p1 = new Point();
-		p1.x = startPoint.x;
-		p1.y = startPoint.y - divisions;
+		p1.x = (game.width - startPoint.x) * .33 + startPoint.x;
+		p1.y = startPoint.y;
 
 		var p2 = new Point();
-		p2.x = p1.x;
-		p2.y = p1.y - divisions;
+		p2.x = (game.width - startPoint.x) * .66 + startPoint.x;
+		p2.y =  startPoint.y;
+
+		var endPoint = new Point();
+		endPoint.x = (game.width - startPoint.x) + startPoint.x;
+		endPoint.y = startPoint.y;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = startPoint;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = endPoint;
+
+		return travelPath;
+	};
+
+	TravelPath.generateStraightPathToLeft = function(startPoint, entityWidth) {
+
+		startPoint.x -= entityWidth;
+
+		var p1 = new Point();
+		p1.x = (startPoint.x - entityWidth) * .66;
+		p1.y = startPoint.y;
+
+		var p2 = new Point();
+		p2.x = (startPoint.x - entityWidth) * .33;
+		p2.y =  startPoint.y;
+
+		var endPoint = new Point();
+		endPoint.x = -entityWidth;
+		endPoint.y = startPoint.y;
 
 		var travelPath = new TravelPath();
 		travelPath.P0 = startPoint;
@@ -1025,15 +984,15 @@ function SpriteLibrary() {
   explosionImage.src = 'images/exp2_0.png';
 
   this.staticSprites = [
-    {id: 'goodGuyShip', x: 69, y: 125, width: 56, height: 59, image: shipImage},
-    {id: 'goodGuyShipInvincible', x: 69, y: 125, width: 56, height: 59, image: shipImageTransparent},
-    {id: 'badGuyShip', x: 131, y: 128, width: 54, height: 56, image: shipImage},
-    {id: 'badGuyShip2', x: 6, y: 3, width: 56, height: 43, image: shipImage},
-    {id: 'badGuyShip3', x: 132, y: 4, width: 52, height: 55, image: shipImage},
-    {id: 'badGuyShip4', x: 71, y: 65, width: 49, height: 57, image: shipImage},
+    {id: 'goodGuyShip', x: 127, y: 67, width: 59, height: 56, image: shipImage},
+    {id: 'goodGuyShipInvincible', x: 127, y: 67, width: 59, height: 56, image: shipImageTransparent},
+    {id: 'badGuyShip', x: 130, y: 6, width: 57, height: 55, image: shipImage},
+    {id: 'badGuyShip2', x: 4, y: 7, width: 55, height: 53, image: shipImage},
+    {id: 'badGuyShip3', x: 65, y: 70, width: 58, height: 51, image: shipImage},
+    {id: 'badGuyShip4', x: 4, y: 130, width: 55, height: 56, image: shipImage},
     //{id: 'bomb', x: 133, y: 69, width: 18, height: 45, image: shipImage},
-    {id: 'lazerBlue', x: 85, y: 69, width: 49, height: 13, image: bulletImage},
-    {id: 'lazerRed', x: 85, y: 52, width: 49, height: 13, image: bulletImage},
+    {id: 'lazerBlue', x: 86, y: 69, width: 47, height: 13, image: bulletImage},
+    {id: 'lazerRed', x: 86, y: 52, width: 47, height: 13, image: bulletImage},
     {id: 'boss1', x: 0, y: 0, width: 278, height: 347, image:boss1}
   ];
   this.animationSprites = [

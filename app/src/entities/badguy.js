@@ -2,7 +2,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.explosion = null;
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
-		this.x = -game.width;
+		this.x = game.width;
 		this.y = game.height; 
 		this.width = (width || 50) * game.scale;
 		this.height = (height || 50) * game.scale;
@@ -15,7 +15,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.hitpoints = hitpoints || 1;
 		this.endLevelOnKill = endLevelOnKill || false;
 		if(this.endLevelOnKill) {
-			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
+			this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
 		} else {
 			this.travelPath = TravelPath.generateRandomPath(game.height);
 		}
@@ -44,13 +44,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 	BadGuy.prototype.draw = function (context) {
 		if(!this.exploding) {
-			this.rotation = (Math.PI / 180) * 270;
-
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
 			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-			context.restore();
 		} else {
 			if(this.explosion.active) { this.explosion.draw(ctx); }
 		}
@@ -73,9 +67,9 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
-			var bullet = new Bullet(8, 'lazerRed');
+			var bullet = new Bullet(4, 'lazerRed');
 			bullet.rotation = 270;
-			bullet.shoot(this.x + (this.width/2), this.y);
+			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);
 		}
 	};

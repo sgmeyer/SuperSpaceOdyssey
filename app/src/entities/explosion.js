@@ -17,11 +17,7 @@
 		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
 
 		if(spriteFrame) {
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
 			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
-			context.restore();
 		}
 	};
 
