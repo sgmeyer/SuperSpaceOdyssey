@@ -153,131 +153,6 @@ SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
 			context.fillRect(star.location.x, star.location.y, 1, 1);
 		});
 	};
-function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
-		this.explosion = null;
-		this.t = 0;
-		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
-		this.x = -game.width;
-		this.y = game.height; 
-		this.width = (width || 50) * game.scale;
-		this.height = (height || 50) * game.scale;
-		this.active = true;
-		this.speed = 2;
-		this.rotation = 0;
-		this.shotBullets = [];
-		this.exploding = false;
-
-		this.hitpoints = hitpoints || 1;
-		this.endLevelOnKill = endLevelOnKill || false;
-		if(this.endLevelOnKill) {
-			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
-		} else {
-			this.travelPath = TravelPath.generateRandomPath(game.height);
-		}
-	};
-
-	BadGuy.prototype.updateState = function (delta) {
-		if(!this.exploding) {
-			this.t += (delta / 10) * this.speed;
-
-			if(this.t <= 1) {
-				var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
-				this.x = point.x;
-				this.y = point.y;
-			} else if(!this.endLevelOnKill) {
-				this.kill();
-			}
-		} else {
-			if(this.explosion.active) { this.explosion.updateState(delta); }
-		}
-
-		if(this.exploding && this.explosion.active == false && this.shotBullets.length <= 0) this.kill();
-
-		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
-		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
-	};
-
-	BadGuy.prototype.draw = function (context) {
-		if(!this.exploding) {
-			this.rotation = (Math.PI / 180) * 270;
-
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
-			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-			context.restore();
-		} else {
-			if(this.explosion.active) { this.explosion.draw(ctx); }
-		}
-
-		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
-	};
-
-	BadGuy.prototype.kill = function() {
-		this.active = false;
-		this.ShotBullets = [];
-	}
-
-	BadGuy.prototype.explode = function() {
-		if(!this.exploding) {
-			this.exploding = true;
-			this.explosion = new Explosion();
-			this.explosion.explode(this);
-		}
-	}
-
-	BadGuy.prototype.shoot = function() {
-		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
-			var bullet = new Bullet();
-			bullet.rotation = 270;
-			bullet.shoot(this.x + (this.width/2), this.y);
-			this.shotBullets.push(bullet);
-		}
-	};
-
-	function Bullet(speed) {
-		this.t = 0;
-		this.sprite = spriteLibrary.getSprite('bullet');
-		this.travelPath = null;
-
-		this.x = 0;
-		this.y = 0; 
-		this.width = 8 * game.scale;
-		this.height = 20 * game.scale;
-		this.rotation = 90;
-		this.active = true;
-		this.speed = speed || 8;
-	};
-
-	Bullet.prototype.draw = function (context) {
-		var rotation = (Math.PI / 180) * this.rotation;
-
-		context.save();
-		context.translate(game.width/2, game.height/2);
-		context.rotate(rotation);
-		context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-		context.restore();
-	};
-
-	Bullet.prototype.updateState = function (delta) {
-		
-		this.t += (delta / 10) * this.speed * game.scale;
-		if(this.t > 1) { this.kill(); }
-		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
-		this.x = point.x;
-		this.y = point.y;	
-	};
-
-	Bullet.prototype.shoot = function(startX, startY) {
-		this.x = startX;
-		this.y = startY;
-		this.travelPath = TravelPath.generateStraightPath(this.x, this.y, game.width, this.width);
-	};
-
-	Bullet.prototype.kill = function() {
-		this.active = false;
-	}
-	
 	function CollisionEngine() {
 
 	}
@@ -332,434 +207,115 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		}
 	};
 
-	function Controls() {
+  function Levels() {
+  }
+
+  Levels.getAll = function() {
+   
+    return [{ distance: 500,
+              obstacles: [
+                { distance: 10, type: 'enemy', entity: new BadGuy() },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip2') },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip3') },
+                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 20, type: 'enemy', entity: new BadGuy() },
+                { distance: 28, type: 'enemy', entity: new BadGuy() },
+                { distance: 30, type: 'enemy', entity: new BadGuy() },
+                { distance: 35, type: 'enemy', entity: new BadGuy() },
+                { distance: 35, type: 'enemy', entity: new BadGuy() },
+                { distance: 40, type: 'enemy', entity: new BadGuy() },
+                { distance: 50, type: 'enemy', entity: new BadGuy() },
+                { distance: 60, type: 'enemy', entity: new BadGuy() },
+                { distance: 70, type: 'enemy', entity: new BadGuy() },
+                { distance: 80, type: 'enemy', entity: new BadGuy() },
+                { distance: 85, type: 'enemy', entity: new BadGuy() },
+                { distance: 85, type: 'enemy', entity: new BadGuy() },
+                { distance: 87, type: 'enemy', entity: new BadGuy() },
+                { distance: 90, type: 'enemy', entity: new BadGuy() },
+                { distance: 95, type: 'enemy', entity: new BadGuy() },
+                { distance: 105, type: 'enemy', entity: new BadGuy() },
+                { distance: 110, type: 'enemy', entity: new BadGuy() },
+                { distance: 110, type: 'enemy', entity: new BadGuy() },
+                { distance: 115, type: 'enemy', entity: new BadGuy() },
+                { distance: 120, type: 'enemy', entity: new BadGuy() }, 
+                { distance: 128, type: 'enemy', entity: new BadGuy() },
+                { distance: 130, type: 'enemy', entity: new BadGuy() },
+                { distance: 135, type: 'enemy', entity: new BadGuy() },
+                { distance: 135, type: 'enemy', entity: new BadGuy() },
+                { distance: 140, type: 'enemy', entity: new BadGuy() },
+                { distance: 150, type: 'enemy', entity: new BadGuy() },
+                { distance: 160, type: 'enemy', entity: new BadGuy() },
+                { distance: 170, type: 'enemy', entity: new BadGuy() },
+                { distance: 180, type: 'enemy', entity: new BadGuy() },
+                { distance: 185, type: 'enemy', entity: new BadGuy() },
+                { distance: 185, type: 'enemy', entity: new BadGuy() },
+                { distance: 187, type: 'enemy', entity: new BadGuy() },
+                { distance: 190, type: 'enemy', entity: new BadGuy() },
+                { distance: 195, type: 'enemy', entity: new BadGuy() },
+                { distance: 205, type: 'enemy', entity: new BadGuy() },
+                { distance: 210, type: 'enemy', entity: new BadGuy() },
+                { distance: 210, type: 'enemy', entity: new BadGuy() },
+                { distance: 215, type: 'enemy', entity: new BadGuy() },
+                { distance: 220, type: 'enemy', entity: new BadGuy() }, 
+                { distance: 240, type: 'enemy', entity: new BadGuy() },
+                { distance: 245, type: 'enemy', entity: new BadGuy() },
+                { distance: 248, type: 'enemy', entity: new BadGuy() },
+                { distance: 250, type: 'enemy', entity: new BadGuy() },
+                { distance: 270, type: 'enemy', entity: new BadGuy() },
+                { distance: 280, type: 'enemy', entity: new BadGuy() },
+                { distance: 285, type: 'enemy', entity: new BadGuy() },
+                { distance: 285, type: 'enemy', entity: new BadGuy() },
+                { distance: 300, type: 'enemy', entity: new BadGuy() },
+                { distance: 300, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 310, type: 'enemy', entity: new BadGuy() },
+                { distance: 320, type: 'enemy', entity: new BadGuy() },
+                { distance: 328, type: 'enemy', entity: new BadGuy() },
+                { distance: 330, type: 'enemy', entity: new BadGuy() },
+                { distance: 335, type: 'enemy', entity: new BadGuy() },
+                { distance: 335, type: 'enemy', entity: new BadGuy() },
+                { distance: 340, type: 'enemy', entity: new BadGuy() },
+                { distance: 350, type: 'enemy', entity: new BadGuy() },
+                { distance: 360, type: 'enemy', entity: new BadGuy() },
+                { distance: 370, type: 'enemy', entity: new BadGuy() },
+                { distance: 380, type: 'enemy', entity: new BadGuy() },
+                { distance: 385, type: 'enemy', entity: new BadGuy() },
+                { distance: 385, type: 'enemy', entity: new BadGuy() },
+                { distance: 387, type: 'enemy', entity: new BadGuy() },
+                { distance: 390, type: 'enemy', entity: new BadGuy() },
+                { distance: 395, type: 'enemy', entity: new BadGuy() },
+                { distance: 405, type: 'enemy', entity: new BadGuy() },
+                { distance: 410, type: 'enemy', entity: new BadGuy() },
+                { distance: 410, type: 'enemy', entity: new BadGuy() },
+                { distance: 415, type: 'enemy', entity: new BadGuy() },
+                { distance: 420, type: 'enemy', entity: new BadGuy('badGuyShip4') },              
+                { distance: 440, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 445, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 448, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 450, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+                { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
+
+                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
+              ]
+            }];
+  }
+
+	function LevelManager() {
+		var levels = Levels.getAll();
+		this.currentLevel = levels[0];
 	}
 
-	Controls.keycode = {
-		space: 32,
-		left: 37,
-		up: 38,
-		right: 39,
-		down: 40
-	};
+	LevelManager.prototype.getCurrentLevel = function() {
+		var levelData = this.currentLevel;
 
-	Controls.keyName = function(event) {
-    if(Controls.keycode.left == event.which) { return 'left' };
-    if(Controls.keycode.up == event.which) { return 'up' };
-    if(Controls.keycode.right == event.which) { return 'right' };
-    if(Controls.keycode.down == event.which) { return 'down' };
-    if(Controls.keycode.space == event.which) { return 'space' };
-    return event.which;
-  }
-  
-  function KeyboardGameController() {
-  };
+		var level = new Level(levelData);
+		level.initialize();
 
-  KeyboardGameController.prototype.initialize = function() {
-    keydown = {};
-
-    document.onkeydown = function(event) {
-      keydown[Controls.keyName(event)] = true;
-      event.preventDefault();
-    };
-
-    document.onkeyup = function(event) {
-      keydown[Controls.keyName(event)] = false;
-      event.preventDefault();
-    };
-  };
-
-function Player() {
-  this.points = 0;
-  this.lives = 30;
-  this.currentGoodGuy;
-}
-
-Player.prototype.addPoints = function(points) {
-  this.points += points || 0;
-};
-
-Player.prototype.addLife = function() {
-  this.lives++;
-}
-
-Player.prototype.removeLife = function() {
-  this.lives--;
-}
-
-Player.prototype.getScore = function() {
-  return this.points.toString();
-}
-
-Player.prototype.getCurrentGoodGuy = function() {
-  return this.currentGoodGuy = this.currentGoodGuy || new GoodGuy();
-}
-
-Player.prototype.hasLives = function() {
-  return this.lives > 0;
-}
-
-Player.prototype.kill = function() {
-  this.removeLife();
-  this.currentGoodGuy = undefined;
-}
-  function TouchGameController() {
-  };
-
-  TouchGameController.prototype.initialize = function() {
-    GameController.init({ 
-      left: { 
-        position: { left: '10%', bottom: '17%' },
-        type: 'joystick',
-        joystick: {
-          touchMove: function(details) {
-            keydown['left'] = details.normalizedX < 0;
-            keydown['up'] = details.normalizedY > 0;
-            keydown['right'] = details.normalizedX > 0;
-            keydown['down'] = details.normalizedY < 0;
-          },
-          touchEnd: function() {
-            keydown['left'] = false;
-            keydown['up'] = false;
-            keydown['right'] = false;
-            keydown['down'] = false;
-          }
-        }
-      }, 
-      right: { 
-        position: { right: '5%' }, 
-        type: 'buttons', 
-        buttons: [
-          { label: 'shoot', fontSize: 13, backgroundColor: 'red', 
-            touchStart: function() { 
-              keydown['space'] = true;
-            },
-            touchEnd: function() {
-              keydown['space'] = false;
-            }
-          }, 
-          false, false, false
-        ] 
-      }
-    });
-  };
-
-	function Explosion() {
-		this.t = 0;
-		this.animation = spriteLibrary.getAnimation('explosion');
-		this.rotation = 0;
-		this.playAudio = false;
-
-		this.active = true;
-		this.x = 0;
-		this.y = 0; 
-		this.width = 55 * game.scale;
-		this.height = 55 * game.scale;
-		this.active = true * game.scale;
-		this.speed = 25;
-	};
-
-	Explosion.prototype.draw = function(context) {
-		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
-
-		if(spriteFrame) {
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
-			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
-			context.restore();
-		}
-	};
-
-	Explosion.prototype.updateState = function(delta) {
-		this.t += (delta / 10) * this.speed;
-		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
-		if(this.t > 1.2) { this.kill(); }
-	};
-
-	Explosion.prototype.explode = function(spaceCraft) {
-		this.x = spaceCraft.x;
-		this.y = spaceCraft.y;
-		this.rotation = spaceCraft.rotation;
-		this.playAudio = true;
-	};
-
-	Explosion.prototype.kill = function() {
-		this.active = false;
-		this.x = null;
-		this.y = null;
-		this.playAudio = false;
-	};
-
-function GoodGuy() {
-		this.shotInterval = 1000;
-		this.explosion = new Explosion();
-		this.sprite = spriteLibrary.getSprite('goodGuyShip');
-		this.active = true;
-		this.width = 50 * game.scale;
-		this.height = 50 * game.scale;
-		this.x = (this.height/2*-1);
-		this.y = ((game.width/2)-this.width); 
-		this.speed = 8;
-		this.rotation = 0;
-		this.shotBullets = [];
-		this.exploding = false;
-		this.invincibilityTimeRemaining = 3;
-	}; 
-
-	GoodGuy.prototype.updateState = function(delta) {
-		this.invincibilityTimeRemaining -= delta;
-		if(this.invincibilityTimeRemaining > 0) {
-			this.sprite = spriteLibrary.getSprite('goodGuyShipInvincible');
-		} else {
-			this.sprite = spriteLibrary.getSprite('goodGuyShip');
-		}
-
-		this.shotInterval += (delta / 10) * this.speed;		
-		var distance = delta * 50 * this.speed;	
-
-		if(!this.exploding) {
-			if (keydown.up) {    
-				this.x -= distance;    
-	      if (this.x < (game.height/2) * -1) {
-					this.x = game.height/2 * -1;
-				}
-	    }
-	        
-	    if (keydown.down) {
-	    	this.x += distance;
-      	if (this.x > (game.height/2)-this.width) {
-    			this.x = (game.height/2)-this.width;
-    		}
-	    }
-
-	    if (keydown.right) {
-	    	this.y -= distance;
-	    	if (this.y < (game.width/2) * -1) {
-    			this.y = (game.width/2) * -1;
-	    	}
-	    }
-
-	    if (keydown.left) {
-	    	this.y += distance;
-	    	if (this.y > (game.width/2) - this.height)  {
-					this.y = (game.width/2) - this.height;
-	    	}
-	    }
-
-	    if(keydown.space) {
-	    	this.shoot();
-	    } else {
-	    	this.shotInterval = 1000;
-	    }
-		} else {
-			if(this.explosion.active) { this.explosion.updateState(delta); }
-		}
-
-		if(this.exploding && !this.explosion.active && this.shotBullets.length <= 0) { this.kill() };
-		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
-		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
-	};
-
-	GoodGuy.prototype.draw = function(context) {
-		if(!this.exploding) {
-			this.rotation = (Math.PI / 180.0) * 90;
-
-			context.save();
-			context.translate(game.width/2, game.height/2);
-			context.rotate(this.rotation);
-			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
-			context.restore();
-		} else {
-			if(this.explosion.active) { this.explosion.draw(ctx); }
-		}
-
-		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
-	};
-
-	GoodGuy.prototype.shoot = function() {
-		if(this.shotInterval >= .2) {
-			var bullet = new Bullet(8);
-			bullet.rotation = 90;;
-			bullet.shoot(this.x+(this.width/2), this.y);
-			this.shotBullets.push(bullet);
-			this.shotInterval = 0;
-			soundLibrary.playLaser();
-		}
-	};
-
-	GoodGuy.prototype.kill = function() {
-		this.active = false;
-		this.shotBullets = [];
-		player.kill();
-	};
-
-	GoodGuy.prototype.explode = function() {
-		if(!this.exploding) {
-			this.exploding = true;
-			this.explosion = new Explosion();
-			this.explosion.explode(this);
-		}
-	};
-
-	GoodGuy.prototype.setInvincability = function(time) {
-		this.invincibilityTimeRemaining = time || 0;
+		return level;
 	}
-
-
-  function LinkButton(x, y, label, textAlign) {
-    this.x = x || 0;
-    this.y = y || 0;
-    this.label = label || '';
-    this.textAlign = textAlign || '';
-    this.active = true;
-  }
-
-  LinkButton.prototype.setActive = function(isActive) {
-    this.active = isActive ? true : false;
-  }
-
-  LinkButton.prototype.draw = function (context) {
-    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
-    context.font = Variables.optionsFont();
-    context.textAlign = this.textAlign;
-    context.fillText(this.label, this.x, this.y);
-  }
-
-  // TODO: refactor to use configuration instead of many parameters.
-  function RangeSelector(min, max, current, x, y, label) {
-    this.min = min || 0;
-    this.max = max || 1;
-    this.current = current || this.min;
-    this.x = x || 0;
-    this.y = y || 0;
-    this.label = label || '';
-    this.active = false;
-  }
-
-  RangeSelector.prototype.setActive = function(isActive) {
-    this.active = isActive ? true : false;
-  }
-
-  RangeSelector.prototype.adjust = function(adjustedValue) {
-    var val = adjustedValue || 0;
-    this.current = this.current + val;
-
-    if(this.current > this.max) { this.current = this.max; }
-    else if (this.current < this.min) { this.current = this.min }
-  }
-
-  RangeSelector.prototype.draw = function(context) {
-    var startingPoint = this.x;
-    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
-    context.font = Variables.optionsFont();
-    context.textAlign = 'left';
-    context.fillText(this.label, this.y, startingPoint);
-
-    context.beginPath();
-    context.rect(this.y, startingPoint + 10, 200, 20);
-    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusBorderColor() : Variables.optionsRangeSelectorOutOfFocusBorderColor();
-    context.stroke();
-
-    context.beginPath();
-    context.rect(this.y+2, startingPoint + 12, 196*this.current, 16);
-    context.fillStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
-    context.fill();
-    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
-    context.stroke();
-  };
-
-function Point(x, y) {
-	this.x = x || null;
-	this.y = y || null;
-};
-
-Math.bezier = function(p0, p1, p2, p3, t) {
-	var p4 = Math.linearInterpolation(p0, p1, t);
-	var p5 = Math.linearInterpolation(p1, p2, t);
-	var p6 = Math.linearInterpolation(p2, p3, t);
-	var p7 = Math.linearInterpolation(p4, p5, t);
-	var p8 = Math.linearInterpolation(p5, p6, t);
-	var p9 = Math.linearInterpolation(p7, p8, t);
-
-	return p9;
-}
-
-Math.linearInterpolation = function(p0, p1, t) {
-  var xlerp = p0.x + (p1.x - p0.x) * t;
-  var ylerp = p0.y + (p1.y - p0.y) * t;
-
-  var newPoint = new Point();
-  newPoint.x = xlerp;
-  newPoint.y = ylerp;
-  return newPoint;
-}
-
-function TravelPath() {
-	this.P0 = undefined;
-	this.P1 = undefined;
-	this.P2 = undefined;
-	this.P3 = undefined;
-};
-
-TravelPath.generateRandomPath = function(gameHeight) {
-		var constraint = 200;
-		var travelPath = new TravelPath();
-
-		var p0 = new Point();
-		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p0.y = game.width / 2;
-
-		var p1 = new Point();
-		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p1.y = Math.random() * 100 + 100;
-
-		var p2 = new Point();
-		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p2.y = Math.random() * -200 - 50;
-
-		var p3 = new Point();
-		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
-		p3.y = (game.width / 2* -1)-50;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = p0;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = p3;
-
-		return travelPath;
-	};
-
-	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
-		var distance = gameWidth + projectileWidth;
-		var divisions = distance / 3;
-
-		var startPoint = new Point();
-		startPoint.x = startX - (projectileWidth/2);
-		startPoint.y = startY;
-
-		var endPoint = new Point();
-		endPoint.x = startPoint.x;
-		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
-
-		var p1 = new Point();
-		p1.x = startPoint.x;
-		p1.y = startPoint.y - divisions;
-
-		var p2 = new Point();
-		p2.x = p1.x;
-		p2.y = p1.y - divisions;
-
-		var travelPath = new TravelPath();
-		travelPath.P0 = startPoint;
-		travelPath.P1 = p1;
-		travelPath.P2 = p2;
-		travelPath.P3 = endPoint;
-
-		return travelPath;
-	};
-
 
   function GameOverMenu() {
     this.active = true;
@@ -1000,115 +556,559 @@ TravelPath.generateRandomPath = function(gameHeight) {
     this.active = false;
   };
 
-  function Levels() {
+  function LinkButton(x, y, label, textAlign) {
+    this.x = x || 0;
+    this.y = y || 0;
+    this.label = label || '';
+    this.textAlign = textAlign || '';
+    this.active = true;
   }
 
-  Levels.getAll = function() {
-   
-    return [{ distance: 500,
-              obstacles: [
-                { distance: 10, type: 'enemy', entity: new BadGuy() },
-                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip2') },
-                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip3') },
-                { distance: 10, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 20, type: 'enemy', entity: new BadGuy() },
-                { distance: 28, type: 'enemy', entity: new BadGuy() },
-                { distance: 30, type: 'enemy', entity: new BadGuy() },
-                { distance: 35, type: 'enemy', entity: new BadGuy() },
-                { distance: 35, type: 'enemy', entity: new BadGuy() },
-                { distance: 40, type: 'enemy', entity: new BadGuy() },
-                { distance: 50, type: 'enemy', entity: new BadGuy() },
-                { distance: 60, type: 'enemy', entity: new BadGuy() },
-                { distance: 70, type: 'enemy', entity: new BadGuy() },
-                { distance: 80, type: 'enemy', entity: new BadGuy() },
-                { distance: 85, type: 'enemy', entity: new BadGuy() },
-                { distance: 85, type: 'enemy', entity: new BadGuy() },
-                { distance: 87, type: 'enemy', entity: new BadGuy() },
-                { distance: 90, type: 'enemy', entity: new BadGuy() },
-                { distance: 95, type: 'enemy', entity: new BadGuy() },
-                { distance: 105, type: 'enemy', entity: new BadGuy() },
-                { distance: 110, type: 'enemy', entity: new BadGuy() },
-                { distance: 110, type: 'enemy', entity: new BadGuy() },
-                { distance: 115, type: 'enemy', entity: new BadGuy() },
-                { distance: 120, type: 'enemy', entity: new BadGuy() }, 
-                { distance: 128, type: 'enemy', entity: new BadGuy() },
-                { distance: 130, type: 'enemy', entity: new BadGuy() },
-                { distance: 135, type: 'enemy', entity: new BadGuy() },
-                { distance: 135, type: 'enemy', entity: new BadGuy() },
-                { distance: 140, type: 'enemy', entity: new BadGuy() },
-                { distance: 150, type: 'enemy', entity: new BadGuy() },
-                { distance: 160, type: 'enemy', entity: new BadGuy() },
-                { distance: 170, type: 'enemy', entity: new BadGuy() },
-                { distance: 180, type: 'enemy', entity: new BadGuy() },
-                { distance: 185, type: 'enemy', entity: new BadGuy() },
-                { distance: 185, type: 'enemy', entity: new BadGuy() },
-                { distance: 187, type: 'enemy', entity: new BadGuy() },
-                { distance: 190, type: 'enemy', entity: new BadGuy() },
-                { distance: 195, type: 'enemy', entity: new BadGuy() },
-                { distance: 205, type: 'enemy', entity: new BadGuy() },
-                { distance: 210, type: 'enemy', entity: new BadGuy() },
-                { distance: 210, type: 'enemy', entity: new BadGuy() },
-                { distance: 215, type: 'enemy', entity: new BadGuy() },
-                { distance: 220, type: 'enemy', entity: new BadGuy() }, 
-                { distance: 240, type: 'enemy', entity: new BadGuy() },
-                { distance: 245, type: 'enemy', entity: new BadGuy() },
-                { distance: 248, type: 'enemy', entity: new BadGuy() },
-                { distance: 250, type: 'enemy', entity: new BadGuy() },
-                { distance: 270, type: 'enemy', entity: new BadGuy() },
-                { distance: 280, type: 'enemy', entity: new BadGuy() },
-                { distance: 285, type: 'enemy', entity: new BadGuy() },
-                { distance: 285, type: 'enemy', entity: new BadGuy() },
-                { distance: 300, type: 'enemy', entity: new BadGuy() },
-                { distance: 300, type: 'enemy', entity: new BadGuy() },
-                { distance: 310, type: 'enemy', entity: new BadGuy() },
-                { distance: 310, type: 'enemy', entity: new BadGuy() },
-                { distance: 310, type: 'enemy', entity: new BadGuy() },
-                { distance: 310, type: 'enemy', entity: new BadGuy() },
-                { distance: 320, type: 'enemy', entity: new BadGuy() },
-                { distance: 328, type: 'enemy', entity: new BadGuy() },
-                { distance: 330, type: 'enemy', entity: new BadGuy() },
-                { distance: 335, type: 'enemy', entity: new BadGuy() },
-                { distance: 335, type: 'enemy', entity: new BadGuy() },
-                { distance: 340, type: 'enemy', entity: new BadGuy() },
-                { distance: 350, type: 'enemy', entity: new BadGuy() },
-                { distance: 360, type: 'enemy', entity: new BadGuy() },
-                { distance: 370, type: 'enemy', entity: new BadGuy() },
-                { distance: 380, type: 'enemy', entity: new BadGuy() },
-                { distance: 385, type: 'enemy', entity: new BadGuy() },
-                { distance: 385, type: 'enemy', entity: new BadGuy() },
-                { distance: 387, type: 'enemy', entity: new BadGuy() },
-                { distance: 390, type: 'enemy', entity: new BadGuy() },
-                { distance: 395, type: 'enemy', entity: new BadGuy() },
-                { distance: 405, type: 'enemy', entity: new BadGuy() },
-                { distance: 410, type: 'enemy', entity: new BadGuy() },
-                { distance: 410, type: 'enemy', entity: new BadGuy() },
-                { distance: 415, type: 'enemy', entity: new BadGuy() },
-                { distance: 420, type: 'enemy', entity: new BadGuy('badGuyShip4') },              
-                { distance: 440, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 445, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 448, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 450, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-                { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-
-                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
-              ]
-            }];
+  LinkButton.prototype.setActive = function(isActive) {
+    this.active = isActive ? true : false;
   }
 
-	function LevelManager() {
-		var levels = Levels.getAll();
-		this.currentLevel = levels[0];
+  LinkButton.prototype.draw = function (context) {
+    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
+    context.font = Variables.optionsFont();
+    context.textAlign = this.textAlign;
+    context.fillText(this.label, this.x, this.y);
+  }
+
+  // TODO: refactor to use configuration instead of many parameters.
+  function RangeSelector(min, max, current, x, y, label) {
+    this.min = min || 0;
+    this.max = max || 1;
+    this.current = current || this.min;
+    this.x = x || 0;
+    this.y = y || 0;
+    this.label = label || '';
+    this.active = false;
+  }
+
+  RangeSelector.prototype.setActive = function(isActive) {
+    this.active = isActive ? true : false;
+  }
+
+  RangeSelector.prototype.adjust = function(adjustedValue) {
+    var val = adjustedValue || 0;
+    this.current = this.current + val;
+
+    if(this.current > this.max) { this.current = this.max; }
+    else if (this.current < this.min) { this.current = this.min }
+  }
+
+  RangeSelector.prototype.draw = function(context) {
+    var startingPoint = this.x;
+    context.fillStyle = this.active ? Variables.optionsInFocusTextColor() : Variables.optionsOutOfFocusTextColor();
+    context.font = Variables.optionsFont();
+    context.textAlign = 'left';
+    context.fillText(this.label, this.y, startingPoint);
+
+    context.beginPath();
+    context.rect(this.y, startingPoint + 10, 200, 20);
+    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusBorderColor() : Variables.optionsRangeSelectorOutOfFocusBorderColor();
+    context.stroke();
+
+    context.beginPath();
+    context.rect(this.y+2, startingPoint + 12, 196*this.current, 16);
+    context.fillStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
+    context.fill();
+    context.strokeStyle = this.active ? Variables.optionsRangeSelectorInFocusFillColor() : Variables.optionsRangeSelectorOutOfFocusFillColor();
+    context.stroke();
+  };
+
+function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
+		this.explosion = null;
+		this.t = 0;
+		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
+		this.x = -game.width;
+		this.y = game.height; 
+		this.width = (width || 50) * game.scale;
+		this.height = (height || 50) * game.scale;
+		this.active = true;
+		this.speed = 2;
+		this.rotation = 0;
+		this.shotBullets = [];
+		this.exploding = false;
+
+		this.hitpoints = hitpoints || 1;
+		this.endLevelOnKill = endLevelOnKill || false;
+		if(this.endLevelOnKill) {
+			this.travelPath = TravelPath.generateStraightPath(((game.height)/2)-(this.height) -30, game.width * .75, game.width/4, this.width);
+		} else {
+			this.travelPath = TravelPath.generateRandomPath(game.height);
+		}
+	};
+
+	BadGuy.prototype.updateState = function (delta) {
+		if(!this.exploding) {
+			this.t += (delta / 10) * this.speed;
+
+			if(this.t <= 1) {
+				var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+				this.x = point.x;
+				this.y = point.y;
+			} else if(!this.endLevelOnKill) {
+				this.kill();
+			}
+		} else {
+			if(this.explosion.active) { this.explosion.updateState(delta); }
+		}
+
+		if(this.exploding && this.explosion.active == false && this.shotBullets.length <= 0) this.kill();
+
+		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
+		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
+	};
+
+	BadGuy.prototype.draw = function (context) {
+		if(!this.exploding) {
+			this.rotation = (Math.PI / 180) * 270;
+
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		} else {
+			if(this.explosion.active) { this.explosion.draw(ctx); }
+		}
+
+		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
+	};
+
+	BadGuy.prototype.kill = function() {
+		this.active = false;
+		this.ShotBullets = [];
 	}
 
-	LevelManager.prototype.getCurrentLevel = function() {
-		var levelData = this.currentLevel;
-
-		var level = new Level(levelData);
-		level.initialize();
-
-		return level;
+	BadGuy.prototype.explode = function() {
+		if(!this.exploding) {
+			this.exploding = true;
+			this.explosion = new Explosion();
+			this.explosion.explode(this);
+		}
 	}
+
+	BadGuy.prototype.shoot = function() {
+		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
+			var bullet = new Bullet();
+			bullet.rotation = 270;
+			bullet.shoot(this.x + (this.width/2), this.y);
+			this.shotBullets.push(bullet);
+		}
+	};
+
+	function Bullet(speed) {
+		this.t = 0;
+		this.sprite = spriteLibrary.getSprite('bullet');
+		this.travelPath = null;
+
+		this.x = 0;
+		this.y = 0; 
+		this.width = 8 * game.scale;
+		this.height = 20 * game.scale;
+		this.rotation = 90;
+		this.active = true;
+		this.speed = speed || 8;
+	};
+
+	Bullet.prototype.draw = function (context) {
+		var rotation = (Math.PI / 180) * this.rotation;
+
+		context.save();
+		context.translate(game.width/2, game.height/2);
+		context.rotate(rotation);
+		context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
+		context.restore();
+	};
+
+	Bullet.prototype.updateState = function (delta) {
+		
+		this.t += (delta / 10) * this.speed * game.scale;
+		if(this.t > 1) { this.kill(); }
+		var point = Math.bezier(this.travelPath.P0, this.travelPath.P1, this.travelPath.P2, this.travelPath.P3, this.t);
+		this.x = point.x;
+		this.y = point.y;	
+	};
+
+	Bullet.prototype.shoot = function(startX, startY) {
+		this.x = startX;
+		this.y = startY;
+		this.travelPath = TravelPath.generateStraightPath(this.x, this.y, game.width, this.width);
+	};
+
+	Bullet.prototype.kill = function() {
+		this.active = false;
+	}
+	
+function GoodGuy() {
+		this.shotInterval = 1000;
+		this.explosion = new Explosion();
+		this.sprite = spriteLibrary.getSprite('goodGuyShip');
+		this.active = true;
+		this.width = 50 * game.scale;
+		this.height = 50 * game.scale;
+		this.x = (this.height/2*-1);
+		this.y = ((game.width/2)-this.width); 
+		this.speed = 8;
+		this.rotation = 0;
+		this.shotBullets = [];
+		this.exploding = false;
+		this.invincibilityTimeRemaining = 3;
+	}; 
+
+	GoodGuy.prototype.updateState = function(delta) {
+		this.invincibilityTimeRemaining -= delta;
+		if(this.invincibilityTimeRemaining > 0) {
+			this.sprite = spriteLibrary.getSprite('goodGuyShipInvincible');
+		} else {
+			this.sprite = spriteLibrary.getSprite('goodGuyShip');
+		}
+
+		this.shotInterval += (delta / 10) * this.speed;		
+		var distance = delta * 50 * this.speed;	
+
+		if(!this.exploding) {
+			if (keydown.up) {    
+				this.x -= distance;    
+	      if (this.x < (game.height/2) * -1) {
+					this.x = game.height/2 * -1;
+				}
+	    }
+	        
+	    if (keydown.down) {
+	    	this.x += distance;
+      	if (this.x > (game.height/2)-this.width) {
+    			this.x = (game.height/2)-this.width;
+    		}
+	    }
+
+	    if (keydown.right) {
+	    	this.y -= distance;
+	    	if (this.y < (game.width/2) * -1) {
+    			this.y = (game.width/2) * -1;
+	    	}
+	    }
+
+	    if (keydown.left) {
+	    	this.y += distance;
+	    	if (this.y > (game.width/2) - this.height)  {
+					this.y = (game.width/2) - this.height;
+	    	}
+	    }
+
+	    if(keydown.space) {
+	    	this.shoot();
+	    } else {
+	    	this.shotInterval = 1000;
+	    }
+		} else {
+			if(this.explosion.active) { this.explosion.updateState(delta); }
+		}
+
+		if(this.exploding && !this.explosion.active && this.shotBullets.length <= 0) { this.kill() };
+		this.shotBullets = this.shotBullets.filter(function(bullet) { return bullet.active; });
+		this.shotBullets.forEach(function(bullet) { bullet.updateState(delta); });
+	};
+
+	GoodGuy.prototype.draw = function(context) {
+		if(!this.exploding) {
+			this.rotation = (Math.PI / 180.0) * 90;
+
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		} else {
+			if(this.explosion.active) { this.explosion.draw(ctx); }
+		}
+
+		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
+	};
+
+	GoodGuy.prototype.shoot = function() {
+		if(this.shotInterval >= .2) {
+			var bullet = new Bullet(8);
+			bullet.rotation = 90;;
+			bullet.shoot(this.x+(this.width/2), this.y);
+			this.shotBullets.push(bullet);
+			this.shotInterval = 0;
+			soundLibrary.playLaser();
+		}
+	};
+
+	GoodGuy.prototype.kill = function() {
+		this.active = false;
+		this.shotBullets = [];
+		player.kill();
+	};
+
+	GoodGuy.prototype.explode = function() {
+		if(!this.exploding) {
+			this.exploding = true;
+			this.explosion = new Explosion();
+			this.explosion.explode(this);
+		}
+	};
+
+	GoodGuy.prototype.setInvincability = function(time) {
+		this.invincibilityTimeRemaining = time || 0;
+	}
+
+
+	function Controls() {
+	}
+
+	Controls.keycode = {
+		space: 32,
+		left: 37,
+		up: 38,
+		right: 39,
+		down: 40
+	};
+
+	Controls.keyName = function(event) {
+    if(Controls.keycode.left == event.which) { return 'left' };
+    if(Controls.keycode.up == event.which) { return 'up' };
+    if(Controls.keycode.right == event.which) { return 'right' };
+    if(Controls.keycode.down == event.which) { return 'down' };
+    if(Controls.keycode.space == event.which) { return 'space' };
+    return event.which;
+  }
+  
+  function KeyboardGameController() {
+  };
+
+  KeyboardGameController.prototype.initialize = function() {
+    keydown = {};
+
+    document.onkeydown = function(event) {
+      keydown[Controls.keyName(event)] = true;
+      event.preventDefault();
+    };
+
+    document.onkeyup = function(event) {
+      keydown[Controls.keyName(event)] = false;
+      event.preventDefault();
+    };
+  };
+
+function Player() {
+  this.points = 0;
+  this.lives = 3;
+  this.currentGoodGuy;
+}
+
+Player.prototype.addPoints = function(points) {
+  this.points += points || 0;
+};
+
+Player.prototype.addLife = function() {
+  this.lives++;
+}
+
+Player.prototype.removeLife = function() {
+  this.lives--;
+}
+
+Player.prototype.getScore = function() {
+  return this.points.toString();
+}
+
+Player.prototype.getCurrentGoodGuy = function() {
+  return this.currentGoodGuy = this.currentGoodGuy || new GoodGuy();
+}
+
+Player.prototype.hasLives = function() {
+  return this.lives > 0;
+}
+
+Player.prototype.kill = function() {
+  this.removeLife();
+  this.currentGoodGuy = undefined;
+}
+  function TouchGameController() {
+  };
+
+  TouchGameController.prototype.initialize = function() {
+    GameController.init({ 
+      left: { 
+        position: { left: '10%', bottom: '17%' },
+        type: 'joystick',
+        joystick: {
+          touchMove: function(details) {
+            keydown['left'] = details.normalizedX < 0;
+            keydown['up'] = details.normalizedY > 0;
+            keydown['right'] = details.normalizedX > 0;
+            keydown['down'] = details.normalizedY < 0;
+          },
+          touchEnd: function() {
+            keydown['left'] = false;
+            keydown['up'] = false;
+            keydown['right'] = false;
+            keydown['down'] = false;
+          }
+        }
+      }, 
+      right: { 
+        position: { right: '5%' }, 
+        type: 'buttons', 
+        buttons: [
+          { label: 'shoot', fontSize: 13, backgroundColor: 'red', 
+            touchStart: function() { 
+              keydown['space'] = true;
+            },
+            touchEnd: function() {
+              keydown['space'] = false;
+            }
+          }, 
+          false, false, false
+        ] 
+      }
+    });
+  };
+
+	function Explosion() {
+		this.t = 0;
+		this.animation = spriteLibrary.getAnimation('explosion');
+		this.rotation = 0;
+		this.playAudio = false;
+
+		this.active = true;
+		this.x = 0;
+		this.y = 0; 
+		this.width = 55 * game.scale;
+		this.height = 55 * game.scale;
+		this.active = true * game.scale;
+		this.speed = 25;
+	};
+
+	Explosion.prototype.draw = function(context) {
+		var spriteFrame = spriteLibrary.getAnimationFrame(this.animation, this.t);
+
+		if(spriteFrame) {
+			context.save();
+			context.translate(game.width/2, game.height/2);
+			context.rotate(this.rotation);
+			context.drawImage(this.animation.image, spriteFrame.x, spriteFrame.y, spriteFrame.width, spriteFrame.height, this.x, this.y, this.width, this.height);
+			context.restore();
+		}
+	};
+
+	Explosion.prototype.updateState = function(delta) {
+		this.t += (delta / 10) * this.speed;
+		if(this.t < .2 && this.playAudio) { this.playAudio = false; soundLibrary.playExplosion(); }
+		if(this.t > 1.2) { this.kill(); }
+	};
+
+	Explosion.prototype.explode = function(spaceCraft) {
+		this.x = spaceCraft.x;
+		this.y = spaceCraft.y;
+		this.rotation = spaceCraft.rotation;
+		this.playAudio = true;
+	};
+
+	Explosion.prototype.kill = function() {
+		this.active = false;
+		this.x = null;
+		this.y = null;
+		this.playAudio = false;
+	};
+
+function Point(x, y) {
+	this.x = x || null;
+	this.y = y || null;
+};
+
+Math.bezier = function(p0, p1, p2, p3, t) {
+	var p4 = Math.linearInterpolation(p0, p1, t);
+	var p5 = Math.linearInterpolation(p1, p2, t);
+	var p6 = Math.linearInterpolation(p2, p3, t);
+	var p7 = Math.linearInterpolation(p4, p5, t);
+	var p8 = Math.linearInterpolation(p5, p6, t);
+	var p9 = Math.linearInterpolation(p7, p8, t);
+
+	return p9;
+}
+
+Math.linearInterpolation = function(p0, p1, t) {
+  var xlerp = p0.x + (p1.x - p0.x) * t;
+  var ylerp = p0.y + (p1.y - p0.y) * t;
+
+  var newPoint = new Point();
+  newPoint.x = xlerp;
+  newPoint.y = ylerp;
+  return newPoint;
+}
+
+function TravelPath() {
+	this.P0 = undefined;
+	this.P1 = undefined;
+	this.P2 = undefined;
+	this.P3 = undefined;
+};
+
+TravelPath.generateRandomPath = function(gameHeight) {
+		var constraint = 200;
+		var travelPath = new TravelPath();
+
+		var p0 = new Point();
+		p0.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p0.y = game.width / 2;
+
+		var p1 = new Point();
+		p1.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p1.y = Math.random() * 100 + 100;
+
+		var p2 = new Point();
+		p2.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p2.y = Math.random() * -200 - 50;
+
+		var p3 = new Point();
+		p3.x = ((game.height + constraint) / 2) - (Math.random() * (gameHeight + constraint));
+		p3.y = (game.width / 2* -1)-50;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = p0;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = p3;
+
+		return travelPath;
+	};
+
+	TravelPath.generateStraightPath = function (startX, startY, gameWidth, projectileWidth) {		
+		var distance = gameWidth + projectileWidth;
+		var divisions = distance / 3;
+
+		var startPoint = new Point();
+		startPoint.x = startX - (projectileWidth/2);
+		startPoint.y = startY;
+
+		var endPoint = new Point();
+		endPoint.x = startPoint.x;
+		endPoint.y =  startPoint.y - gameWidth - projectileWidth;
+
+		var p1 = new Point();
+		p1.x = startPoint.x;
+		p1.y = startPoint.y - divisions;
+
+		var p2 = new Point();
+		p2.x = p1.x;
+		p2.y = p1.y - divisions;
+
+		var travelPath = new TravelPath();
+		travelPath.P0 = startPoint;
+		travelPath.P1 = p1;
+		travelPath.P2 = p2;
+		travelPath.P3 = endPoint;
+
+		return travelPath;
+	};
+
 
   function Variables() {
   }
