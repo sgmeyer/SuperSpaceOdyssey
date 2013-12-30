@@ -8,7 +8,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.height = (height || 50) * game.scale;
 		this.active = true;
 		this.speed = 2;
-		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
 
@@ -70,7 +69,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
 			var bullet = new Bullet(4, 'lazerRed');
-			bullet.rotation = 270;
 			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);
 		}

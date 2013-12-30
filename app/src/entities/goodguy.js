@@ -8,7 +8,6 @@ function GoodGuy() {
 		this.x = 0;
 		this.y = game.height / 2 - this.height / 2; 
 		this.speed = 8;
-		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
 		this.invincibilityTimeRemaining = 3;

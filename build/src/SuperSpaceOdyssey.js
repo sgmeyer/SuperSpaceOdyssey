@@ -97,7 +97,7 @@
                 { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
 
-                { distance: 20, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
+                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];
   }
@@ -540,14 +540,12 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.height = (height || 50) * game.scale;
 		this.active = true;
 		this.speed = 2;
-		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
 
 		this.hitpoints = hitpoints || 1;
 		this.endLevelOnKill = endLevelOnKill || false;
 		if(this.endLevelOnKill) {
-			//this.travelPath = TravelPath.generateStraightPathToLeft(game.width, (game.height / 2) - (this.height / 2), game.width, this.width);
 			var startX = game.width;
 			var startY = (game.height / 2) - (this.height /2);
 			this.travelPath = TravelPath.generateLinearPath(new Point(startX, startY), new Point(startX - this.width - (25 * game.scale), startY));
@@ -603,7 +601,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
 			var bullet = new Bullet(4, 'lazerRed');
-			bullet.rotation = 270;
 			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);
 		}
@@ -655,7 +652,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	function Explosion() {
 		this.t = 0;
 		this.animation = spriteLibrary.getAnimation('explosion');
-		this.rotation = 0;
 		this.playAudio = false;
 
 		this.active = true;
@@ -684,7 +680,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	Explosion.prototype.explode = function(spaceCraft) {
 		this.x = spaceCraft.x;
 		this.y = spaceCraft.y;
-		this.rotation = spaceCraft.rotation;
 		this.playAudio = true;
 	};
 
@@ -705,7 +700,6 @@ function GoodGuy() {
 		this.x = 0;
 		this.y = game.height / 2 - this.height / 2; 
 		this.speed = 8;
-		this.rotation = 0;
 		this.shotBullets = [];
 		this.exploding = false;
 		this.invincibilityTimeRemaining = 3;

@@ -1,7 +1,6 @@
 	function Explosion() {
 		this.t = 0;
 		this.animation = spriteLibrary.getAnimation('explosion');
-		this.rotation = 0;
 		this.playAudio = false;
 
 		this.active = true;
@@ -30,7 +29,6 @@
 	Explosion.prototype.explode = function(spaceCraft) {
 		this.x = spaceCraft.x;
 		this.y = spaceCraft.y;
-		this.rotation = spaceCraft.rotation;
 		this.playAudio = true;
 	};
 
