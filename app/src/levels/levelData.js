@@ -88,7 +88,6 @@
                 { distance: 450, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-
                 { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];

@@ -64,6 +64,7 @@
 		this.scenes = [];
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
+		this.scenes.push(new Cutscene());
 
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();

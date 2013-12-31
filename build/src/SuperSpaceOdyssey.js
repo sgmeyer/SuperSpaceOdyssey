@@ -97,7 +97,7 @@
                 { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
 
-                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
+                { distance: 20, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];
   }
@@ -115,6 +115,37 @@
 
 		return level;
 	}
+
+  function Cutscene() {
+    this.active = true;
+    this.timer = 10;
+    this.timer2 = 8;
+  };
+
+  Cutscene.prototype.draw = function (context) {
+    context.fillStyle = Variables.headingFontColor();
+    context.font = Variables.headingFont();
+    context.textAlign = Variables.headingTextAlign();
+
+    var titleLocation = Variables.headingTitleLocation();
+    context.fillText("some awesome content here   " + this.timer, titleLocation.x, titleLocation.y); 
+    this.startButton.draw(context);
+  };
+
+  Cutscene.prototype.updateState = function (delta) {
+    this.timer -= delta;
+
+    if(this.timer <- 0) { this.end(); }
+
+    if(keydown.space && this.timer2 > this.timer) {
+      keydown.space = false;
+      this.end();
+    }
+  };
+
+  Cutscene.prototype.end = function() {
+    this.active = false;
+  };
 
   function GameOverMenu() {
     this.active = true;
@@ -1180,6 +1211,7 @@ Player.prototype.kill = function() {
 		this.scenes = [];
 		this.scenes.push(new LoadingMenu());
 		this.scenes.push(new StartMenu());
+		this.scenes.push(new Cutscene());
 
 		var levelManager = new LevelManager();
 		var level = levelManager.getCurrentLevel();
