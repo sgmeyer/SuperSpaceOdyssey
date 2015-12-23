@@ -9,6 +9,7 @@ Basic retro side scrolling shooter.  This reminds me of the olds days, but with 
 - Shoot 'em up
 - Phoenix style retro game
 
+Play the game: http://sgmeyer.github.io/SuperSpaceOdyssey
 
 GAME ART
 =================
