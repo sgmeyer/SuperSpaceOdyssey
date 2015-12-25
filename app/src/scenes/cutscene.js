@@ -1,6 +1,6 @@
   function Cutscene() {
     this.active = true;
-    this.timer = 10;
+    this.timer = 3;
     this.timer2 = 8;
   };
 
@@ -10,7 +10,7 @@
     context.textAlign = Variables.headingTextAlign();
 
     var titleLocation = Variables.headingTitleLocation();
-    context.fillText("some awesome content here   " + this.timer, titleLocation.x, titleLocation.y); 
+    context.fillText('some awesome content here   ' + Math.ceil(this.timer), titleLocation.x, titleLocation.y); 
     this.startButton.draw(context);
   };
 
