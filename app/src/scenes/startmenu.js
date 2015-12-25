@@ -27,7 +27,7 @@
     this.optionsButton.setActive(this.selectedOption === 2);
   };
 
-  StartMenu.prototype.draw = function (context) {   
+  StartMenu.prototype.draw = function (context) {
     context.fillStyle = Variables.headingFontColor();
     context.font = Variables.headingFont();
     context.textAlign = Variables.headingTextAlign();
@@ -41,6 +41,7 @@
     if(this.optionsButton.active) {
       game.scenes.splice(1, 0, new SoundOptionsMenu());
     } else {
+      soundLibrary.stopAllSounds();
       soundLibrary.playThemeSong();
     }
 

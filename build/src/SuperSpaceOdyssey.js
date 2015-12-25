@@ -96,8 +96,7 @@
                 { distance: 450, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 470, type: 'enemy', entity: new BadGuy('badGuyShip4') },
                 { distance: 480, type: 'enemy', entity: new BadGuy('badGuyShip4') },
-
-                { distance: 20, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
+                { distance: 490, type: 'enemy', entity: new BadGuy('boss1', 347, 278, 30, true) }
               ]
             }];
   }
@@ -247,7 +246,7 @@
 
   function LoadingMenu() {
     this.active = true;
-  
+
     soundLibrary = new SoundLibrary();
     spriteLibrary = new SpriteLibrary();
   }
@@ -262,11 +261,12 @@
     context.fillStyle = "#FF0000";
     context.font = "40px Georgia";
     context.textAlign = "center";
-    context.fillText("Loading...", game.width/2, game.height/2-20); 
+    context.fillText("Loading...", game.width/2, game.height/2-20);
   }
 
   LoadingMenu.prototype.end = function() {
     this.active = false;
+    soundLibrary.playIntroSong();
   }
 
   function SoundOptionsMenu() {
@@ -366,7 +366,7 @@
     this.optionsButton.setActive(this.selectedOption === 2);
   };
 
-  StartMenu.prototype.draw = function (context) {   
+  StartMenu.prototype.draw = function (context) {
     context.fillStyle = Variables.headingFontColor();
     context.font = Variables.headingFont();
     context.textAlign = Variables.headingTextAlign();
@@ -380,6 +380,7 @@
     if(this.optionsButton.active) {
       game.scenes.splice(1, 0, new SoundOptionsMenu());
     } else {
+      soundLibrary.stopAllSounds();
       soundLibrary.playThemeSong();
     }
 
@@ -937,13 +938,22 @@ TravelPath.generateRandomPath = function() {
 		this.isLoadComplete = false;
 
 		var audioPath = 'sound/';
+		var soundsLoadingProgress = {
+			introSong: false,
+			themeSong: false
+		};
 		var manifest = [
-		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-		    {id:'lazer', src:'laser1.wav'},
-		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		    {id: 'introSong', src: 'Digital Native.mp3'},
+		    {id: 'themeSong', src: 'Grey_Sector_v0_86_0.mp3'},
+		    {id: 'lazer', src: 'laser1.wav'},
+		    {id: 'explosion', src: '8bit_bomb_explosion.wav'}
 		];
 
-		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
+		createjs.Sound.addEventListener("fileload", function(event) {
+			soundsLoadingProgress[event.id] = true;
+			soundLibrary.isLoadComplete = soundsLoadingProgress.introSong && soundsLoadingProgress.themeSong;
+		});
+
 		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
   	createjs.Sound.registerManifest(manifest, audioPath);
 	}
@@ -951,7 +961,7 @@ TravelPath.generateRandomPath = function() {
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
 		this.musicVolume = volume || this.musicVolume;
 
-		if(this.currentMusic) { 
+		if(this.currentMusic) {
 			this.currentMusic.setVolume(volume);
 		}
 	}
@@ -965,15 +975,25 @@ TravelPath.generateRandomPath = function() {
 		explosion.setVolume(this.soundEffectsVolume);
 	}
 
+	SoundLibrary.prototype.playIntroSong = function() {
+		this.currentMusic = createjs.Sound.play('introSong',  {loop: -1});
+		this.currentMusic.setVolume(this.musicVolume);
+	}
+
 	SoundLibrary.prototype.playThemeSong = function() {
 		this.currentMusic = createjs.Sound.play('themeSong');
 		this.currentMusic.setVolume(this.musicVolume);
 	}
-	
+
 	SoundLibrary.prototype.playLaser = function() {
 		var lazer = createjs.Sound.play('lazer');
 		lazer.setVolume(this.soundEffectsVolume);
 	}
+
+	SoundLibrary.prototype.stopAllSounds = function() {
+		createjs.Sound.stop();
+	}
+
 function SpriteLibrary() {
   var shipImage = new Image();
   shipImage.src = 'images/shipsall_4.gif';

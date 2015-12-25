@@ -30,4 +30,5 @@ http://opengameart.org/content/bombexplosion8bit
 
 
 Background Audio:
-http://opengameart.org/content/grey-sector-8-bit
+Intro: Eric Skiff - Arpanauts http://ericskiff.com/music/
+Level 1: http://opengameart.org/content/grey-sector-8-bit

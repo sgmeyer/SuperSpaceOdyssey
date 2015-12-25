@@ -5,13 +5,22 @@
 		this.isLoadComplete = false;
 
 		var audioPath = 'sound/';
+		var soundsLoadingProgress = {
+			introSong: false,
+			themeSong: false
+		};
 		var manifest = [
-		    {id:'themeSong', src:'Grey_Sector_v0_86_0.mp3'},
-		    {id:'lazer', src:'laser1.wav'},
-		    {id:'explosion', src:'8bit_bomb_explosion.wav'}
+		    {id: 'introSong', src: 'Digital Native.mp3'},
+		    {id: 'themeSong', src: 'Grey_Sector_v0_86_0.mp3'},
+		    {id: 'lazer', src: 'laser1.wav'},
+		    {id: 'explosion', src: '8bit_bomb_explosion.wav'}
 		];
 
-		createjs.Sound.addEventListener("fileload", function(event) { if(event.id === 'themeSong') { soundLibrary.isLoadComplete = true; } });
+		createjs.Sound.addEventListener("fileload", function(event) {
+			soundsLoadingProgress[event.id] = true;
+			soundLibrary.isLoadComplete = soundsLoadingProgress.introSong && soundsLoadingProgress.themeSong;
+		});
+
 		createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
   	createjs.Sound.registerManifest(manifest, audioPath);
 	}
@@ -19,7 +28,7 @@
 	SoundLibrary.prototype.setMusicVolume = function(volume) {
 		this.musicVolume = volume || this.musicVolume;
 
-		if(this.currentMusic) { 
+		if(this.currentMusic) {
 			this.currentMusic.setVolume(volume);
 		}
 	}
@@ -33,12 +42,21 @@
 		explosion.setVolume(this.soundEffectsVolume);
 	}
 
+	SoundLibrary.prototype.playIntroSong = function() {
+		this.currentMusic = createjs.Sound.play('introSong',  {loop: -1});
+		this.currentMusic.setVolume(this.musicVolume);
+	}
+
 	SoundLibrary.prototype.playThemeSong = function() {
 		this.currentMusic = createjs.Sound.play('themeSong');
 		this.currentMusic.setVolume(this.musicVolume);
 	}
-	
+
 	SoundLibrary.prototype.playLaser = function() {
 		var lazer = createjs.Sound.play('lazer');
 		lazer.setVolume(this.soundEffectsVolume);
+	}
+
+	SoundLibrary.prototype.stopAllSounds = function() {
+		createjs.Sound.stop();
 	}
