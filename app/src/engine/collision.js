@@ -9,7 +9,7 @@
 					 a.y + a.height > b.y;
 	};
 
-	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
+	CollisionEngine.handleCollisions = function (badGuys, goodGuy, warez) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
@@ -41,4 +41,11 @@
 				}
 			});
 		}
+
+		warez.forEach(function(ware) {
+			if (!goodGuy.exploding && CollisionEngine.collides(goodGuy, ware)) {
+				ware.pickUp();
+				player.addPoints(ware.pointsValue);	
+			}
+		});
 	};

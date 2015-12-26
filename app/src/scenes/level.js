@@ -26,11 +26,12 @@
 
     this.background.updateState(delta);
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
+    game.warez = game.warez.filter(function(ware) { return ware.active; });
 
-    if(player.hasLives()) { 
+    if(player.hasLives()) {
       var goodGuy = player.getCurrentGoodGuy();
-      CollisionEngine.handleCollisions(this.badGuys, goodGuy);
-      goodGuy.updateState(delta); 
+      CollisionEngine.handleCollisions(this.badGuys, goodGuy, game.warez);
+      goodGuy.updateState(delta);
     }
 
     this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
@@ -40,9 +41,10 @@
   Level.prototype.draw = function(context) {
     this.background.draw(context);
 
-    if(player.hasLives()) { 
+    if(player.hasLives()) {
       player.getCurrentGoodGuy().draw(context);
       this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
+      game.warez.forEach(function (ware) { ware.draw(context); });
     }
 
     context.fillStyle = "orange";
@@ -64,3 +66,5 @@
     this.active = false;
     game.initializeGameOver();
   }
+
+// TODO: When a bad guy is killed throw an event.

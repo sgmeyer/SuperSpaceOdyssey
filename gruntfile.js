@@ -62,16 +62,17 @@ module.exports = function(grunt) {
         separator: '\n'
       },
       dist: {
-        src: ['app/src/intro.js', 
-              'app/src/levels/*.js', 
-              'app/src/scenes/*.js', 
-              'app/src/controls/*.js', 
-              'app/src/uicontrols/*.js', 
+        src: ['app/src/intro.js',
+              'app/src/levels/*.js',
+              'app/src/scenes/*.js',
+              'app/src/controls/*.js',
+              'app/src/uicontrols/*.js',
               'app/src/entities/*.js',
               'app/src/engine/*.js',
               'app/src/player.js',
+              'app/src/events.js',
               'app/src/uivariables.js',
-              'app/src/game.js', 
+              'app/src/game.js',
               'app/src/outro.js'],
         dest: 'build/src/<%= pkg.name %>.js'
       }

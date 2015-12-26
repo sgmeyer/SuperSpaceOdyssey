@@ -118,7 +118,7 @@
   function Cutscene() {
     this.active = true;
     this.timer = 3;
-    this.timer2 = 8;
+    this.timer2 = 0;
   };
 
   Cutscene.prototype.draw = function (context) {
@@ -127,7 +127,7 @@
     context.textAlign = Variables.headingTextAlign();
 
     var titleLocation = Variables.headingTitleLocation();
-    context.fillText('some awesome content here   ' + Math.ceil(this.timer), titleLocation.x, titleLocation.y); 
+    context.fillText('The game will begin in ' + Math.ceil(this.timer), titleLocation.x, titleLocation.y);
     this.startButton.draw(context);
   };
 
@@ -205,11 +205,12 @@
 
     this.background.updateState(delta);
     this.badGuys = this.badGuys.filter(function(badGuy) { return badGuy.active; });
+    game.warez = game.warez.filter(function(ware) { return ware.active; });
 
-    if(player.hasLives()) { 
+    if(player.hasLives()) {
       var goodGuy = player.getCurrentGoodGuy();
-      CollisionEngine.handleCollisions(this.badGuys, goodGuy);
-      goodGuy.updateState(delta); 
+      CollisionEngine.handleCollisions(this.badGuys, goodGuy, game.warez);
+      goodGuy.updateState(delta);
     }
 
     this.badGuys.forEach(function (badGuy) { badGuy.updateState(delta); });
@@ -219,9 +220,10 @@
   Level.prototype.draw = function(context) {
     this.background.draw(context);
 
-    if(player.hasLives()) { 
+    if(player.hasLives()) {
       player.getCurrentGoodGuy().draw(context);
       this.badGuys.forEach(function (badGuy) { badGuy.draw(context); });
+      game.warez.forEach(function (ware) { ware.draw(context); });
     }
 
     context.fillStyle = "orange";
@@ -243,6 +245,8 @@
     this.active = false;
     game.initializeGameOver();
   }
+
+// TODO: When a bad guy is killed throw an event.
 
   function LoadingMenu() {
     this.active = true;
@@ -567,7 +571,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
 		this.x = game.width;
-		this.y = game.height; 
+		this.y = game.height;
 		this.width = (width || 50) * game.scale;
 		this.height = (height || 50) * game.scale;
 		this.active = true;
@@ -620,6 +624,9 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
+
+		var event = new CustomEvent('bogiekilled', {detail: {x: this.x, y: this.y}});
+		window.dispatchEvent(event);
 	}
 
 	BadGuy.prototype.explode = function() {
@@ -631,7 +638,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	}
 
 	BadGuy.prototype.shoot = function() {
-		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
+		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) {
 			var bullet = new Bullet(4, 'lazerRed');
 			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);
@@ -647,7 +654,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.endPoint = new Point();
 
 		this.x = 0;
-		this.y = 0; 
+		this.y = 0;
 		this.height = 5 * game.scale;
 		this.width = 20 * game.scale;
 		this.active = true;
@@ -664,8 +671,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		var point = Math.linearInterpolation(this.startPoint, this.endPoint, this.t);
 		this.x = point.x;
 		this.y = point.y;	
-
-
 	};
 
 	Bullet.prototype.shoot = function(startX, startY, leftToRight) {
@@ -674,13 +679,13 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.startPoint = new Point(startX, startY);
 		if(leftToRight) { this.endPoint = new Point(this.x + game.width, this.y); }
 		else { this.endPoint = new Point(this.x - game.width, this.y); }
-			
+
 	};
 
 	Bullet.prototype.kill = function() {
 		this.active = false;
 	}
-	
+
 	function Explosion() {
 		this.t = 0;
 		this.animation = spriteLibrary.getAnimation('explosion');
@@ -801,6 +806,40 @@ function GoodGuy() {
 		this.invincibilityTimeRemaining = time || 0;
 	}
 
+function Warez(x, y, spriteId) {
+  this.t = 0;
+  this.sprite = spriteLibrary.getSprite(spriteId || 'greenWarez');
+  this.travelPath = null;
+
+  this.startPoint = new Point(x, y);
+  this.endPoint = new Point();
+
+  this.pointsValue = 100;
+
+  this.x = x;
+  this.y = y;
+  this.height = 15 * game.scale;
+  this.width = 15 * game.scale;
+  this.active = true;
+  this.speed = 1;
+};
+
+Warez.prototype.draw = function (context) {
+  context.drawImage(this.sprite.image, this.sprite.x, this.sprite.y, this.sprite.width, this.sprite.height, this.x, this.y, this.width, this.height);
+};
+
+Warez.prototype.updateState = function (delta) {
+  this.t += (delta / 10) * this.speed;
+  if(this.t > 1) { this.kill(); }
+  var point = Math.linearInterpolation(this.startPoint, this.endPoint, this.t);
+  this.x = point.x;
+  this.y = point.y;
+};
+
+Warez.prototype.pickUp = function() {
+  this.active = false;
+}
+
 	function CollisionEngine() {
 
 	}
@@ -812,7 +851,7 @@ function GoodGuy() {
 					 a.y + a.height > b.y;
 	};
 
-	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
+	CollisionEngine.handleCollisions = function (badGuys, goodGuy, warez) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
@@ -844,6 +883,13 @@ function GoodGuy() {
 				}
 			});
 		}
+
+		warez.forEach(function(ware) {
+			if (!goodGuy.exploding && CollisionEngine.collides(goodGuy, ware)) {
+				ware.pickUp();
+				player.addPoints(ware.pointsValue);	
+			}
+		});
 	};
 
 function Point(x, y) {
@@ -1020,10 +1066,11 @@ function SpriteLibrary() {
     //{id: 'bomb', x: 133, y: 69, width: 18, height: 45, image: shipImage},
     {id: 'lazerBlue', x: 86, y: 69, width: 47, height: 13, image: bulletImage},
     {id: 'lazerRed', x: 86, y: 52, width: 47, height: 13, image: bulletImage},
-    {id: 'boss1', x: 0, y: 0, width: 278, height: 347, image:boss1}
+    {id: 'greenWarez', x: 110, y: 260, width: 12, height: 12, image: bulletImage},
+    {id: 'boss1', x: 110, y: 2600, width: 12, height: 12, image:boss1}
   ];
   this.animationSprites = [
-    { id: 'explosion', 
+    { id: 'explosion',
       intervals: [
         { time: .1, x: 0, y: 0, height: 55, width: 55},
         { time: .2, x: 65, y: 0, height: 55, width: 55},
@@ -1067,6 +1114,7 @@ SpriteLibrary.prototype.getAnimationFrame = function(animation, time) {
     }
   }
 }
+
 function Player() {
   this.points = 0;
   this.lives = 3;
@@ -1101,6 +1149,14 @@ Player.prototype.kill = function() {
   this.removeLife();
   this.currentGoodGuy = undefined;
 }
+
+    window.addEventListener('bogiekilled', function(e) {
+      if(e.detail.x > 20 && Math.random() * 10 > 5) {
+        var warez = new Warez(e.detail.x, e.detail.y);
+  			game.warez.push(warez);
+  		}
+    });
+
   function Variables() {
   }
 
@@ -1172,6 +1228,7 @@ Player.prototype.kill = function() {
 		this.lastTime = 0;
 		this.scenes = [];
 		this.goodGuys = [];
+		this.warez = [];
 		this.scale = 1;
 	}
 
@@ -1185,8 +1242,6 @@ Player.prototype.kill = function() {
 
 		this.height = height || this.height;
 		this.width = width || this.width;
-
-		
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
@@ -1212,10 +1267,10 @@ Player.prototype.kill = function() {
 		this.scenes = this.scenes.filter(function (scene) { return scene.active; });
 		if(this.scenes.length > 0) {
 			this.scenes[0].updateState(delta);
-		}		
+		}
 	};
 
-	Game.prototype.renderScene = function() { 
+	Game.prototype.renderScene = function() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		if(this.scenes.length > 0) {
 			this.scenes[0].draw(ctx);
@@ -1253,11 +1308,11 @@ Player.prototype.kill = function() {
 					var currentTime = new Date().getTime();
 					var delta = (currentTime - game.lastTime) / 1000.0;
 					game.lastTime = currentTime;
-					
+
 					if (delta > 1.0) delta = 1.0;
 					game.updateScene(delta);
 					game.renderScene();
-				}, 
+				},
 			1000/this.frameRate);
 		};
 

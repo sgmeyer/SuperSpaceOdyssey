@@ -7,7 +7,7 @@
 		this.endPoint = new Point();
 
 		this.x = 0;
-		this.y = 0; 
+		this.y = 0;
 		this.height = 5 * game.scale;
 		this.width = 20 * game.scale;
 		this.active = true;
@@ -24,8 +24,6 @@
 		var point = Math.linearInterpolation(this.startPoint, this.endPoint, this.t);
 		this.x = point.x;
 		this.y = point.y;	
-
-
 	};
 
 	Bullet.prototype.shoot = function(startX, startY, leftToRight) {
@@ -34,10 +32,9 @@
 		this.startPoint = new Point(startX, startY);
 		if(leftToRight) { this.endPoint = new Point(this.x + game.width, this.y); }
 		else { this.endPoint = new Point(this.x - game.width, this.y); }
-			
+
 	};
 
 	Bullet.prototype.kill = function() {
 		this.active = false;
 	}
-	
