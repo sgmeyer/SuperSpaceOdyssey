@@ -63,8 +63,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 				this.explode();
 				if(this.endLevelOnKill) { game.scenes[0].end(); }
 			}
-
-			bullet.kill();
 			player.addPoints(10);
 		}
 	};

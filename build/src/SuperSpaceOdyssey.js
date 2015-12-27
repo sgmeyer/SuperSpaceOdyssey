@@ -631,8 +631,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 				this.explode();
 				if(this.endLevelOnKill) { game.scenes[0].end(); }
 			}
-
-			bullet.kill();
 			player.addPoints(10);
 		}
 	};
@@ -849,10 +847,14 @@ Warez.prototype.updateState = function (delta) {
   this.y = point.y;
 };
 
+Warez.prototype.kill = function() {
+  this.active = false;
+};
+
 Warez.prototype.pickUp = function() {
   this.active = false;
   soundLibrary.playNormalPickup();
-}
+};
 
 	function CollisionEngine() {
 
@@ -869,18 +871,8 @@ Warez.prototype.pickUp = function() {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
 		      	 if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+							 bullet.kill();
 							 badGuy.takeHit();
-		      	// 	badGuy.hitpoints--;
-		      	// 	if(badGuy.hitpoints <= 0) {
-						// 		var event = new CustomEvent('bogiekilled', {detail: {x: badGuy.x, y: badGuy.y}});
-						// 		window.dispatchEvent(event);
-						//
-			    	// 		badGuy.explode();
-			    	// 		if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
-			    	// 	}
-						//
-		        // 	bullet.kill();
-		        // 	player.addPoints(10);
 		      	}
 		    });
 		});
@@ -1185,7 +1177,13 @@ Player.prototype.kill = function() {
       if(e.detail.x > 20 && Math.random() * 10 > 5) {
         var warez = new Warez(e.detail.x, e.detail.y);
   			game.warez.push(warez);
-  		}
+
+  			var intervalId = window.setInterval(function() {
+          warez.kill();
+          window.clearInterval(intervalId);
+        }, 7000);
+      }
+
     });
 
   function Variables() {
