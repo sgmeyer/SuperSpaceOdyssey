@@ -12,18 +12,9 @@
 	CollisionEngine.handleCollisions = function (badGuys, goodGuy, warez) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
-		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		      		badGuy.hitpoints--;
-		      		if(badGuy.hitpoints <= 0) {
-								var event = new CustomEvent('bogiekilled', {detail: {x: badGuy.x, y: badGuy.y}});
-								window.dispatchEvent(event);
-
-			    			badGuy.explode();
-			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
-			    		}
-
-		        	bullet.kill();
-		        	player.addPoints(10);
+		      	 if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+							 bullet.kill();
+							 badGuy.takeHit();
 		      	}
 		    });
 		});

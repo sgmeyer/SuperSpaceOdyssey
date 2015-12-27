@@ -53,10 +53,26 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
+	BadGuy.prototype.takeHit = function () {
+		if (!this.exploding) {
+			this.hitpoints--;
+			if(this.hitpoints <= 0) {
+				var event = new CustomEvent('bogiekilled', {detail: {x: this.x, y: this.y}});
+				window.dispatchEvent(event);
+
+				this.explode();
+				if(this.endLevelOnKill) { game.scenes[0].end(); }
+			}
+
+			bullet.kill();
+			player.addPoints(10);
+		}
+	};
+
 	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
-	}
+	};
 
 	BadGuy.prototype.explode = function() {
 		if(!this.exploding) {
@@ -64,7 +80,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 			this.explosion = new Explosion();
 			this.explosion.explode(this);
 		}
-	}
+	};
 
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) {

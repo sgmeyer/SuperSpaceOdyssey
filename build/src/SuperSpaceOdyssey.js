@@ -621,10 +621,26 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
+	BadGuy.prototype.takeHit = function () {
+		if (!this.exploding) {
+			this.hitpoints--;
+			if(this.hitpoints <= 0) {
+				var event = new CustomEvent('bogiekilled', {detail: {x: this.x, y: this.y}});
+				window.dispatchEvent(event);
+
+				this.explode();
+				if(this.endLevelOnKill) { game.scenes[0].end(); }
+			}
+
+			bullet.kill();
+			player.addPoints(10);
+		}
+	};
+
 	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
-	}
+	};
 
 	BadGuy.prototype.explode = function() {
 		if(!this.exploding) {
@@ -632,7 +648,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 			this.explosion = new Explosion();
 			this.explosion.explode(this);
 		}
-	}
+	};
 
 	BadGuy.prototype.shoot = function() {
 		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) {
@@ -852,18 +868,19 @@ Warez.prototype.pickUp = function() {
 	CollisionEngine.handleCollisions = function (badGuys, goodGuy, warez) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
-		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		      		badGuy.hitpoints--;
-		      		if(badGuy.hitpoints <= 0) {
-								var event = new CustomEvent('bogiekilled', {detail: {x: badGuy.x, y: badGuy.y}});
-								window.dispatchEvent(event);
-
-			    			badGuy.explode();
-			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
-			    		}
-
-		        	bullet.kill();
-		        	player.addPoints(10);
+		      	 if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+							 badGuy.takeHit();
+		      	// 	badGuy.hitpoints--;
+		      	// 	if(badGuy.hitpoints <= 0) {
+						// 		var event = new CustomEvent('bogiekilled', {detail: {x: badGuy.x, y: badGuy.y}});
+						// 		window.dispatchEvent(event);
+						//
+			    	// 		badGuy.explode();
+			    	// 		if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
+			    	// 	}
+						//
+		        // 	bullet.kill();
+		        // 	player.addPoints(10);
 		      	}
 		    });
 		});
