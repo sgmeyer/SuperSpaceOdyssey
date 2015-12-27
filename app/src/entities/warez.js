@@ -28,7 +28,11 @@ Warez.prototype.updateState = function (delta) {
   this.y = point.y;
 };
 
+Warez.prototype.kill = function() {
+  this.active = false;
+};
+
 Warez.prototype.pickUp = function() {
   this.active = false;
   soundLibrary.playNormalPickup();
-}
+};
