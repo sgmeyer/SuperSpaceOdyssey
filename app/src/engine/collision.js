@@ -9,17 +9,12 @@
 					 a.y + a.height > b.y;
 	};
 
-	CollisionEngine.handleCollisions = function (badGuys, goodGuy) {
+	CollisionEngine.handleCollisions = function (badGuys, goodGuy, warez) {
 		goodGuy.shotBullets.forEach(function(bullet) {
 	    	badGuys.forEach(function(badGuy) {
-		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
-		      		badGuy.hitpoints--;
-		      		if(badGuy.hitpoints <= 0) {
-			    			badGuy.explode();
-			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
-			    		}
-		        	bullet.kill();
-		        	player.addPoints(10);
+		      	 if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
+							 bullet.kill();
+							 badGuy.takeHit();
 		      	}
 		    });
 		});
@@ -41,4 +36,11 @@
 				}
 			});
 		}
+
+		warez.forEach(function(ware) {
+			if (!goodGuy.exploding && CollisionEngine.collides(goodGuy, ware)) {
+				ware.pickUp();
+				player.addPoints(ware.pointsValue);
+			}
+		});
 	};

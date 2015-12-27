@@ -1,7 +1,7 @@
   function Cutscene() {
     this.active = true;
-    this.timer = 10;
-    this.timer2 = 8;
+    this.timer = 3;
+    this.timer2 = 0;
   };
 
   Cutscene.prototype.draw = function (context) {
@@ -10,7 +10,7 @@
     context.textAlign = Variables.headingTextAlign();
 
     var titleLocation = Variables.headingTitleLocation();
-    context.fillText("some awesome content here   " + this.timer, titleLocation.x, titleLocation.y); 
+    context.fillText('The game will begin in ' + Math.ceil(this.timer), titleLocation.x, titleLocation.y);
     this.startButton.draw(context);
   };
 

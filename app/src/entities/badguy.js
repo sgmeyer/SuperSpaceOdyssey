@@ -3,7 +3,7 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.t = 0;
 		this.sprite = spriteLibrary.getSprite(shipId || 'badGuyShip');
 		this.x = game.width;
-		this.y = game.height; 
+		this.y = game.height;
 		this.width = (width || 50) * game.scale;
 		this.height = (height || 50) * game.scale;
 		this.active = true;
@@ -53,10 +53,26 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 		this.shotBullets.forEach(function(bullet) { bullet.draw(context); });
 	};
 
+	BadGuy.prototype.takeHit = function () {
+		if (!this.exploding) {
+			this.hitpoints--;
+			if(this.hitpoints <= 0) {
+				var event = new CustomEvent('bogiekilled', {detail: {x: this.x, y: this.y}});
+				window.dispatchEvent(event);
+
+				this.explode();
+				if(this.endLevelOnKill) { game.scenes[0].end(); }
+			}
+
+			bullet.kill();
+			player.addPoints(10);
+		}
+	};
+
 	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
-	}
+	};
 
 	BadGuy.prototype.explode = function() {
 		if(!this.exploding) {
@@ -64,10 +80,10 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 			this.explosion = new Explosion();
 			this.explosion.explode(this);
 		}
-	}
+	};
 
 	BadGuy.prototype.shoot = function() {
-		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) { 
+		if(!this.exploding && !(this.endLevelOnKill && this.t < 1)) {
 			var bullet = new Bullet(4, 'lazerRed');
 			bullet.shoot(this.x, this.y + (this.height/2));
 			this.shotBullets.push(bullet);

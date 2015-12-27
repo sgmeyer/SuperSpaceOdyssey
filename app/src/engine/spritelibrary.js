@@ -24,10 +24,11 @@ function SpriteLibrary() {
     //{id: 'bomb', x: 133, y: 69, width: 18, height: 45, image: shipImage},
     {id: 'lazerBlue', x: 86, y: 69, width: 47, height: 13, image: bulletImage},
     {id: 'lazerRed', x: 86, y: 52, width: 47, height: 13, image: bulletImage},
-    {id: 'boss1', x: 0, y: 0, width: 278, height: 347, image:boss1}
+    {id: 'greenWarez', x: 110, y: 260, width: 12, height: 12, image: bulletImage},
+    {id: 'boss1', x: 110, y: 2600, width: 12, height: 12, image:boss1}
   ];
   this.animationSprites = [
-    { id: 'explosion', 
+    { id: 'explosion',
       intervals: [
         { time: .1, x: 0, y: 0, height: 55, width: 55},
         { time: .2, x: 65, y: 0, height: 55, width: 55},

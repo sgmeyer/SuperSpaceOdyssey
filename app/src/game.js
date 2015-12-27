@@ -5,6 +5,7 @@
 		this.lastTime = 0;
 		this.scenes = [];
 		this.goodGuys = [];
+		this.warez = [];
 		this.scale = 1;
 	}
 
@@ -18,8 +19,6 @@
 
 		this.height = height || this.height;
 		this.width = width || this.width;
-
-		
 
 		canvas = document.getElementById('space-odyssey-game');
 		canvas.height = height;
@@ -45,10 +44,10 @@
 		this.scenes = this.scenes.filter(function (scene) { return scene.active; });
 		if(this.scenes.length > 0) {
 			this.scenes[0].updateState(delta);
-		}		
+		}
 	};
 
-	Game.prototype.renderScene = function() { 
+	Game.prototype.renderScene = function() {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 		if(this.scenes.length > 0) {
 			this.scenes[0].draw(ctx);
@@ -86,11 +85,11 @@
 					var currentTime = new Date().getTime();
 					var delta = (currentTime - game.lastTime) / 1000.0;
 					game.lastTime = currentTime;
-					
+
 					if (delta > 1.0) delta = 1.0;
 					game.updateScene(delta);
 					game.renderScene();
-				}, 
+				},
 			1000/this.frameRate);
 		};
 
