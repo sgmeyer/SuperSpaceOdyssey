@@ -56,9 +56,6 @@ function BadGuy(shipId, width, height, hitpoints, endLevelOnKill) {
 	BadGuy.prototype.kill = function() {
 		this.active = false;
 		this.ShotBullets = [];
-
-		var event = new CustomEvent('bogiekilled', {detail: {x: this.x, y: this.y}});
-		window.dispatchEvent(event);
 	}
 
 	BadGuy.prototype.explode = function() {

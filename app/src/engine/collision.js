@@ -15,9 +15,13 @@
 		      	if (!badGuy.exploding && CollisionEngine.collides(bullet, badGuy)) {
 		      		badGuy.hitpoints--;
 		      		if(badGuy.hitpoints <= 0) {
+								var event = new CustomEvent('bogiekilled', {detail: {x: badGuy.x, y: badGuy.y}});
+								window.dispatchEvent(event);
+
 			    			badGuy.explode();
 			    			if(badGuy.endLevelOnKill) { game.scenes[0].end(); }
 			    		}
+
 		        	bullet.kill();
 		        	player.addPoints(10);
 		      	}
@@ -45,7 +49,7 @@
 		warez.forEach(function(ware) {
 			if (!goodGuy.exploding && CollisionEngine.collides(goodGuy, ware)) {
 				ware.pickUp();
-				player.addPoints(ware.pointsValue);	
+				player.addPoints(ware.pointsValue);
 			}
 		});
 	};
