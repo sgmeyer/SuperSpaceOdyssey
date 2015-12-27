@@ -30,4 +30,5 @@ Warez.prototype.updateState = function (delta) {
 
 Warez.prototype.pickUp = function() {
   this.active = false;
+  soundLibrary.playNormalPickup();
 }
