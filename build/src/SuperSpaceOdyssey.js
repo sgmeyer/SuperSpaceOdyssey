@@ -432,6 +432,7 @@
   };
 
   TouchGameController.prototype.initialize = function() {
+    keydown = {};
     GameController.init({ 
       left: { 
         position: { left: '10%', bottom: '17%' },
@@ -762,8 +763,7 @@ function GoodGuy() {
 		this.shotInterval += (delta / 10) * this.speed;		
 		var distance = delta * (50 * game.scale ) * this.speed;	
 
-		if(!this.exploding) {
-			if (keydown.left) { this.x = Math.max(this.x - distance, 0); }
+		if (!this.exploding) { if (keydown.left) { this.x = Math.max(this.x - distance, 0); }
 	    if (keydown.right) { this.x = Math.min(this.x + distance, game.width - this.width); }
 	    if (keydown.up) { this.y = Math.max(this.y - distance, 0); }
 	    if (keydown.down) { this.y = Math.min(this.y + distance, game.height - this.height); }
@@ -1282,9 +1282,9 @@ Player.prototype.kill = function() {
 
 		var gameController;
 		if(touchEnabled) {
-			gameController = new TouchGameController();
-			gameController.initialize();
-		} else {
+		 	gameController = new TouchGameController();
+		 	gameController.initialize();
+		 } else {
 			gameController = new KeyboardGameController();
 			gameController.initialize();
 		}

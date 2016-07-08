@@ -2,6 +2,7 @@
   };
 
   TouchGameController.prototype.initialize = function() {
+    keydown = {};
     GameController.init({ 
       left: { 
         position: { left: '10%', bottom: '17%' },
