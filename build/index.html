@@ -33,7 +33,7 @@
 		};
 
 		function is_touch_device() {
-		  return !!('ontouchstart' in window);
+		  return !!('ontouchstart' in window) && !!('onclick' in window);
 		}
 	</script>
 <body>

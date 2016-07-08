@@ -30,9 +30,9 @@
 
 		var gameController;
 		if(touchEnabled) {
-			gameController = new TouchGameController();
-			gameController.initialize();
-		} else {
+		 	gameController = new TouchGameController();
+		 	gameController.initialize();
+		 } else {
 			gameController = new KeyboardGameController();
 			gameController.initialize();
 		}
